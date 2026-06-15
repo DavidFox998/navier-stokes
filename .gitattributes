@@ -1,0 +1,2 @@
+*.lean linguist-language=Lean
+*.ts linguist-vendored=true

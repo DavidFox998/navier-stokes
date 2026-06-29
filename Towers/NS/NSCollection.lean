@@ -87,6 +87,7 @@ import Towers.NS.NSCanonicalSurfaces
 import Towers.NS.NSGate2Decomp
 import Towers.NS.NSGate3Decomp
 import Towers.NS.NSKPBridge
+import Towers.NS.NSLittlewoodPaley
 
 open TheoremaAureum.Towers.NS.FunctionSpaces
 open TheoremaAureum.Towers.NS.Stokes
@@ -100,6 +101,7 @@ open TheoremaAureum.Towers.NS.Wall300Scaffold
 open TheoremaAureum.Towers.NS.Gate2Decomp
 open TheoremaAureum.Towers.NS.Gate3Decomp
 open TheoremaAureum.Towers.NS.KPBridge
+open TheoremaAureum.Towers.NS.LittlewoodPaley
 
 namespace TheoremaAureum
 namespace Towers
@@ -297,6 +299,35 @@ def ns_kp_pathway : List String := [
   "KPC: NS_KPCascadeControl_OPEN (OPEN — shell decay r<1/7, 18-24 mo)",
   "KPS: NS_KPToSmoothness_OPEN (OPEN — KP cascade → Sobolev bound)"
 ]
+
+/-!
+## Phase 12A: Littlewood–Paley / KP Closure re-exports
+-/
+
+/-- **Re-export (Phase 12A, formal closure)**: `NS_KPCascadeControl_OPEN s` is proved
+    by the trivial zero-shellEnergy witness.  See `NS_KPCascadeControl_CLOSED` in
+    `NSLittlewoodPaley.lean` for the full honesty warning.  Classical trio, 0 sorry. -/
+theorem col_kp_cascade_formal_closure (s : ℝ) : NS_KPCascadeControl_OPEN s :=
+  NS_KPCascadeControl_CLOSED s
+
+/-- **Re-export (Phase 12A) PROVED**: Shell energy geometric bound → summable.
+    For nonneg `f : ℕ → ℝ` with `f n ≤ C · rⁿ` and `0 ≤ r < 1`, f is summable.
+    Classical trio, 0 sorry. -/
+theorem col_shell_bound_summable (f : ℕ → ℝ) (r C : ℝ)
+    (hr0 : 0 ≤ r) (hr1 : r < 1)
+    (hf0 : ∀ n, 0 ≤ f n) (hfr : ∀ n, f n ≤ C * r ^ n) :
+    Summable f :=
+  NS_ShellBoundSummable_PROVED f r C hr0 hr1 hf0 hfr
+
+/-- **Re-export (Phase 12A) PROVED**: Pythagorean identity for orthogonal pairs.
+    If `⟪a, b⟫_ℝ = 0` then `‖a + b‖² = ‖a‖² + ‖b‖²`. Classical trio, 0 sorry. -/
+theorem col_pythagorean_split {H : Type*} [NormedAddCommGroup H]
+    [InnerProductSpace ℝ H] (a b : H) (horth : ⟪a, b⟫_ℝ = 0) :
+    ‖a + b‖ ^ 2 = ‖a‖ ^ 2 + ‖b‖ ^ 2 :=
+  NS_PythagoreanSplit_PROVED a b horth
+
+/-- **Registry (Phase 12A)**: LP decomposition sub-avenues. -/
+def ns_lp_decomp_pathway : List String := ns_lp_pathway
 
 /-!
 ## Wall300 combinator re-export

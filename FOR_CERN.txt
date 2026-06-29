@@ -1,35 +1,55 @@
-FOR_CERN.txt  —  Navier–Stokes Clay Tower (NS Tower 540)
+FOR_CERN.txt  —  Navier-Stokes Clay Tower (NS Tower 540)
 Morning Star Project · Theorema Aureum 143
 Generated: 2026-06-29
 
-STATUS: NS global regularity OPEN. This is a formal reduction to 3 atomic gates.
+STATUS: NS global regularity OPEN. Formal reduction to 3 atomic gates.
+        Phase 11: KP-to-NS bridge adds 4 proved structural lemmas.
 
 GATE SUMMARY
 ============
 Gate 1: NS_AubinLions_OPEN
-  Content: Rellich-Kondrachov compact Sobolev embedding H^{s+2} hookrightarrow hookrightarrow H^s
-  Gap: Absent from Mathlib v4.12.0 (ETA 12-24 months)
-  Ref: Rellich (1930), Kondrachov (1945), Lions (1961), Aubin (1963)
+  Content: Rellich-Kondrachov compact Sobolev embedding H^{s+2} ->-> H^s
+  Sub-avenues proved: A (FinDimCompact), B (GalerkinBounded), B' (InCompact)
+  Sub-avenues open: C (Rellich-Kondrachov), D (Banach-Alaoglu), Bridge
+  Gap: Compact Sobolev embedding absent from Mathlib v4.12.0 (ETA 12-24 mo)
 
 Gate 2: NS_NonlinearWeakForm_OPEN
   Content: Nonlinear trilinear form B(u,v,w) = int ((u.nabla)v).w dx in L^2
+  Sub-avenues proved: E (TrilinearZeroGalerkin), F (GalerkinEnergyBalance)
+  Sub-avenues open: G (Gagliardo-Nirenberg), H (Leray proj.), Bridge
   Gap: Physical-space PDE machinery absent from Mathlib v4.12.0
-  Ref: Leray (1934 Acta Math.), Ladyzhenskaya (1969)
 
-Gate 3: NS_GlobalContinuation_OPEN
-  Content: No finite-time blow-up (global continuation of local smooth solutions)
-  Gap: THE GENUINE CLAY OPEN PROBLEM
-  Ref: Clay Mathematics Institute (2000), Fefferman (2000 problem statement)
+Gate 3: NS_GlobalContinuation_OPEN  [THE GENUINE CLAY OPEN PROBLEM]
+  Content: No finite-time blow-up (global continuation of smooth solutions)
+  BKM strategy (Phase 10):
+    Sub-avenues proved: I (SmoothMono), J (SmoothMin)
+    Sub-avenues open: M (LocalRegularity), K (BKMCriterion), L (GlobalSobolev), Bridge
+  KP reduction (Phase 11 — NEW):
+    L reduced to: KPC (KP cascade control, shell decay r<1/7)
+                + KPS (KP-to-smoothness bridge)
+    Proved structural lemmas: P (comparison test), Q (7^n entropy),
+                              R (cascade->Sobolev), S (decay necessary)
 
-PROVED IN THIS TOWER (classical trio, 0 sorry)
-==============================================
-* stokes_op_adjoint: Stokes operator is self-adjoint in Fourier model
-* integration_by_parts_proved: closes Phase-3 Energy.lean named surface
-* trilinear_zero_energy: B(u,u,u) = 0 for div-free u (energy cancellation)
-* ns_clay_combinator: Gate1 ^ Gate2 ^ Gate3 -> NS_ClayStatement
-* weak_solution_exists: Galerkin existence (over 3 named Props)
-* weak_implies_strong: local regularity (over global_smooth_exists)
-* energy_inequality, energy_nonincreasing: energy decay along solutions
+PROVED IN THIS TOWER (classical trio, 0 sorry, 0 sorry)
+=============================================================
+Phase 7A: stokes_op_adjoint — Stokes operator self-adjoint (Fourier model)
+Phase 7A: integration_by_parts_proved — closes Energy.lean Phase-3 surface
+Phase 7B: trilinear_zero_energy — B(u,u,u)=0 for div-free u
+Phase 7C: ns_clay_combinator — Gate1^Gate2^Gate3 -> NS_ClayStatement
+Phase 8A: NS_FinDimCompact_PROVED — compact ball in K(n)
+Phase 8A: NS_GalerkinBounded_PROVED — Galerkin seq bounded
+Phase 8A: NS_GalerkinInCompact_PROVED — in compact ball
+Phase 9A: NS_TrilinearZeroGalerkin_PROVED — B(u,u,u)=0 on Galerkin
+Phase 9A: NS_GalerkinEnergyBalance_PROVED — energy balance simplification
+Phase 10: NS_SmoothMono_PROVED — IsSmoothOn monotone in T
+Phase 10: NS_SmoothMin_PROVED — intersection of smooth intervals smooth
+Phase 11: NS_KPComparisonTest_PROVED — abstract KP comparison test
+Phase 11: NS_EntropyGeometric_PROVED — 7^n entropy beaten at q<1/7
+Phase 11: NS_SobolevControlFromCascade_PROVED — cascade decay -> Sobolev
+Phase 11: NS_CascadeDecayNecessary_PROVED — summable -> terms -> 0
+Combinators (conditional): ns_aubin_lions_from_avenues, ns_gate2_from_avenues,
+    ns_gate3_from_avenues, ns_kp_gate3_reduction (all KP-based route)
+Phases 1-6: weak_solution_exists, energy_inequality, energy_nonincreasing, etc.
 
 AXIOM AUDIT
 ===========

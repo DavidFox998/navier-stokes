@@ -29,4 +29,5 @@ lean_lib Towers where
              `Towers.NS.NSOrbitClosure,
              `Towers.NS.NSGeneratorClose,
              `Towers.NS.NSFourierInner,
+             `Towers.NS.NSMuIntegralShift,
              `Towers.NS.NSClayCertificateV2]

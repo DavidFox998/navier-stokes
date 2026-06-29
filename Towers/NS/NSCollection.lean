@@ -88,6 +88,7 @@ import Towers.NS.NSGate2Decomp
 import Towers.NS.NSGate3Decomp
 import Towers.NS.NSKPBridge
 import Towers.NS.NSLittlewoodPaley
+import Towers.NS.NSLPKPCertificate
 
 open TheoremaAureum.Towers.NS.FunctionSpaces
 open TheoremaAureum.Towers.NS.Stokes
@@ -102,6 +103,7 @@ open TheoremaAureum.Towers.NS.Gate2Decomp
 open TheoremaAureum.Towers.NS.Gate3Decomp
 open TheoremaAureum.Towers.NS.KPBridge
 open TheoremaAureum.Towers.NS.LittlewoodPaley
+open TheoremaAureum.Towers.NS.LPKPCertificate
 
 namespace TheoremaAureum
 namespace Towers
@@ -328,6 +330,59 @@ theorem col_pythagorean_split {H : Type*} [NormedAddCommGroup H]
 
 /-- **Registry (Phase 12A)**: LP decomposition sub-avenues. -/
 def ns_lp_decomp_pathway : List String := ns_lp_pathway
+
+/-!
+## Phase 12B: LP → KP Certificate (rigorous chain) re-exports
+-/
+
+/-- **Re-export (Phase 12B, Steps i–v) PROVED**: Explicit 5-property chain from LP data.
+    Given shellNorm, r, C, nonneg, Parseval, decay, the initial-time shell energies satisfy:
+    (i) nonneg, (ii) decay ≤ C·rⁿ, (iii) summable, (iv) Parseval, (v) ‖u(0)‖² ≤ C·(1-r)⁻¹.
+    Classical trio, 0 sorry. CLAY_CONDITIONAL. -/
+theorem col_lp_cascade_chain {s : ℝ}
+    (shellNorm : Hdiv_free (s + 2) → ℕ → ℝ) (r C : ℝ)
+    (hr0 : 0 ≤ r) (hr7 : r < 1 / 7) (hC : 0 < C)
+    (hnonneg : ∀ (v : Hdiv_free (s + 2)) (n : ℕ), 0 ≤ shellNorm v n)
+    (hpar : ∀ (v : Hdiv_free (s + 2)),
+      Summable (shellNorm v) ∧ ∑' n : ℕ, shellNorm v n = ‖v‖ ^ 2)
+    (hdecay : ∀ (u₀ : Hdiv_free (s + 2)) (f : ExternalForce s)
+      (u : ℝ → Hdiv_free (s + 2)),
+      WeakNS u u₀ f → ∀ (n : ℕ) (t : ℝ), shellNorm (u t) n ≤ C * r ^ n)
+    (u₀ : Hdiv_free (s + 2)) (f : ExternalForce s)
+    (u : ℝ → Hdiv_free (s + 2)) (hNS : WeakNS u u₀ f) :
+    (∀ n, 0 ≤ shellNorm (u 0) n) ∧
+    (∀ n, shellNorm (u 0) n ≤ C * r ^ n) ∧
+    Summable (shellNorm (u 0)) ∧
+    (∑' n : ℕ, shellNorm (u 0) n = ‖u 0‖ ^ 2) ∧
+    ‖u 0‖ ^ 2 ≤ C * (1 - r) ⁻¹ :=
+  NS_LPCascadeChain_PROVED shellNorm r C hr0 hr7 hC hnonneg hpar hdecay u₀ f u hNS
+
+/-- **Re-export (Phase 12B, Step vi) PROVED**: Entropy-weighted summability.
+    Given LP decay with r < 1/7, the series `Σ 7ⁿ · shellNorm (u 0) n` converges.
+    KEY: shell activities beat KP Fourier entropy 7ⁿ (r < 1/7 ⟹ 7r < 1).
+    Classical trio, 0 sorry. CLAY_CONDITIONAL. -/
+theorem col_lp_entropy_beat {s : ℝ}
+    (shellNorm : Hdiv_free (s + 2) → ℕ → ℝ) (r C : ℝ)
+    (hr0 : 0 ≤ r) (hr7 : r < 1 / 7) (hC : 0 < C)
+    (hnonneg : ∀ (v : Hdiv_free (s + 2)) (n : ℕ), 0 ≤ shellNorm v n)
+    (hdecay : ∀ (u₀ : Hdiv_free (s + 2)) (f : ExternalForce s)
+      (u : ℝ → Hdiv_free (s + 2)),
+      WeakNS u u₀ f → ∀ (n : ℕ) (t : ℝ), shellNorm (u t) n ≤ C * r ^ n)
+    (u₀ : Hdiv_free (s + 2)) (f : ExternalForce s)
+    (u : ℝ → Hdiv_free (s + 2)) (hNS : WeakNS u u₀ f) :
+    Summable (fun n : ℕ => (7 : ℝ) ^ n * shellNorm (u 0) n) :=
+  NS_LPEntropyBeat_PROVED shellNorm r C hr0 hr7 hC hnonneg hdecay u₀ f u hNS
+
+/-- **Re-export (Phase 12B) PROVED rigorous combinator**:
+    Complete certified route NS_LPDyadicDecomp_OPEN s → NS_KPCascadeControl_OPEN s.
+    Uses NS_LPCascadeChain_PROVED for the explicit intermediate verification.
+    Classical trio, 0 sorry. CLAY_CONDITIONAL. -/
+theorem col_lp_kp_cascade_rigorous (s : ℝ) (hLP : NS_LPDyadicDecomp_OPEN s) :
+    NS_KPCascadeControl_OPEN s :=
+  ns_lp_kp_cascade_rigorous s hLP
+
+/-- **Registry (Phase 12B)**: Certificate chain steps. -/
+def ns_phase12b_certificate : List String := ns_lp_kp_certificate_steps
 
 /-!
 ## Wall300 combinator re-export

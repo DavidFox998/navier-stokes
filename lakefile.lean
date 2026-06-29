@@ -15,4 +15,6 @@ lean_lib Towers where
              `Towers.NS.NSStokesAdjoint,
              `Towers.NS.NSNonlinearTerm,
              `Towers.NS.NSClayCombinator,
+             `Towers.NS.NSAubinLionsDecomp,
+             `Towers.NS.NSCanonicalSurfaces,
              `Towers.NS.NSCollection]

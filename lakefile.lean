@@ -31,4 +31,5 @@ lean_lib Towers where
              `Towers.NS.NSFourierInner,
              `Towers.NS.NSMuIntegralShift,
              `Towers.NS.NSParametricDiff,
+             `Towers.NS.NSBochnerDiff,
              `Towers.NS.NSClayCertificateV2]

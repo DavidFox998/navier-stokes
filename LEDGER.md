@@ -211,3 +211,37 @@ and Surface #2 (`weak_solution_exists` in physical sense) remain OPEN.
 The function spaces `Hdiv_free s` and `WeakNS` are **Fourier-side models**
 (fixed Sobolev index, ν=1, linear Stokes surrogate weak form). They are NOT
 the literal Leray–Hopf spaces `L²([0,T]; H¹) ∩ L^∞([0,T]; L²)`.
+---
+
+## Phase 8 (NEW 2026-06-29) — Gate Decomposition
+
+### Phase 8A — Aubin–Lions Avenue Decomposition (`NSAubinLionsDecomp.lean`)
+
+Decomposes Clay Gate 1 (`NS_AubinLions_OPEN K`) into six named sub-avenues.
+
+| Sub-avenue | Name | Status | Method |
+|------------|------|--------|--------|
+| A | `NS_FinDimCompact_PROVED K n r` | **PROVED** | `ProperSpace (K n)` from `FiniteDimensional ℂ (K n)` → `isCompact_closedBall 0 r` |
+| B | `NS_GalerkinBounded_PROVED K` | **PROVED** | Direct from `galerkin_seq_norm_le` |
+| B' | `NS_GalerkinInCompact_PROVED K` | **PROVED** | A + B combined |
+| C | `NS_RellichKondrachov_OPEN s` | OPEN | Rellich–Kondrachov compact Sobolev embedding (Mathlib gap, 12–24 mo) |
+| D | `NS_WeakCompactness_OPEN s` | OPEN | Banach–Alaoglu in Sobolev setting (Mathlib gap, 6–12 mo) |
+| Bridge | `NS_AubinLions_Bridge_OPEN s K` | OPEN | Aubin–Lions 1963 (Galerkin ODE + lsc, 18–24 mo) |
+
+**Combinator:** `ns_aubin_lions_from_avenues` takes (C + D + Bridge) → Gate 1.
+Classical trio, 0 sorry. Sub-avenues A/B/B' internally wired.
+
+### Phase 8B — Canonical Surfaces Registry (`NSCanonicalSurfaces.lean`)
+
+| Entry | Content | Status |
+|-------|---------|--------|
+| `NS_Surface1` | Clay Surface #1 = `global_smooth_exists` | LOCKED OPEN |
+| `NS_Surface2` | Clay Surface #2 = physical Leray–Hopf existence | LOCKED OPEN |
+| `ns_all_clay_gates_OPEN` | 3-gate conjunction | CONDITIONAL |
+| `ns_clay_from_all_gates` | Gates → Clay statement | `CLAY_CONDITIONAL` |
+| `ns_gate1_proved_avenues_hold` | A+B+B' hold unconditionally | `CLAY_VALID` |
+| `cs_integration_by_parts_closed` | Re-exports Phase 7A closure | `CLAY_VALID` |
+| `ns_tower_honest_scope` | Honesty scope statement | — |
+
+**Net result after Phase 8:** Clay Gate 1 reduced from 1 monolithic OPEN surface
+to 3 proved sub-avenues + 3 named open sub-avenues. Gates 2 and 3 unchanged.

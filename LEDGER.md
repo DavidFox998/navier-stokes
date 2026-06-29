@@ -271,3 +271,40 @@ Classical trio, 0 sorry. Sub-avenues E/F proved from Phase 7B `trilinear_zero_en
   - Gate 2: 2 proved + 3 open sub-avenues (Phase 9A)
   - Gate 3: Still monolithic OPEN (genuine Clay open, no decomposition yet)
 Total NS BRICKS.txt: 114 → **120** (6 new theorems).
+---
+
+## Phase 10 (2026-06-29) — Gate 3 BKM Decomposition
+
+### Phase 10 — Gate 3 BKM Avenue Decomposition (`NSGate3Decomp.lean`)
+
+Decomposes Clay Gate 3 (`NS_GlobalContinuation_OPEN s`) via the Beale–Kato–Majda
+strategy into five named sub-avenues (two proved, four open):
+
+| Sub-avenue | Name | Status | Method |
+|------------|------|--------|--------|
+| I | `NS_SmoothMono_PROVED` | **PROVED** | `IsSmoothOn` is monotone (downward-closed) in T; `ContDiffOn.mono` + `Set.Ioo_subset_Ioo_right` |
+| J | `NS_SmoothMin_PROVED` | **PROVED** | Intersection of smooth intervals; `ContDiffOn.mono` + `min_le_left` |
+| M | `NS_LocalRegularity_OPEN` | OPEN | Stokes parabolic regularity (`global_smooth_exists`); Sobolev embedding ⋂_s Hˢ ↪ C^∞, Mathlib gap, 12–18 mo |
+| K | `NS_BKMCriterion_OPEN` | OPEN | Beale–Kato–Majda criterion: Hˢ norm blow-up at finite time; Gronwall + Sobolev product, Mathlib gap, 12–18 mo |
+| L | `NS_GlobalSobolevBound_OPEN` | OPEN | Global Hˢ bound: ‖u(t)‖ finite for all t; THE genuine Clay open problem |
+| Bridge | `NS_BKM_Bridge_OPEN` | OPEN | K + L → Gate 3 Part B (local → global) |
+
+**Combinator:** `ns_gate3_from_avenues` takes (M + K + L + Bridge) → Gate 3.
+`ns_gate3_proved_avenues_hold` records the I+J conjunction.
+Classical trio, 0 sorry.
+
+**Gate 3 structure** (from `NSClayCombinator.lean`):
+  Gate 3 = Part A (`global_smooth_exists`) ∧ Part B (local → global, no blow-up)
+  M discharges Part A; K+L+Bridge discharge Part B.
+  `NS_SmoothMono_PROVED` (I) and `NS_SmoothMin_PROVED` (J) are the structural
+  lemmas underpinning the continuation argument — monotonicity and finite-intersection
+  of smooth-time intervals.
+
+**Full NS tower summary after Phase 10:**
+  - Gate 1: 3 proved + 3 open (Phase 8A)
+  - Gate 2: 2 proved + 3 open (Phase 9A)
+  - Gate 3: 2 proved + 4 open (Phase 10)
+  Total proved structural theorems: 7 (across gates)
+  Total open sub-avenues: 10 (across 3 gates)
+Seal/BRICKS.txt: 120 → **126** (6 new theorems). 5 files pushed.
+NS global regularity: OPEN. No Clay claim.

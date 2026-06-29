@@ -22,10 +22,15 @@ for the YM tower and `BSD_MasterCertification` for the BSD tower.
   Phase 8B (NSCanonicalSurfaces):
     `ns_gate1_proved_avenues_hold` — A+B+B' unconditional
   Phase 9A (NSGate2Decomp):
-    `NS_TrilinearZeroGalerkin_PROVED` — B(u,u,u)=0 on Galerkin elements ✓ NEW
-    `NS_GalerkinEnergyBalance_PROVED` — energy balance (linear part)    ✓ NEW
-    `ns_gate2_from_avenues` — Gate-2 combinator                         ✓ NEW
-    `ns_gate2_proved_avenues_hold` — E+F proved unconditionally          ✓ NEW
+    `NS_TrilinearZeroGalerkin_PROVED` — B(u,u,u)=0 on Galerkin elements
+    `NS_GalerkinEnergyBalance_PROVED` — energy balance (linear part)
+    `ns_gate2_from_avenues` — Gate-2 combinator
+    `ns_gate2_proved_avenues_hold` — E+F proved unconditionally
+  Phase 10 (NSGate3Decomp):
+    `NS_SmoothMono_PROVED` — IsSmoothOn is monotone in T              ✓ NEW
+    `NS_SmoothMin_PROVED` — intersection of smooth intervals is smooth ✓ NEW
+    `ns_gate3_from_avenues` — Gate-3 BKM combinator                   ✓ NEW
+    `ns_gate3_proved_avenues_hold` — I+J proved unconditionally        ✓ NEW
   Phases 1–6 (FunctionSpaces through Wall300):
     All phase combinators re-exported.
 
@@ -40,6 +45,10 @@ for the YM tower and `BSD_MasterCertification` for the BSD tower.
     H: `NS_NonlinearProjection_OPEN`     — Leray-projected (u·∇)u (12–18 mo)
     Bridge: `NS_WeakFormBilinear_OPEN`   — L² density extension (12–18 mo)
   Gate 3: `NS_GlobalContinuation_OPEN s` — no finite-time blow-up (Clay open)
+    M: `NS_LocalRegularity_OPEN`         — Stokes parabolic regularity (12–18 mo)
+    K: `NS_BKMCriterion_OPEN`            — BKM blow-up criterion (12–18 mo)
+    L: `NS_GlobalSobolevBound_OPEN`      — global Hˢ bound (Clay open)
+    Bridge: `NS_BKM_Bridge_OPEN`         — K+L → Gate 3 Part B
 
 ### Newly closed surfaces
 
@@ -67,6 +76,7 @@ import Towers.NS.NSClayCombinator
 import Towers.NS.NSAubinLionsDecomp
 import Towers.NS.NSCanonicalSurfaces
 import Towers.NS.NSGate2Decomp
+import Towers.NS.NSGate3Decomp
 
 open TheoremaAureum.Towers.NS.FunctionSpaces
 open TheoremaAureum.Towers.NS.Stokes
@@ -78,6 +88,7 @@ open TheoremaAureum.Towers.NS.NonlinearTerm
 open TheoremaAureum.Towers.NS.ClayCombinator
 open TheoremaAureum.Towers.NS.Wall300Scaffold
 open TheoremaAureum.Towers.NS.Gate2Decomp
+open TheoremaAureum.Towers.NS.Gate3Decomp
 
 namespace TheoremaAureum
 namespace Towers
@@ -210,6 +221,36 @@ def ns_gate2_sub_avenues : List String := [
   "G: NS_SobolevAlgebra_OPEN (OPEN — Gagliardo-Nirenberg, 6-12 mo)",
   "H: NS_NonlinearProjection_OPEN (OPEN — Leray-projected (u·∇)u, 12-18 mo)",
   "Bridge: NS_WeakFormBilinear_OPEN (OPEN — L² density, 12-18 mo)"
+]
+
+/-!
+## Phase 10: Gate 3 BKM decomposition re-exports
+-/
+
+/-- **Re-export (Phase 10, Sub-av. I) PROVED**: `IsSmoothOn` is monotone in `T`.
+    If `u` is smooth on `(0, T)` and `T' ≤ T`, then `u` is smooth on `(0, T')`. -/
+theorem col_smooth_mono {s : ℝ}
+    (u : ℝ → Hdiv_free (s + 2)) (T T' : ℝ) (hle : T' ≤ T)
+    (hsmooth : IsSmoothOn u T) :
+    IsSmoothOn u T' :=
+  Gate3Decomp.NS_SmoothMono_PROVED u T T' hle hsmooth
+
+/-- **Re-export (Phase 10, Sub-av. J) PROVED**: intersection of smooth intervals.
+    If `u` is smooth on `(0, T₁)` and `(0, T₂)`, it is smooth on `(0, min T₁ T₂)`. -/
+theorem col_smooth_min {s : ℝ}
+    (u : ℝ → Hdiv_free (s + 2)) (T₁ T₂ : ℝ)
+    (h1 : IsSmoothOn u T₁) (h2 : IsSmoothOn u T₂) :
+    IsSmoothOn u (min T₁ T₂) :=
+  Gate3Decomp.NS_SmoothMin_PROVED u T₁ T₂ h1 h2
+
+/-- **Registry (Phase 10)**: 2 proved sub-avenues (I+J), 4 open (M+K+L+Bridge) for Gate 3. -/
+def ns_gate3_sub_avenues : List String := [
+  "I: NS_SmoothMono_PROVED (PROVED)",
+  "J: NS_SmoothMin_PROVED (PROVED)",
+  "M: NS_LocalRegularity_OPEN (OPEN — Stokes parabolic regularity, 12-18 mo)",
+  "K: NS_BKMCriterion_OPEN (OPEN — BKM criterion, 12-18 mo)",
+  "L: NS_GlobalSobolevBound_OPEN (OPEN — global Hˢ bound, Clay open)",
+  "Bridge: NS_BKM_Bridge_OPEN (OPEN — K+L → Gate 3 Part B)"
 ]
 
 /-!

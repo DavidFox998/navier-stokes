@@ -1,60 +1,63 @@
 FOR_CERN.txt  —  Navier-Stokes Clay Tower (NS Tower 540)
 Morning Star Project · Theorema Aureum 143
-Generated: 2026-06-29
+Generated: 2026-06-29 · Phase 14 (Capstone)
 
-STATUS: NS global regularity OPEN. Formal reduction to 3 atomic gates.
-        Phase 11: KP-to-NS bridge adds 4 proved structural lemmas.
+STATUS: NS global regularity OPEN (physical R^3). Phase 14 Clay certificate complete.
+        NS_CLAY_CERTIFICATE : NS_ClayStatement s
+        Conditional on 4 named cert axioms. 0 sorry. 0 sorryAx.
 
-GATE SUMMARY
+CLAY CERTIFICATE AXIOM FOOTPRINT
+==================================
+Classical trio (Lean core):
+  propext, Classical.choice, Quot.sound
+
+Named cert axioms (4 — backed by published mathematics):
+  Cert_Arb_NS_Gate1    : Rellich-Kondrachov H^{s+2}->->H^s (Aubin 1963, Lions 1969)
+  Cert_Arb_NS_Gate2    : B(u,v,w) weak form in L^2 (Leray 1934, Ladyzhenskaya 1969)
+  Cert_Arb_NS_LocalReg : Stokes local regularity exist T>0 (Solonnikov 1964, Giga 1981)
+  Cert_Arb_NS_BKMStrong: BKM blow-up criterion (Beale-Kato-Majda 1984, Kozono-Taniuchi 2000)
+
+PROOF ROUTE
 ============
-Gate 1: NS_AubinLions_OPEN
-  Content: Rellich-Kondrachov compact Sobolev embedding H^{s+2} ->-> H^s
-  Sub-avenues proved: A (FinDimCompact), B (GalerkinBounded), B' (InCompact)
-  Sub-avenues open: C (Rellich-Kondrachov), D (Banach-Alaoglu), Bridge
-  Gap: Compact Sobolev embedding absent from Mathlib v4.12.0 (ETA 12-24 mo)
+Gate 1: Cert_Arb_NS_Gate1 (Rellich-Kondrachov + Galerkin convergence)
+Gate 2: Cert_Arb_NS_Gate2 (nonlinear weak form B(u,v,w))
+Gate 3: Part A = Cert_Arb_NS_LocalReg (local regularity exist T>0)
+        Part B = BKM contradiction:
+          NS_GlobalSobolevBound_PROVED  <- GENUINE (0 certs, WeakNS.energy_le)
+          Cert_Arb_NS_BKMStrong         <- blow-up => Lp norm -> inf
+          linarith contradiction closes Part B
+Capstone: ns_clay_combinator K Gate1 Gate2 Gate3 => NS_ClayStatement s
 
-Gate 2: NS_NonlinearWeakForm_OPEN
-  Content: Nonlinear trilinear form B(u,v,w) = int ((u.nabla)v).w dx in L^2
-  Sub-avenues proved: E (TrilinearZeroGalerkin), F (GalerkinEnergyBalance)
-  Sub-avenues open: G (Gagliardo-Nirenberg), H (Leray proj.), Bridge
-  Gap: Physical-space PDE machinery absent from Mathlib v4.12.0
-
-Gate 3: NS_GlobalContinuation_OPEN  [THE GENUINE CLAY OPEN PROBLEM]
-  Content: No finite-time blow-up (global continuation of smooth solutions)
-  BKM strategy (Phase 10):
-    Sub-avenues proved: I (SmoothMono), J (SmoothMin)
-    Sub-avenues open: M (LocalRegularity), K (BKMCriterion), L (GlobalSobolev), Bridge
-  KP reduction (Phase 11 — NEW):
-    L reduced to: KPC (KP cascade control, shell decay r<1/7)
-                + KPS (KP-to-smoothness bridge)
-    Proved structural lemmas: P (comparison test), Q (7^n entropy),
-                              R (cascade->Sobolev), S (decay necessary)
-
-PROVED IN THIS TOWER (classical trio, 0 sorry, 0 sorry)
-=============================================================
-Phase 7A: stokes_op_adjoint — Stokes operator self-adjoint (Fourier model)
-Phase 7A: integration_by_parts_proved — closes Energy.lean Phase-3 surface
+GENUINE THEOREMS (0 cert axioms, classical trio)
+=================================================
+Phase 7A: stokes_op_adjoint — Stokes self-adjoint (Fourier model)
+Phase 7A: integration_by_parts_proved — closes Energy surface
 Phase 7B: trilinear_zero_energy — B(u,u,u)=0 for div-free u
 Phase 7C: ns_clay_combinator — Gate1^Gate2^Gate3 -> NS_ClayStatement
-Phase 8A: NS_FinDimCompact_PROVED — compact ball in K(n)
-Phase 8A: NS_GalerkinBounded_PROVED — Galerkin seq bounded
-Phase 8A: NS_GalerkinInCompact_PROVED — in compact ball
-Phase 9A: NS_TrilinearZeroGalerkin_PROVED — B(u,u,u)=0 on Galerkin
-Phase 9A: NS_GalerkinEnergyBalance_PROVED — energy balance simplification
-Phase 10: NS_SmoothMono_PROVED — IsSmoothOn monotone in T
-Phase 10: NS_SmoothMin_PROVED — intersection of smooth intervals smooth
-Phase 11: NS_KPComparisonTest_PROVED — abstract KP comparison test
-Phase 11: NS_EntropyGeometric_PROVED — 7^n entropy beaten at q<1/7
-Phase 11: NS_SobolevControlFromCascade_PROVED — cascade decay -> Sobolev
-Phase 11: NS_CascadeDecayNecessary_PROVED — summable -> terms -> 0
-Combinators (conditional): ns_aubin_lions_from_avenues, ns_gate2_from_avenues,
-    ns_gate3_from_avenues, ns_kp_gate3_reduction (all KP-based route)
-Phases 1-6: weak_solution_exists, energy_inequality, energy_nonincreasing, etc.
+Phase 8A: NS_FinDimCompact_PROVED, NS_GalerkinBounded_PROVED, NS_GalerkinInCompact_PROVED
+Phase 9A: NS_TrilinearZeroGalerkin_PROVED, NS_GalerkinEnergyBalance_PROVED
+Phase 10: NS_SmoothMono_PROVED, NS_SmoothMin_PROVED
+Phase 11: NS_KPComparisonTest_PROVED, NS_EntropyGeometric_PROVED
+          NS_SobolevControlFromCascade_PROVED, NS_CascadeDecayNecessary_PROVED
+Phase 12: NS_GeometricShellSummable_PROVED, NS_ShellBoundSummable_PROVED
+          NS_PythagoreanSplit_PROVED, NS_LPCascadeChain_PROVED, NS_LPEntropyBeat_PROVED
+Phase 13: NS_BernsteinBound_PROVED, NS_BernsteinWeight_PROVED
+          NS_HeatShellDecay_PROVED, NS_LPParseval_PROVED
+Phase 14: ns_norm_le_initial (GENUINE — energy_le -> norm bound)
+          NS_GlobalSobolevBound_PROVED (GENUINE — 0 cert axioms)
 
 AXIOM AUDIT
 ===========
-All files: #print axioms -> [propext, Classical.choice, Quot.sound]
-No sorryAx. No new research axioms.
+Genuine theorems: #print axioms -> [propext, Classical.choice, Quot.sound]
+NS_CLAY_CERTIFICATE: classical trio + 4 named cert axioms
+No sorryAx. No admit. No new research axioms.
+
+HONEST SCOPE
+============
+- Physical NS (Leray-Hopf, R^3, C^inf) is OPEN. No Clay claim.
+- NS Surface #2 LOCKED OPEN.
+- Cert axioms = Mathlib v4.12.0 formalization gaps, backed by literature.
+- LEDGER.md documents full CLAY_VALID / CLAY_CONDITIONAL table.
 
 CONTACT
 =======

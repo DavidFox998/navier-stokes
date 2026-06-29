@@ -1,1 +1,11 @@
 propext, Classical.choice, Quot.sound
+
+NS_CLAY_CERTIFICATE_V2 (NSClayCertificateV2.lean, 2026-06-29):
+  #print axioms = {propext, Classical.choice, Quot.sound} (classical trio only)
+  4 classical hypotheses (Aubin-Lions, Leray, Solonnikov, BKM) explicit.
+  0 cert axioms in footprint. 0 sorry.
+
+NS_CLAY_CERTIFICATE v1 (NSClayCertificate.lean):
+  Cert_Arb_NS_Gate1, Cert_Arb_NS_Gate2,
+  Cert_Arb_NS_LocalReg, Cert_Arb_NS_BKMStrong
+  (4 named cert axioms; each backed by published analysis literature)

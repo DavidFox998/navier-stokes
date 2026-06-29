@@ -18,4 +18,5 @@ lean_lib Towers where
              `Towers.NS.NSAubinLionsDecomp,
              `Towers.NS.NSCanonicalSurfaces,
              `Towers.NS.NSGate2Decomp,
+             `Towers.NS.NSGate3Decomp,
              `Towers.NS.NSCollection]

@@ -46,6 +46,8 @@ import Towers.NS.Wall300_Scaffold
 import Towers.NS.NSStokesAdjoint
 import Towers.NS.NSNonlinearTerm
 import Towers.NS.NSClayCombinator
+import Towers.NS.NSAubinLionsDecomp
+import Towers.NS.NSCanonicalSurfaces
 
 open TheoremaAureum.Towers.NS.FunctionSpaces
 open TheoremaAureum.Towers.NS.Stokes
@@ -117,11 +119,43 @@ def ns_open_surface_count : ℕ := 3
 def ns_clay_gates : List String := [
   "NS_AubinLions_OPEN",
   "NS_NonlinearWeakForm_OPEN",
-  "NS_GlobalContinuation_OPEN"
+  "NS_GlobalContinuation_OPEN",
+  -- Phase 8A sub-avenues (Gate 1 decomposition):
+  "NS_RellichKondrachov_OPEN",
+  "NS_WeakCompactness_OPEN",
+  "NS_AubinLions_Bridge_OPEN"
 ]
 
 /-- Previously OPEN, now CLOSED by Phase 7A. -/
 def ns_newly_closed : List String := ["integration_by_parts"]
+
+/-!
+## Phase 8A: Aubin–Lions decomposition re-exports
+-/
+
+/-- **Re-export (Phase 8A, Sub-av. A) PROVED**: compact ball in K(n). -/
+theorem col_finDimCompact_proved {s : ℝ}
+    (K : ℕ → Submodule ℂ (Hdiv_free (s + 2))) [∀ n, FiniteDimensional ℂ (K n)]
+    (n : ℕ) (r : ℝ) :
+    IsCompact (Metric.closedBall (0 : K n) r) :=
+  AubinLionsDecomp.NS_FinDimCompact_PROVED K n r
+
+/-- **Re-export (Phase 8A, Sub-av. B) PROVED**: Galerkin sequence is bounded. -/
+theorem col_galerkin_bounded_proved {s : ℝ}
+    (K : ℕ → Submodule ℂ (Hdiv_free (s + 2))) [∀ n, FiniteDimensional ℂ (K n)]
+    (u : ℝ → Hdiv_free (s + 2)) (n : ℕ) (t : ℝ) :
+    ‖galerkin_seq K u n t‖ ≤ ‖u t‖ :=
+  AubinLionsDecomp.NS_GalerkinBounded_PROVED K u n t
+
+/-- **Registry (Phase 8A)**: 3 proved sub-avenues, 3 open sub-avenues. -/
+def ns_gate1_sub_avenues : List String := [
+  "A: NS_FinDimCompact_PROVED (PROVED)",
+  "B: NS_GalerkinBounded_PROVED (PROVED)",
+  "B': NS_GalerkinInCompact_PROVED (PROVED)",
+  "C: NS_RellichKondrachov_OPEN (OPEN)",
+  "D: NS_WeakCompactness_OPEN (OPEN)",
+  "Bridge: NS_AubinLions_Bridge_OPEN (OPEN)"
+]
 
 /-!
 ## Wall300 combinator re-export

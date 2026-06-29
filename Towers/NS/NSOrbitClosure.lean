@@ -84,7 +84,8 @@ theorem stokes_semigroup_norm_le (s : ℝ) (t : ℝ) (ht : 0 ≤ t) :
 theorem corrSemigroupRate_adjoint_id (xi : FreqDomain) :
     corrSemigroupRate xi * (1 + ‖xi‖ ^ 2) ^ 2 = ‖xi‖ ^ 2 := by
   have hpos : (0 : ℝ) < (1 + ‖xi‖ ^ 2) ^ 2 := by positivity
-  rw [corrSemigroupRate, div_mul_cancel₀ (‖xi‖ ^ 2) (ne_of_gt hpos)]
+  simp only [corrSemigroupRate]
+  exact div_mul_cancel₀ (‖xi‖ ^ 2) (ne_of_gt hpos)
 
 /-! ## III.  Named Props — three conditional claims -/
 

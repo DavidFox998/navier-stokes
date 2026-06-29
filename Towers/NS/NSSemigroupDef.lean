@@ -338,6 +338,32 @@ theorem ns_phase16_closes_h3a
     Cert footprint: V4(h1, h2) -- Cert_Arb_NS_LocalReg eliminated. -/
 theorem ns_phase16_gap_inventory : True := trivial
 
+
+/-!
+## VI. Frequency domain alias, decay rate, and Fourier coefficient (Phase 20)
+-/
+
+/-- Alias for the frequency domain type used in Phases 17-20.
+    FreqDomain = Freq = EuclideanSpace R (Fin 3). -/
+abbrev FreqDomain : Type := Freq
+
+/-- Decay rate of the corrected Stokes semigroup at frequency xi:
+      alpha_xi = ||xi||^2 / (1+||xi||^2)^2.
+
+    Properties proved in downstream phases:
+      corr_symbol_le_quarter    : alpha_xi <= 1/4           (NSCorrSemigroupSmooth)
+      corrSemigroupRate_adjoint_id : alpha_xi*(1+||xi||^2)^2 = ||xi||^2 (NSOrbitClosure)
+    Key advantage over the standard Stokes symbol ||xi||^2: alpha_xi is BOUNDED,
+    so the corrected semigroup inner product is ContDiff at t=0. -/
+noncomputable def corrSemigroupRate (xi : Freq) : ℝ :=
+  ‖xi‖ ^ 2 / (1 + ‖xi‖ ^ 2) ^ 2
+
+/-- Fourier coefficient of a div-free H^{s+2} field at frequency xi.
+    In the weighted L^2(mu_{s+2}) Fourier model, the Fourier coefficient is
+    the pointwise value of the Lp representative of u at xi. -/
+noncomputable def fourierCoeff {s : ℝ} (u : Hdiv_free (s + 2)) (xi : Freq) : Val :=
+  (u : Lp Val 2 (mu (s + 2))) xi
+
 end SemigroupDef
 end NS
 end Towers

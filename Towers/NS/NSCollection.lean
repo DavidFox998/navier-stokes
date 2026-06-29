@@ -27,10 +27,16 @@ for the YM tower and `BSD_MasterCertification` for the BSD tower.
     `ns_gate2_from_avenues` — Gate-2 combinator
     `ns_gate2_proved_avenues_hold` — E+F proved unconditionally
   Phase 10 (NSGate3Decomp):
-    `NS_SmoothMono_PROVED` — IsSmoothOn is monotone in T              ✓ NEW
-    `NS_SmoothMin_PROVED` — intersection of smooth intervals is smooth ✓ NEW
-    `ns_gate3_from_avenues` — Gate-3 BKM combinator                   ✓ NEW
-    `ns_gate3_proved_avenues_hold` — I+J proved unconditionally        ✓ NEW
+    `NS_SmoothMono_PROVED` — IsSmoothOn is monotone in T              ✓
+    `NS_SmoothMin_PROVED` — intersection of smooth intervals is smooth ✓
+    `ns_gate3_from_avenues` — Gate-3 BKM combinator                   ✓
+    `ns_gate3_proved_avenues_hold` — I+J proved unconditionally        ✓
+  Phase 11 (NSKPBridge):
+    `NS_KPComparisonTest_PROVED` — abstract KP comparison test         ✓ NEW
+    `NS_EntropyGeometric_PROVED` — 7ⁿ entropy beaten at q < 1/7       ✓ NEW
+    `NS_SobolevControlFromCascade_PROVED` — cascade decay → Sobolev   ✓ NEW
+    `NS_CascadeDecayNecessary_PROVED` — summable → terms → 0          ✓ NEW
+    `ns_kp_gate3_reduction` — KP reduction combinator (Gate 3)        ✓ NEW
   Phases 1–6 (FunctionSpaces through Wall300):
     All phase combinators re-exported.
 
@@ -49,6 +55,9 @@ for the YM tower and `BSD_MasterCertification` for the BSD tower.
     K: `NS_BKMCriterion_OPEN`            — BKM blow-up criterion (12–18 mo)
     L: `NS_GlobalSobolevBound_OPEN`      — global Hˢ bound (Clay open)
     Bridge: `NS_BKM_Bridge_OPEN`         — K+L → Gate 3 Part B
+  KP pathway (Phase 11 reduction):
+    `NS_KPCascadeControl_OPEN`           — shell energy decay r < 1/7 (18–24 mo)
+    `NS_KPToSmoothness_OPEN`             — KP cascade → Sobolev bound
 
 ### Newly closed surfaces
 
@@ -77,6 +86,7 @@ import Towers.NS.NSAubinLionsDecomp
 import Towers.NS.NSCanonicalSurfaces
 import Towers.NS.NSGate2Decomp
 import Towers.NS.NSGate3Decomp
+import Towers.NS.NSKPBridge
 
 open TheoremaAureum.Towers.NS.FunctionSpaces
 open TheoremaAureum.Towers.NS.Stokes
@@ -89,6 +99,7 @@ open TheoremaAureum.Towers.NS.ClayCombinator
 open TheoremaAureum.Towers.NS.Wall300Scaffold
 open TheoremaAureum.Towers.NS.Gate2Decomp
 open TheoremaAureum.Towers.NS.Gate3Decomp
+open TheoremaAureum.Towers.NS.KPBridge
 
 namespace TheoremaAureum
 namespace Towers
@@ -251,6 +262,40 @@ def ns_gate3_sub_avenues : List String := [
   "K: NS_BKMCriterion_OPEN (OPEN — BKM criterion, 12-18 mo)",
   "L: NS_GlobalSobolevBound_OPEN (OPEN — global Hˢ bound, Clay open)",
   "Bridge: NS_BKM_Bridge_OPEN (OPEN — K+L → Gate 3 Part B)"
+]
+
+/-!
+## Phase 11: KP-to-NS Bridge re-exports
+-/
+
+/-- **Re-export (Phase 11, Sub-av. P) PROVED**: abstract KP comparison test.
+    For any shell index type, if exp-weighted shell energies are summable,
+    so are the unweighted energies. Classical trio, 0 sorry. -/
+theorem col_kp_comparison_test {Shell : Type*}
+    (energy weight : Shell → ℝ)
+    (hw : ∀ n, 0 ≤ weight n)
+    (hKP : Summable (fun n : Shell => |energy n| * Real.exp (weight n))) :
+    Summable (fun n : Shell => |energy n|) :=
+  NS_KPComparisonTest_PROVED energy weight hw hKP
+
+/-- **Re-export (Phase 11, Sub-av. R) PROVED**: cascade decay → Sobolev control.
+    If shell energies decay at geometric rate r and q·r < 1, the q-weighted
+    Sobolev sum converges. Classical trio, 0 sorry. -/
+theorem col_sobolev_from_cascade
+    (a : ℕ → ℝ) (r q : ℝ)
+    (ha0 : ∀ n, 0 ≤ a n) (har : ∀ n, a n ≤ r ^ n)
+    (hr0 : 0 ≤ r) (hq0 : 0 ≤ q) (hqr : q * r < 1) :
+    Summable (fun n : ℕ => q ^ n * a n) :=
+  NS_SobolevControlFromCascade_PROVED a r q ha0 har hr0 hq0 hqr
+
+/-- **Registry (Phase 11)**: 4 proved + 2 open KP pathway surfaces. -/
+def ns_kp_pathway : List String := [
+  "P: NS_KPComparisonTest_PROVED (PROVED — comparison test, mirrors Wall253)",
+  "Q: NS_EntropyGeometric_PROVED (PROVED — 7ⁿ entropy, mirrors Wall255)",
+  "R: NS_SobolevControlFromCascade_PROVED (PROVED — cascade decay → Sobolev)",
+  "S: NS_CascadeDecayNecessary_PROVED (PROVED — summable → terms → 0)",
+  "KPC: NS_KPCascadeControl_OPEN (OPEN — shell decay r<1/7, 18-24 mo)",
+  "KPS: NS_KPToSmoothness_OPEN (OPEN — KP cascade → Sobolev bound)"
 ]
 
 /-!

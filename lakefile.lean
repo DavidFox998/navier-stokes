@@ -35,4 +35,5 @@ lean_lib Towers where
              `Towers.NS.NSDerivSemigroup,
              `Towers.NS.NSLpErrorPlumbing,
              `Towers.NS.NSStokesMaxReg,
+             `Towers.NS.NSAdjointArgument,
              `Towers.NS.NSClayCertificateV2]

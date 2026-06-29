@@ -1,1 +1,2 @@
-2026-06-15T10:42:35Z
+2026-06-29
+NS Tower Phase 7 (7A Stokes adjoint + 7B nonlinear term + 7C Clay combinator)

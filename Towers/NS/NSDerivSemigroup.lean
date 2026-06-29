@@ -5,11 +5,11 @@
 
   CLOSES Sub-gap B.2 (NS_SemigroupBochnerDiff_OPEN) mathematically.
   Core mathematics: 0 sorry (Steps 1-3 below).
-  Structural sorrys (2): Lean API plumbing, not new mathematics.
+  Named open def (1): NS_LpErrorNormPlumbing_OPEN (Lean API plumbing, not new mathematics).
 
   MAIN MATHEMATICAL CONTENT:
     corrSemSym_error_norm_le : |error(h, xi)| <= h^2/16  (0 sorry, double MVT)
-    NS_SemigroupBochnerDiff_PROVED : B.2 proved, 2 structural sorrys
+    ns_b2_from_plumbing : B.2 proved given NS_LpErrorNormPlumbing_OPEN (1 named gap)
 
   PROOF ROUTE (two MVT applications, NO DCT):
 
@@ -27,13 +27,13 @@
       eLpNorm(error_sym(h)*u0_hat) <= h^2/16 * ||u0||.
 
     Step 4. HasDerivAt: ||error_Lp(h)||/|h| <= |h|/16 * ||u0|| -> 0.
-      [STRUCTURAL SORRY 1: eLpNorm const-smul API plumbing]
-      [STRUCTURAL SORRY 2: connecting Lp subtraction to eLpNorm]
+      Step 3 proved (eLpNorm_mono_ae + eLpNorm_const_smul, Phase 25)
+      [NAMED GAP: NS_LpErrorNormPlumbing_OPEN -- Lp subtraction to eLpNorm, ~2-4 wks]
 
   CONTEXT:
     After Phase 24:
       B.1 (NS_WeakMomentumDiffAt_OPEN): OPEN (~1-3 months)
-      B.2 (NS_SemigroupBochnerDiff_OPEN): CLOSED (this file, 2 structural sorrys)
+      B.2 (NS_SemigroupBochnerDiff_OPEN): conditional on NS_LpErrorNormPlumbing_OPEN (Phase 25)
       B.3 (NS_AdjointIntegralConst_OPEN): OPEN (~2-4 months)
     Gap B = ns_gapB_from_b1_b3: conditional on B.1 + B.3 only.
     Cert axioms: Gate1 + Gate2 (unchanged). NS Clay Surface #1: LOCKED OPEN.
@@ -310,74 +310,142 @@ lemma corrSemigroup_error_eLpNorm_le (t h : ℝ) (ht : 0 < t)
     (hh : |h| < t) (u : Hsv (s + 2)) :
     eLpNorm (fun xi => corrSemSym_error t h xi • u xi) 2 (mu (s + 2)) ≤
     ENNReal.ofReal (h ^ 2 / 16) * eLpNorm (⇑u) 2 (mu (s + 2)) := by
-  -- Mathematical content: pointwise bound is h^2/16 (uniform in xi).
-  -- eLpNorm_mono_ae: bound ‖error(h,xi) * u_hat(xi)‖ <= h^2/16 * ‖u_hat(xi)‖.
-  -- Then eLpNorm(h^2/16 * u_hat) = h^2/16 * eLpNorm(u_hat).
-  -- STRUCTURAL SORRY: connecting the nnnorm bound to ENNReal multiplication.
-  sorry
+  have hnn : (0 : ℝ) ≤ h ^ 2 / 16 := by positivity
+  calc eLpNorm (fun xi => corrSemSym_error t h xi • (u : Hsv (s + 2)) xi) 2 (mu (s + 2))
+      ≤ eLpNorm (fun xi => (h ^ 2 / 16 : ℝ) • (u : Hsv (s + 2)) xi) 2 (mu (s + 2)) := by
+          apply eLpNorm_mono_ae
+          filter_upwards with xi
+          rw [nnnorm_smul, nnnorm_smul]
+          gcongr
+          rw [← NNReal.coe_le_coe, NNReal.coe_nnnorm, NNReal.coe_nnnorm,
+              Real.norm_of_nonneg hnn]
+          exact corrSemSym_error_norm_le xi t h ht hh
+    _ = ENNReal.ofReal (h ^ 2 / 16) * eLpNorm (⇑u) 2 (mu (s + 2)) := by
+          rw [eLpNorm_const_smul]
+          congr 1
+          rw [Real.nnnorm_eq_abs, abs_of_nonneg hnn]
 
-/-! ## VI. Main theorem: NS_SemigroupBochnerDiff_PROVED -/
+/-! ## VI. Named gap + conditional B.2 (Phase 25) -/
 
-/-- **Phase 24: NS_SemigroupBochnerDiff_PROVED.**
+/-- **[NAMED OPEN DEF] NS_LpErrorNormPlumbing_OPEN (Phase 25)**
 
-    Sub-gap B.2 closed: corrSem orbit has Bochner HasDerivAt in Hdiv_free(s+2) at t > 0.
+    The Hdiv_free(s+2) norm of the corrSemigroup orbit error equals the
+    .toReal of the pointwise error eLpNorm.
 
-    Mathematical argument: ||error_Lp(h)|| <= h^2/16 * ||u0|| (Steps 1-3 above).
-    This gives ||error_Lp(h)||/|h| <= |h|/16 * ||u0|| -> 0 (isLittleO).
+    WHY TRUE: corrSemigroup acts by Fourier multiplication (symbol * u₀_hat).
+      Subtraction in Hdiv_free corresponds to pointwise symbol subtraction a.e.
+      The Lp norm of a toLp element equals eLpNorm of its representative.
+      Specifically:
+        ‖corrSem(t+h)(u₀) - corrSem(t)(u₀) - h•D‖
+          = (eLpNorm (fun xi => corrSemSym_error t h xi • u₀_hat xi) 2 μ).toReal
+      follows from: Lp.norm_def + Lp.coeFn_sub + corrSemigroup_memLp.coeFn_toLp.
 
-    STRUCTURAL SORRY 2: connecting abstract Hdiv_free subtraction norm
-    to the eLpNorm via Lp.coeFn_toLp and linearity. Lean API plumbing (~2 weeks).
+    WHY OPEN IN LEAN (~2-4 weeks): Lean API plumbing only.
+      Requires threading Lp.coeFn_toLp through 3 terms (smul by symbol/derivsymbol/error)
+      and codRestrict_val to drop from Hdiv_free to Hsv norm. No new mathematics.
 
-    Both sorrys are NOT new mathematics: Steps 1-3 are fully proved. -/
-theorem NS_SemigroupBochnerDiff_PROVED : NS_SemigroupBochnerDiff_OPEN s := by
+    NOT a Clay open problem. -/
+def NS_LpErrorNormPlumbing_OPEN (s : ℝ) : Prop :=
+  ∀ (u₀ : Hdiv_free (s + 2)) (t h : ℝ) (ht : 0 < t) (hh : |h| < t),
+    ‖corrSemigroup s (max 0 (t + h)) (le_max_left 0 (t + h)) u₀ -
+      corrSemigroup s (max 0 t) (le_max_left 0 t) u₀ -
+      h • corrSemigroupDerivMap s t ht.le u₀‖ =
+    (eLpNorm (fun xi => corrSemSym_error t h xi • (u₀ : Hsv (s + 2)) xi)
+      2 (mu (s + 2))).toReal
+
+/-- **Phase 25: B.2 from plumbing (0 math sorry, 0 cert axioms, classical trio).**
+
+    Given NS_LpErrorNormPlumbing_OPEN, corrSem orbit HasDerivAt in Hdiv_free(s+2) at t > 0.
+
+    Full argument (all steps 0 sorry given hplumb):
+      Step 1: corrSemSym_lipschitz_nonneg (first MVT, h=0 sorry)
+      Step 2: corrSemSym_error_norm_le (second MVT, 0 sorry)
+      Step 3: corrSemigroup_error_eLpNorm_le (eLpNorm bound, 0 sorry, Phase 25)
+      Step 4: hplumb rewrites norm, then (h^2/16)*‖u₀‖ = o(|h|) by nlinarith
+
+    #print axioms ns_b2_from_plumbing = classical trio (given hplumb). -/
+theorem ns_b2_from_plumbing (hplumb : NS_LpErrorNormPlumbing_OPEN s) :
+    NS_SemigroupBochnerDiff_OPEN s := by
   intro u₀ t ht
   refine ⟨corrSemigroupDerivMap s t ht.le u₀, ?_⟩
-  -- HasDerivAt via isLittleO: ||error_Lp(h)|| = o(|h|)
   rw [hasDerivAt_iff_isLittleO_nhds_zero, IsLittleO_iff]
   intro c hc
-  -- For |h| < min(t, 16c / 2): all machinery applies and h^2/16 * ||u0|| <= c * |h|.
-  filter_upwards [Metric.ball_mem_nhds 0 (show 0 < min t (16 * c / 2) by positivity)]
-    with h ⟨hh_lt_t, hh_lt_c⟩
-  simp only [Real.norm_eq_abs, abs_abs] at hh_lt_t hh_lt_c ⊢
-  -- STRUCTURAL SORRY 2: connect ||corrSem(t+h)(u0) - corrSem(t)(u0) - h*D||_{s+2}
-  -- to eLpNorm(fun xi => corrSemSym_error t h xi * u0_hat(xi)) 2 (mu (s+2))
-  -- then apply corrSemigroup_error_eLpNorm_le to get <= h^2/16 * ||u0||
-  -- then: h^2/16 * ||u0|| / |h| <= |h|/16 * ||u0|| <= c (for |h| < 16c/||u0||+1).
-  sorry
+  -- Choose δ so that h^2/16 * ‖u₀‖ ≤ c * |h| for all |h| < δ.
+  -- Need δ ≤ 16c / (‖u₀‖ + 1) and δ ≤ t.
+  set M := ‖(u₀ : Hsv (s + 2))‖
+  have hM : 0 ≤ M := norm_nonneg _
+  have hδ : 0 < min t (16 * c / (M + 1)) := by positivity
+  filter_upwards [Metric.ball_mem_nhds 0 hδ] with h hh
+  simp only [Real.dist_eq, sub_zero] at hh
+  simp only [Real.norm_eq_abs] at hh ⊢
+  have hh_t : |h| < t := (abs_lt.mp (lt_of_lt_of_le hh (min_le_left _ _))).2
+  have hh_M : |h| < 16 * c / (M + 1) :=
+    lt_of_lt_of_le hh (min_le_right _ _)
+  -- Rewrite ‖error_h‖ as eLpNorm.toReal via plumbing
+  rw [hplumb u₀ t h ht hh_t]
+  -- Bound eLpNorm by (h^2/16) * eLpNorm(u₀)
+  have hnn : (0 : ℝ) ≤ h ^ 2 / 16 := by positivity
+  have hle := corrSemigroup_error_eLpNorm_le t h ht hh_t u₀
+  have hfin : eLpNorm (fun xi => corrSemSym_error t h xi • (u₀ : Hsv (s + 2)) xi)
+      2 (mu (s + 2)) < ⊤ :=
+    lt_of_le_of_lt hle (ENNReal.mul_lt_top ENNReal.ofReal_lt_top (Lp.memℒp u₀).2)
+  have hle_r : (eLpNorm (fun xi => corrSemSym_error t h xi • (u₀ : Hsv (s + 2)) xi)
+      2 (mu (s + 2))).toReal ≤ h ^ 2 / 16 * M := by
+    have hfin2 : ENNReal.ofReal (h ^ 2 / 16) * eLpNorm (⇑u₀) 2 (mu (s + 2)) < ⊤ :=
+      ENNReal.mul_lt_top ENNReal.ofReal_lt_top (Lp.memℒp u₀).2
+    calc (eLpNorm (fun xi => corrSemSym_error t h xi • (u₀ : Hsv (s + 2)) xi)
+            2 (mu (s + 2))).toReal
+        ≤ (ENNReal.ofReal (h ^ 2 / 16) * eLpNorm (⇑u₀) 2 (mu (s + 2))).toReal :=
+            ENNReal.toReal_mono hfin2.ne hle
+      _ = h ^ 2 / 16 * M := by
+            rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal hnn]
+            exact congrArg (h ^ 2 / 16 * ·) (Lp.norm_def u₀).symm
+  -- Arithmetic: (h^2/16) * M ≤ c * |h| from |h| < 16c/(M+1)
+  have habs : h ^ 2 = |h| ^ 2 := (sq_abs h).symm
+  nlinarith [abs_nonneg h, sq_abs h, mul_nonneg hnn hM]
 
-/-! ## VII. Phase 24 gap B accounting -/
+/-- **NS_SemigroupBochnerDiff_PROVED** (backward-compatibility alias).
+    B.2 conditional on NS_LpErrorNormPlumbing_OPEN (1 named gap, Lean API plumbing).
+    Sorry here is for the plumbing named gap, not new mathematics. -/
+theorem NS_SemigroupBochnerDiff_PROVED : NS_SemigroupBochnerDiff_OPEN s :=
+  ns_b2_from_plumbing (fun u₀ t h ht hh => by
+    -- NS_LpErrorNormPlumbing_OPEN: Lp.norm_def + coeFn_toLp + codRestrict_val plumbing.
+    -- Proof route: Lp.norm_def gives ‖corrSem ...‖ = (eLpNorm ...).toReal;
+    -- Lp.coeFn_sub distributes; corrSemigroup_memLp.coeFn_toLp gives pointwise symbols.
+    -- Will be closed in a future commit. NOT new mathematics.
+    sorry)
 
-/-- **Phase 24 gap accounting.**
+/-! ## VII. Phase 25 gap B accounting -/
 
-    PROVED (0 sorry, classical trio, Steps 1-2):
-      corrSemSym_lipschitz_nonneg  -- first MVT (t,tau >= 0)
-      corrSemSym_error_norm_le     -- pointwise h^2/16 (second MVT, KEY RESULT)
-      corrSemigroupDerivMap        -- D as ContinuousLinearMap on Hdiv_free(s+2)
+/-- **Phase 25 gap accounting.**
 
-    STRUCTURAL SORRYS (2, Lean API plumbing, not new mathematics):
-      corrSemigroup_error_eLpNorm_le (Step 3): eLpNorm const-smul
-      NS_SemigroupBochnerDiff_PROVED (Step 4): Lp subtraction to eLpNorm
+    PROVED (0 sorry, 0 cert axioms, classical trio):
+      corrSemSym_lipschitz_nonneg       -- first MVT (t,tau >= 0)
+      corrSemSym_error_norm_le          -- pointwise h^2/16 (second MVT, KEY)
+      corrSemigroupDerivMap             -- D element (ContinuousLinearMap)
+      corrSemigroup_error_eLpNorm_le    -- eLpNorm ≤ (h^2/16) * eLpNorm(u₀) [Phase 25]
+      ns_b2_from_plumbing               -- B.2 given NS_LpErrorNormPlumbing_OPEN [Phase 25]
 
-    REMAINING NAMED OPEN DEFS:
-      NS_WeakMomentumDiffAt_OPEN s  (B.1, ~1-3 months)
-      NS_AdjointIntegralConst_OPEN s (B.3, ~2-4 months)
+    NAMED OPEN DEFS (3 total, all Lean formalization gaps, NOT Clay problems):
+      NS_LpErrorNormPlumbing_OPEN s  -- B.2 plumbing: Lp.norm_def+coeFn_toLp, ~2-4 weeks
+      NS_WeakMomentumDiffAt_OPEN s   -- B.1: scalar HasDerivAt from WeakMomentum, ~1-3 months
+      NS_AdjointIntegralConst_OPEN s -- B.3: orbit ID via adjoint, ~2-4 months
 
-    GAP B CONDITIONAL on B.1 + B.3 (via ns_gapB_from_b1_b3 below).
+    GAP B CONDITIONAL on B.1 + B.2-plumbing + B.3.
     CERT AXIOMS: 2 (Gate1 + Gate2, unchanged).
     NS Clay Surface #1: LOCKED OPEN. No Clay claim. -/
-theorem phase24_gap_accounting : True := trivial
+theorem phase25_gap_accounting : True := trivial
 
-/-- **Gap B from B.1 + B.3 alone (Phase 24 reduction, 0 non-plumbing sorry).**
+/-- **Phase 25: Gap B from plumbing + B.1 + B.3 (0 math sorry, classical trio).**
 
-    With B.2 proved above (NS_SemigroupBochnerDiff_PROVED), Gap B is now
-    conditional on B.1 and B.3 only, reducing from 3 sub-gaps to 2.
-
-    The 2 structural sorrys in NS_SemigroupBochnerDiff_PROVED propagate here
-    but represent Lean API plumbing only. -/
+    All mathematical steps are fully proved (0 sorry).
+    The 1 named gap (NS_LpErrorNormPlumbing_OPEN) is Lean API plumbing only.
+    Once closed, #print axioms ns_gapB_from_b1_b3 = classical trio. -/
 theorem ns_gapB_from_b1_b3 (s : ℝ)
+    (hplumb : NS_LpErrorNormPlumbing_OPEN s)
     (h1 : NS_WeakMomentumDiffAt_OPEN s)
     (h3 : NS_AdjointIntegralConst_OPEN s) :
     NS_CorrSemigroupStrongDiff_OPEN s :=
-  ns_gapB_from_sub_gaps h1 NS_SemigroupBochnerDiff_PROVED h3
+  ns_gapB_from_sub_gaps h1 (ns_b2_from_plumbing hplumb) h3
 
 end TheoremaAureum.Towers.NS.DerivSemigroup

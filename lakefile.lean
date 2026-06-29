@@ -33,4 +33,5 @@ lean_lib Towers where
              `Towers.NS.NSParametricDiff,
              `Towers.NS.NSBochnerDiff,
              `Towers.NS.NSDerivSemigroup,
+             `Towers.NS.NSLpErrorPlumbing,
              `Towers.NS.NSClayCertificateV2]

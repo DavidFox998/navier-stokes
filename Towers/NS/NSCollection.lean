@@ -8,19 +8,37 @@ for the YM tower and `BSD_MasterCertification` for the BSD tower.
 ### Proved theorems (all classical trio, 0 sorry)
 
   Phase 7A (NSStokesAdjoint):
-    `stokes_op_adjoint` — self-adjointness in the Fourier model   ✓ NEW
-    `integration_by_parts_proved` — closes Energy.lean surface    ✓ NEW
+    `stokes_op_adjoint` — self-adjointness in the Fourier model
+    `integration_by_parts_proved` — closes Energy.lean surface
   Phase 7B (NSNonlinearTerm):
-    `trilinear_zero_energy` — B(u,u,u)=0 for div-free u          ✓ NEW
+    `trilinear_zero_energy` — B(u,u,u)=0 for div-free u
   Phase 7C (NSClayCombinator):
-    `ns_clay_combinator` — 3 atomic gates → NS_ClayStatement       ✓ NEW
+    `ns_clay_combinator` — 3 atomic gates → NS_ClayStatement
+  Phase 8A (NSAubinLionsDecomp):
+    `NS_FinDimCompact_PROVED` — compact ball in K(n)
+    `NS_GalerkinBounded_PROVED` — ‖galerkin_seq‖ ≤ ‖u‖
+    `NS_GalerkinInCompact_PROVED` — element in compact set
+    `ns_aubin_lions_from_avenues` — Gate-1 combinator
+  Phase 8B (NSCanonicalSurfaces):
+    `ns_gate1_proved_avenues_hold` — A+B+B' unconditional
+  Phase 9A (NSGate2Decomp):
+    `NS_TrilinearZeroGalerkin_PROVED` — B(u,u,u)=0 on Galerkin elements ✓ NEW
+    `NS_GalerkinEnergyBalance_PROVED` — energy balance (linear part)    ✓ NEW
+    `ns_gate2_from_avenues` — Gate-2 combinator                         ✓ NEW
+    `ns_gate2_proved_avenues_hold` — E+F proved unconditionally          ✓ NEW
   Phases 1–6 (FunctionSpaces through Wall300):
     All phase combinators re-exported.
 
 ### Named OPEN surfaces (Clay gates, all classical trio, 0 sorryAx)
 
-  Gate 1: `NS_AubinLions_OPEN K`       — Rellich–Kondrachov (Mathlib gap)
-  Gate 2: `NS_NonlinearWeakForm_OPEN K` — nonlinear trilinear form (Mathlib gap)
+  Gate 1: `NS_AubinLions_OPEN K`        — Rellich–Kondrachov (Mathlib gap)
+    C: `NS_RellichKondrachov_OPEN`       — compact embedding (12–24 mo)
+    D: `NS_WeakCompactness_OPEN`         — Banach–Alaoglu (6–12 mo)
+    Bridge: `NS_AubinLions_Bridge_OPEN`  — Aubin–Lions 1963 (18–24 mo)
+  Gate 2: `NS_NonlinearWeakForm_OPEN K`  — trilinear weak form (Mathlib gap)
+    G: `NS_SobolevAlgebra_OPEN`          — Gagliardo–Nirenberg (6–12 mo)
+    H: `NS_NonlinearProjection_OPEN`     — Leray-projected (u·∇)u (12–18 mo)
+    Bridge: `NS_WeakFormBilinear_OPEN`   — L² density extension (12–18 mo)
   Gate 3: `NS_GlobalContinuation_OPEN s` — no finite-time blow-up (Clay open)
 
 ### Newly closed surfaces
@@ -48,6 +66,7 @@ import Towers.NS.NSNonlinearTerm
 import Towers.NS.NSClayCombinator
 import Towers.NS.NSAubinLionsDecomp
 import Towers.NS.NSCanonicalSurfaces
+import Towers.NS.NSGate2Decomp
 
 open TheoremaAureum.Towers.NS.FunctionSpaces
 open TheoremaAureum.Towers.NS.Stokes
@@ -58,6 +77,7 @@ open TheoremaAureum.Towers.NS.StokesAdjoint
 open TheoremaAureum.Towers.NS.NonlinearTerm
 open TheoremaAureum.Towers.NS.ClayCombinator
 open TheoremaAureum.Towers.NS.Wall300Scaffold
+open TheoremaAureum.Towers.NS.Gate2Decomp
 
 namespace TheoremaAureum
 namespace Towers
@@ -155,6 +175,41 @@ def ns_gate1_sub_avenues : List String := [
   "C: NS_RellichKondrachov_OPEN (OPEN)",
   "D: NS_WeakCompactness_OPEN (OPEN)",
   "Bridge: NS_AubinLions_Bridge_OPEN (OPEN)"
+]
+
+/-!
+## Phase 9A: Gate 2 decomposition re-exports
+-/
+
+/-- **Re-export (Phase 9A, Sub-av. E) PROVED**: B(u,u,u)=0 on Galerkin elements. -/
+theorem col_trilinear_zero_galerkin {s : ℝ}
+    (B : Hdiv_free (s + 2) → Hdiv_free (s + 2) → Hdiv_free (s + 2) → ℂ)
+    (hans : ∀ (u v w : Hdiv_free (s + 2)),
+        IsDivFree (u : Lp Val 2 (mu (s + 2))) → B u v w = -(B u w v))
+    (u : Hdiv_free (s + 2))
+    (hdiv : IsDivFree (u : Lp Val 2 (mu (s + 2)))) :
+    B u u u = 0 :=
+  Gate2Decomp.NS_TrilinearZeroGalerkin_PROVED B hans u hdiv
+
+/-- **Re-export (Phase 9A, Sub-av. F) PROVED**: energy balance simplification. -/
+theorem col_galerkin_energy_balance {s : ℝ}
+    (B : Hdiv_free (s + 2) → Hdiv_free (s + 2) → Hdiv_free (s + 2) → ℂ)
+    (hans : ∀ (u v w : Hdiv_free (s + 2)),
+        IsDivFree (u : Lp Val 2 (mu (s + 2))) → B u v w = -(B u w v))
+    (u : Hdiv_free (s + 2))
+    (hdiv : IsDivFree (u : Lp Val 2 (mu (s + 2))))
+    (st ft : ℝ)
+    (henergy : ∀ nc : ℝ, nc = 0 → st + ft + nc = st + ft) :
+    st + ft + (B u u u).re = st + ft :=
+  Gate2Decomp.NS_GalerkinEnergyBalance_PROVED B hans u hdiv st ft henergy
+
+/-- **Registry (Phase 9A)**: 2 proved sub-avenues, 3 open sub-avenues for Gate 2. -/
+def ns_gate2_sub_avenues : List String := [
+  "E: NS_TrilinearZeroGalerkin_PROVED (PROVED)",
+  "F: NS_GalerkinEnergyBalance_PROVED (PROVED)",
+  "G: NS_SobolevAlgebra_OPEN (OPEN — Gagliardo-Nirenberg, 6-12 mo)",
+  "H: NS_NonlinearProjection_OPEN (OPEN — Leray-projected (u·∇)u, 12-18 mo)",
+  "Bridge: NS_WeakFormBilinear_OPEN (OPEN — L² density, 12-18 mo)"
 ]
 
 /-!

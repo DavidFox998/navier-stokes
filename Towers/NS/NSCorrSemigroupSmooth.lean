@@ -59,6 +59,7 @@ import Towers.NS.NSStokesSmoothing
 namespace NSTower
 
 open Real MeasureTheory
+open TheoremaAureum.Towers.NS.SemigroupDef
 
 /-! ## I. Uniform quarter-bound: alpha_xi <= 1/4 -/
 
@@ -72,7 +73,7 @@ open Real MeasureTheory
     semigroup inner product is ContDiff at t=0; the standard one is not.  -/
 theorem corr_symbol_le_quarter (xi : FreqDomain) :
     corrSemigroupRate xi ≤ 1 / 4 := by
-  rw [corrSemigroupRate]
+  simp only [corrSemigroupRate]
   rw [div_le_div_iff (by positivity) (by positivity)]
   nlinarith [sq_nonneg (1 - ‖xi‖ ^ 2), sq_nonneg ‖xi‖]
 

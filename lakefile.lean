@@ -11,4 +11,8 @@ lean_lib Towers where
   roots := #[`Towers.NS.EnergyIneq,
              `Towers.NS.EnergyV2,
              `Towers.NS.Divergence,
-             `Towers.NS.Wall300_Scaffold]
+             `Towers.NS.Wall300_Scaffold,
+             `Towers.NS.NSStokesAdjoint,
+             `Towers.NS.NSNonlinearTerm,
+             `Towers.NS.NSClayCombinator,
+             `Towers.NS.NSCollection]

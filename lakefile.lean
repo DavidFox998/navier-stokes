@@ -20,4 +20,5 @@ lean_lib Towers where
              `Towers.NS.NSGate2Decomp,
              `Towers.NS.NSGate3Decomp,
              `Towers.NS.NSKPBridge,
+             `Towers.NS.NSLittlewoodPaley,
              `Towers.NS.NSCollection]

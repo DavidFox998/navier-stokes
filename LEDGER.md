@@ -245,3 +245,29 @@ Classical trio, 0 sorry. Sub-avenues A/B/B' internally wired.
 
 **Net result after Phase 8:** Clay Gate 1 reduced from 1 monolithic OPEN surface
 to 3 proved sub-avenues + 3 named open sub-avenues. Gates 2 and 3 unchanged.
+---
+
+## Phase 9 (2026-06-29) — Gate 2 Decomposition
+
+### Phase 9A — Gate 2 Avenue Decomposition (`NSGate2Decomp.lean`)
+
+Decomposes Clay Gate 2 (`NS_NonlinearWeakForm_OPEN K`) into five named sub-avenues,
+mirroring Phase 8A structure for Gate 1.
+
+| Sub-avenue | Name | Status | Method |
+|------------|------|--------|--------|
+| E | `NS_TrilinearZeroGalerkin_PROVED` | **PROVED** | Direct from `trilinear_zero_energy` (Phase 7B); B(u,u,u)=0 on Galerkin elements |
+| F | `NS_GalerkinEnergyBalance_PROVED` | **PROVED** | Energy balance simplification; nonlinear term drops out from E |
+| G | `NS_SobolevAlgebra_OPEN` | OPEN | Gagliardo–Nirenberg interpolation (Mathlib gap, 6–12 mo) |
+| H | `NS_NonlinearProjection_OPEN` | OPEN | Leray-projected (u·∇)u ∈ Hˢ (physical space, 12–18 mo) |
+| Bridge | `NS_WeakFormBilinear_OPEN` | OPEN | L² density extension, Lions–Peetre duality (12–18 mo) |
+
+**Combinator:** `ns_gate2_from_avenues` takes (G + H + Bridge) → Gate 2.
+`ns_gate2_proved_avenues_hold` records the E+F conjunction.
+Classical trio, 0 sorry. Sub-avenues E/F proved from Phase 7B `trilinear_zero_energy`.
+
+**Net result after Phase 9:** Both Gate 1 and Gate 2 decomposed into:
+  - Gate 1: 3 proved + 3 open sub-avenues (Phase 8A)
+  - Gate 2: 2 proved + 3 open sub-avenues (Phase 9A)
+  - Gate 3: Still monolithic OPEN (genuine Clay open, no decomposition yet)
+Total NS BRICKS.txt: 114 → **120** (6 new theorems).

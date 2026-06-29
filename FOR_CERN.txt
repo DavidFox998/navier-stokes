@@ -1,0 +1,41 @@
+FOR_CERN.txt  —  Navier–Stokes Clay Tower (NS Tower 540)
+Morning Star Project · Theorema Aureum 143
+Generated: 2026-06-29
+
+STATUS: NS global regularity OPEN. This is a formal reduction to 3 atomic gates.
+
+GATE SUMMARY
+============
+Gate 1: NS_AubinLions_OPEN
+  Content: Rellich-Kondrachov compact Sobolev embedding H^{s+2} hookrightarrow hookrightarrow H^s
+  Gap: Absent from Mathlib v4.12.0 (ETA 12-24 months)
+  Ref: Rellich (1930), Kondrachov (1945), Lions (1961), Aubin (1963)
+
+Gate 2: NS_NonlinearWeakForm_OPEN
+  Content: Nonlinear trilinear form B(u,v,w) = int ((u.nabla)v).w dx in L^2
+  Gap: Physical-space PDE machinery absent from Mathlib v4.12.0
+  Ref: Leray (1934 Acta Math.), Ladyzhenskaya (1969)
+
+Gate 3: NS_GlobalContinuation_OPEN
+  Content: No finite-time blow-up (global continuation of local smooth solutions)
+  Gap: THE GENUINE CLAY OPEN PROBLEM
+  Ref: Clay Mathematics Institute (2000), Fefferman (2000 problem statement)
+
+PROVED IN THIS TOWER (classical trio, 0 sorry)
+==============================================
+* stokes_op_adjoint: Stokes operator is self-adjoint in Fourier model
+* integration_by_parts_proved: closes Phase-3 Energy.lean named surface
+* trilinear_zero_energy: B(u,u,u) = 0 for div-free u (energy cancellation)
+* ns_clay_combinator: Gate1 ^ Gate2 ^ Gate3 -> NS_ClayStatement
+* weak_solution_exists: Galerkin existence (over 3 named Props)
+* weak_implies_strong: local regularity (over global_smooth_exists)
+* energy_inequality, energy_nonincreasing: energy decay along solutions
+
+AXIOM AUDIT
+===========
+All files: #print axioms -> [propext, Classical.choice, Quot.sound]
+No sorryAx. No new research axioms.
+
+CONTACT
+=======
+DavidFox998 at GitHub. Morning Star Project.

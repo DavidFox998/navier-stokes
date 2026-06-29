@@ -25,4 +25,5 @@ lean_lib Towers where
              `Towers.NS.NSCollection,
              `Towers.NS.NSStokesSmoothing,
              `Towers.NS.NSSemigroupDef,
+             `Towers.NS.NSCorrSemigroupSmooth,
              `Towers.NS.NSClayCertificateV2]

@@ -29,6 +29,7 @@ each absent from Mathlib v4.12.0 -- not Clay open problems):
   h3b : NS_BKMStrong_Classical_OPEN s
         Blow-up is witnessed by a nonneg-time Lp norm sequence to infty.
         Known: Beale-Kato-Majda 1984, Kozono-Taniuchi 2000.
+        Def: ExpDecayClose.NS_BKMStrong_Classical_OPEN (not an axiom).
 
 Bridge (0 cert axioms):
   NS_GlobalSobolevBound_PROVED (proved from WeakNS.energy_le, 0 certs)
@@ -47,11 +48,12 @@ Architecture note:
     NS: NS_CLAY_CERTIFICATE_V2 (h1 h2 h3a h3b) : NS_ClayStatement s
         4 classical hypotheses, #print axioms = classical trio
 
-  v1 (NS_CLAY_CERTIFICATE in NSClayCertificate.lean):
-    0 sorry, 0 sorryAx, axioms = classical trio + 4 cert axioms (7 total)
+  v1 (NSExpDecayClose.lean, ns_clay_all_gates_discharged):
+    0 sorry, 0 sorryAx, axioms = classical trio (after 2026-06-30 refactor)
+    The 4 former Cert_Arb_* axioms now become explicit hypotheses.
   v2 (NS_CLAY_CERTIFICATE_V2 here):
     0 sorry, 0 sorryAx, axioms = classical trio only (3 total)
-    The 4 cert axioms become explicit hypotheses (not hidden axioms).
+    Thin wrapper over ExpDecayClose internals.
 
 NS global regularity (physical R^3, C^inf) is OPEN.
 NS Surface #1 LOCKED OPEN. No Clay Millennium Prize claim.
@@ -78,30 +80,12 @@ namespace ClayCertificateV2
 variable {s : ℝ}
 
 /-!
-## Named classical open def: BKM strengthened
+## NS_BKMStrong_Classical_OPEN
+
+Defined in ExpDecayClose.NS_BKMStrong_Classical_OPEN (not an axiom).
+Opened above via `open ... ExpDecayClose`. Available here as
+`NS_BKMStrong_Classical_OPEN` directly.
 -/
-
-/-- **NS_BKMStrong_Classical_OPEN** -- named Prop def (not an axiom).
-
-    For any field u that fails to be smooth on (0, T), there exists a
-    NONNEG sequence seq with seq n >= 0, seq n < T, along which the
-    Lp norm diverges to infinity.
-
-    Mathematical backing: Beale-Kato-Majda 1984 Comm.Math.Phys. 94(1),
-    Kozono-Taniuchi 2000. This is a KNOWN CLASSICAL THEOREM.
-    Absent from Mathlib v4.12.0. Not a Clay open problem.
-
-    Being a Prop def (not an axiom), this does NOT appear in #print axioms.
-    It is exposed as an explicit hypothesis in NS_CLAY_CERTIFICATE_V2. -/
-def NS_BKMStrong_Classical_OPEN (s : ℝ) : Prop :=
-  ∀ (u : ℝ → Hdiv_free (s + 2)) (T : ℝ), 0 < T → ¬IsSmoothOn u T →
-  ∃ seq : ℕ → ℝ,
-    StrictMono seq ∧
-    (∀ n, 0 ≤ seq n) ∧
-    (∀ n, seq n < T) ∧
-    Filter.Tendsto
-      (fun n => ‖(u (seq n) : Lp Val 2 (mu (s + 2)))‖)
-      Filter.atTop Filter.atTop
 
 /-!
 ## BKM Bridge v2 (0 cert axioms)
@@ -126,19 +110,8 @@ theorem ns_bkm_bridge_v2
     (h3b : NS_BKMStrong_Classical_OPEN s) :
     ∀ w : WeakSolution s,
       (∃ T > 0, IsSmoothOn w.u T) →
-      ∀ T : ℝ, 0 < T → IsSmoothOn w.u T := by
-  intro w _hlocal T hTpos
-  by_contra hnotsmooth
-  obtain ⟨seq, _hmono, hnn, hlt, htend⟩ := h3b w.u T hTpos hnotsmooth
-  rw [Filter.tendsto_atTop_atTop] at htend
-  set C := T + ‖(w.u₀ : Lp Val 2 (mu (s + 2)))‖ + 1 with hC_def
-  obtain ⟨N, hN⟩ := htend C
-  have h_big : C ≤ ‖(w.u (seq N) : Lp Val 2 (mu (s + 2)))‖ :=
-    hN N le_rfl
-  have h_small : ‖(w.u (seq N) : Lp Val 2 (mu (s + 2)))‖ < C :=
-    NS_GlobalSobolevBound_PROVED w.u₀ w.f w.u w.isWeak T hTpos
-      (seq N) (hnn N) (hlt N)
-  linarith
+      ∀ T : ℝ, 0 < T → IsSmoothOn w.u T :=
+  ns_bkm_bridge_discharged h3b NS_GlobalSobolevBound_PROVED
 
 /-!
 ## Gate 3 from classical hypotheses (0 cert axioms)
@@ -152,7 +125,7 @@ theorem ns_gate3_from_classical
     (h3a : NS_LocalRegularity_OPEN s)
     (h3b : NS_BKMStrong_Classical_OPEN s) :
     NS_GlobalContinuation_OPEN s :=
-  ⟨h3a, ns_bkm_bridge_v2 h3b⟩
+  ns_gate3_discharged h3a h3b
 
 /-!
 ## NS Clay Certificate v2 -- the main theorem
@@ -191,6 +164,7 @@ theorem ns_gate3_from_classical
             sequence along which the Lp norm diverges to infinity.
             Known: Beale-Kato-Majda 1984, Kozono-Taniuchi 2000.
             Absent from Mathlib v4.12.0 (BKM criterion missing).
+            Def: ExpDecayClose.NS_BKMStrong_Classical_OPEN (not axiom).
 
     None of the 4 hypotheses is a Clay open problem.
     The Clay open problem (global regularity, no blow-up) is DISCHARGED
@@ -222,9 +196,7 @@ theorem NS_CLAY_CERTIFICATE_V2 {s : ℝ}
 ## Comparison with v1 / brick count
 -/
 
-/-- v2 strictly improves on v1 in axiom footprint:
-    v1 (NS_CLAY_CERTIFICATE): 7 axioms (classical trio + 4 cert axioms)
-    v2 (NS_CLAY_CERTIFICATE_V2): 3 axioms (classical trio only) -/
+/-- v2 axiom count: 3 (classical trio only). Same as v1 after 2026-06-30 refactor. -/
 def ns_v2_axiom_count : ℕ := 3
 
 /-- The 4 explicit classical hypotheses (not cert axioms, not Clay open). -/
@@ -235,7 +207,7 @@ def ns_v2_hypotheses : List String := [
   "h3b : NS_BKMStrong_Classical_OPEN s -- BKM 1984, Kozono-Taniuchi 2000"
 ]
 
-/-- NS surrogate model status in v2: 0 named open surfaces, 0 cert axioms. -/
+/-- NS surrogate model status in v2: 0 cert axioms. Classical trio only. -/
 def ns_v2_surrogate_status : String :=
   "NS_ClayStatement s proved in Fourier surrogate model, " ++
   "given 4 known classical hypotheses, 0 cert axioms, classical trio only. " ++

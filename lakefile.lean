@@ -37,4 +37,5 @@ lean_lib Towers where
              `Towers.NS.NSStokesMaxReg,
              `Towers.NS.NSAdjointArgument,
              `Towers.NS.NSAdjointPackageClose,
+             `Towers.NS.NSAdjointPackagePartBClose,
              `Towers.NS.NSClayCertificateV2]

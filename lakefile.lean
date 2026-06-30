@@ -46,4 +46,6 @@ lean_lib Towers where
              `Towers.NS.NSAdjointIntegralClose,
              `Towers.NS.NSCorrSemigroupSelfAdj,
              `Towers.NS.NSWeakInitContDirect,
+             `Towers.NS.NSWeakMomentumDiffAtProved,
+             `Towers.NS.NSAdjointSymmetry,
              `Towers.NS.NSClayCertificateV2]

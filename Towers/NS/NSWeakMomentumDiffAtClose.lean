@@ -23,7 +23,10 @@
       (hdiff : NS_WeakMomentumDiff_OPEN s) : NS_WeakMomentumDiffAt_OPEN s
 
   PROOF: one line --
-    exact hweak.momentum φ t ▸ (hdiff u u₀ f hweak φ t ht).hasDerivAt
+    obtain ⟨D, hD_deriv, hD_inner⟩ := hweak.momentum t ht.le
+  have h := hD_deriv.inner (hasDerivAt_const t φ)
+  simp only [inner_zero_right, add_zero] at h
+  exact h.congr_deriv (hD_inner φ)
 
   NEW NAMED OPEN DEF:
     NS_WeakMomentumDiff_OPEN s  -- DifferentiableAt ℝ (fun tau => inner(u tau, phi)) t
@@ -93,10 +96,10 @@ def NS_WeakMomentumDiff_OPEN (s : ℝ) : Prop :=
 /-- **Phase 35: NS_WeakMomentumDiffAt_OPEN CLOSED (0 sorry, given NS_WeakMomentumDiff_OPEN).**
 
     PROOF:
-      hdiff u u₀ f hweak phi t ht : DifferentiableAt ℝ F t    (scalar diff)
-      .hasDerivAt              : HasDerivAt F (deriv F t) t    (Lean API)
-      hweak.momentum phi t     : deriv F t = VALUE             (WeakMomentum)
-      rewrite via ▸             : HasDerivAt F VALUE t          (done)
+      hweak.momentum t ht.le   : ∃ D, HasDerivAt u D t ∧ ∀ φ, inner D φ = VALUE
+      hD_deriv.inner (hasDerivAt_const t φ) : HasDerivAt (fun τ => inner(u τ,φ)) (inner D φ) t
+      simp [inner_zero_right, add_zero]      : simplify derivative value
+      .congr_deriv (hD_inner φ)              : HasDerivAt F VALUE t  (done)
 
     #print axioms ns_weakMomentumDiffAt_from_diff = classical trio (given hdiff). -/
 theorem ns_weakMomentumDiffAt_from_diff

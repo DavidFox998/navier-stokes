@@ -42,4 +42,6 @@ lean_lib Towers where
              `Towers.NS.NSCorrSemigroupContinuity,
              `Towers.NS.NSCorrSemigroupLipAtZero,
              `Towers.NS.NSWeakInitContOrbit,
+             `Towers.NS.NSWeakMomentumDiffAtClose,
+             `Towers.NS.NSAdjointIntegralClose,
              `Towers.NS.NSClayCertificateV2]

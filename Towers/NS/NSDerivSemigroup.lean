@@ -404,16 +404,16 @@ theorem ns_b2_from_plumbing (hplumb : NS_LpErrorNormPlumbing_OPEN s) :
   have habs : h ^ 2 = |h| ^ 2 := (sq_abs h).symm
   nlinarith [abs_nonneg h, sq_abs h, mul_nonneg hnn hM]
 
-/-- **NS_SemigroupBochnerDiff_PROVED** (backward-compatibility alias).
-    B.2 conditional on NS_LpErrorNormPlumbing_OPEN (1 named gap, Lean API plumbing).
-    Sorry here is for the plumbing named gap, not new mathematics. -/
-theorem NS_SemigroupBochnerDiff_PROVED : NS_SemigroupBochnerDiff_OPEN s :=
-  ns_b2_from_plumbing (fun u₀ t h ht hh => by
-    -- NS_LpErrorNormPlumbing_OPEN: Lp.norm_def + coeFn_toLp + codRestrict_val plumbing.
-    -- Proof route: Lp.norm_def gives ‖corrSem ...‖ = (eLpNorm ...).toReal;
-    -- Lp.coeFn_sub distributes; corrSemigroup_memLp.coeFn_toLp gives pointwise symbols.
-    -- Will be closed in a future commit. NOT new mathematics.
-    sorry)
+/-- **NS_SemigroupBochnerDiff_conditional** (Phase 25+26 bridge, 0 sorry).
+    B.2 conditional on NS_LpErrorNormPlumbing_OPEN.
+    0 sorry, classical trio + NS_LpErrorNormPlumbing_OPEN.
+    See ns_b2_proved (Phase 26, NSLpErrorPlumbing.lean) for the fully closed version:
+    NS_LpErrorNormPlumbing_OPEN is proved as ns_lp_error_plumbing_proved in Phase 26.
+    #print axioms NS_SemigroupBochnerDiff_conditional = classical trio +
+      NS_LpErrorNormPlumbing_OPEN (named open def). -/
+theorem NS_SemigroupBochnerDiff_conditional (hplumb : NS_LpErrorNormPlumbing_OPEN s) :
+    NS_SemigroupBochnerDiff_OPEN s :=
+  ns_b2_from_plumbing hplumb
 
 /-! ## VII. Phase 25 gap B accounting -/
 
@@ -426,8 +426,8 @@ theorem NS_SemigroupBochnerDiff_PROVED : NS_SemigroupBochnerDiff_OPEN s :=
       corrSemigroup_error_eLpNorm_le    -- eLpNorm ≤ (h^2/16) * eLpNorm(u₀) [Phase 25]
       ns_b2_from_plumbing               -- B.2 given NS_LpErrorNormPlumbing_OPEN [Phase 25]
 
-    NAMED OPEN DEFS (3 total, all Lean formalization gaps, NOT Clay problems):
-      NS_LpErrorNormPlumbing_OPEN s  -- B.2 plumbing: Lp.norm_def+coeFn_toLp, ~2-4 weeks
+    NAMED OPEN DEFS (2 total after Phase 26, all Lean formalization gaps, NOT Clay problems):
+      -- NS_LpErrorNormPlumbing_OPEN s: CLOSED in Phase 26 (ns_lp_error_plumbing_proved)
       NS_WeakMomentumDiffAt_OPEN s   -- B.1: scalar HasDerivAt from WeakMomentum, ~1-3 months
       NS_AdjointIntegralConst_OPEN s -- B.3: orbit ID via adjoint, ~2-4 months
 

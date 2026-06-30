@@ -100,18 +100,24 @@ field `f : ℝ → Hdiv_free (s+2)`. (Modeled in the solution space; the
 genuine forcing may live in a lower/dual space.) -/
 abbrev ExternalForce (s : ℝ) : Type := ℝ → Hdiv_free (s + 2)
 
-/-- **MODELED weak momentum balance** (linear Stokes weak form, `ν = 1`).
-For every test field `φ`,
-`d/dt ⟪u t, φ⟫ = -⟪A u t, ι φ⟫ + ⟪f t, φ⟫`, with `A = stokes_op` and
-`ι = embed` the inclusion `Hˢ⁺² ↪ Hˢ`. HONEST scope: the nonlinear
-transport term `(u·∇)u` is DROPPED — this is a surrogate for the genuine
-distributional Navier–Stokes weak form, NOT that form literally. -/
+/-- **MODELED weak momentum balance** (Bochner form, linear Stokes, `ν = 1`).
+For every `t ≥ 0` there exists a Bochner derivative `D_t : Hdiv_free (s + 2)`
+such that (i) `HasDerivAt u D_t t` (u is strongly/Bochner-differentiable at t),
+and (ii) for every test field `φ`,
+    `⟪D_t, φ⟫ = -⟪A u t, ι φ⟫ + ⟪f t, φ⟫`
+with `A = stokes_op`, `ι = embed` the inclusion `Hˢ⁺² ↪ Hˢ`.
+HONEST scope: surrogate for the genuine distributional Navier–Stokes weak form
+(nonlinear transport dropped). Including `t = 0` encodes strong initial
+differentiability: `HasDerivAt u D₀ 0 → ContinuousAt u 0` (Phase 37). -/
 def WeakMomentum (u : ℝ → Hdiv_free (s + 2)) (f : ExternalForce s) : Prop :=
-  ∀ (φ : Hdiv_free (s + 2)) (t : ℝ),
-    deriv (fun τ => (@inner ℂ (Hdiv_free (s + 2)) _ (u τ) φ)) t
-      = - (@inner ℂ (Hdiv_free s) _ (stokes_op s (u t))
-              (@embed (s + 2) s (by linarith) φ))
-        + (@inner ℂ (Hdiv_free (s + 2)) _ (f t) φ)
+  ∀ (t : ℝ), 0 ≤ t →
+    ∃ D : Hdiv_free (s + 2),
+      HasDerivAt u D t ∧
+      ∀ (φ : Hdiv_free (s + 2)),
+        @inner ℂ (Hdiv_free (s + 2)) _ D φ =
+          - (@inner ℂ (Hdiv_free s) _ (stokes_op s (u t))
+                (@embed (s + 2) s (by linarith) φ))
+          + (@inner ℂ (Hdiv_free (s + 2)) _ (f t) φ)
 
 /-- **MODELED weak-solution predicate.** `u` is a weak solution with
 initial data `u₀` and forcing `f` iff (i) `u 0 = u₀`, (ii) the modeled
@@ -124,7 +130,7 @@ structure WeakNS (u : ℝ → Hdiv_free (s + 2)) (u₀ : Hdiv_free (s + 2))
     (f : ExternalForce s) : Prop where
   /-- The initial condition `u 0 = u₀`. -/
   init : u 0 = u₀
-  /-- The (modeled, linear) weak momentum balance. -/
+  /-- The (modeled, Bochner) weak momentum balance. -/
   momentum : WeakMomentum u f
   /-- The Leray–Hopf-style (force-free) energy inequality for `t ≥ 0`. -/
   energy_le : ∀ t : ℝ, 0 ≤ t → energy u t ≤ energy u 0

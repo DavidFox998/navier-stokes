@@ -411,39 +411,46 @@ theorem col_ns_global_sobolev_bound {s : ℝ} :
     NS_GlobalSobolevBound_OPEN s :=
   NS_GlobalSobolevBound_PROVED
 
-/-- **Re-export (Phase 14) PROVED**: BKM criterion discharged (from BKMStrong cert). -/
-theorem col_ns_bkm_criterion_discharged {s : ℝ} :
+/-- **Re-export (Phase 14) PROVED**: BKM criterion discharged from h3b.
+    NS_BKMStrong_Classical_OPEN s -> NS_BKMCriterion_OPEN s. Classical trio only. -/
+theorem col_ns_bkm_criterion_discharged {s : ℝ}
+    (h3b : NS_BKMStrong_Classical_OPEN s) :
     NS_BKMCriterion_OPEN s :=
-  ns_bkm_criterion_discharged
+  ns_bkm_criterion_discharged h3b
 
-/-- **Re-export (Phase 14) PROVED**: BKM Bridge discharged (from BKMStrong + Sobolev). -/
-theorem col_ns_bkm_bridge_discharged {s : ℝ} :
+/-- **Re-export (Phase 14) PROVED**: BKM Bridge from h3b + energy bound. Classical trio only. -/
+theorem col_ns_bkm_bridge_discharged {s : ℝ}
+    (h3b : NS_BKMStrong_Classical_OPEN s) :
     NS_BKM_Bridge_OPEN s :=
-  ns_bkm_bridge_discharged
+  ns_bkm_bridge_discharged h3b
 
-/-- **Re-export (Phase 14) PROVED**: Gate 3 (NS_GlobalContinuation_OPEN s) discharged.
-    Part A: Cert_Arb_NS_LocalReg. Part B: BKM contradiction + energy bound.
-    Axiom footprint: classical trio + {Cert_Arb_NS_LocalReg, Cert_Arb_NS_BKMStrong}. -/
-theorem col_ns_gate3_discharged {s : ℝ} :
+/-- **Re-export (Phase 14) PROVED**: Gate 3 (NS_GlobalContinuation_OPEN s) from h3a + h3b.
+    Part A: h3a (NS_LocalRegularity_OPEN). Part B: BKM contradiction + energy bound.
+    Classical trio only. 0 cert axioms. -/
+theorem col_ns_gate3_discharged {s : ℝ}
+    (h3a : NS_LocalRegularity_OPEN s)
+    (h3b : NS_BKMStrong_Classical_OPEN s) :
     NS_GlobalContinuation_OPEN s :=
-  ns_gate3_discharged
+  ns_gate3_discharged h3a h3b
 
-/-- **CAPSTONE (Phase 14)**: NS Clay statement — all 3 gates discharged.
-    `ns_clay_all_gates_discharged K` proves `NS_ClayStatement s` given 4 cert axioms:
-      Cert_Arb_NS_Gate1, Cert_Arb_NS_Gate2,
-      Cert_Arb_NS_LocalReg, Cert_Arb_NS_BKMStrong.
-    Honest scope: Fourier model only. NS Surface #1 (physical ℝ³) LOCKED OPEN. -/
+/-- **CAPSTONE (Phase 14)+**: NS Clay statement from 4 explicit classical hypotheses.
+    Honest scope: Fourier model only. NS Surface #1 (physical ℝ³) LOCKED OPEN.
+    Classical trio only. 0 cert axioms. -/
 theorem col_ns_clay_capstone {s : ℝ}
-    (K : ℕ → Submodule ℂ (Hdiv_free (s + 2))) [∀ n, FiniteDimensional ℂ (K n)] :
+    (K : ℕ → Submodule ℂ (Hdiv_free (s + 2))) [∀ n, FiniteDimensional ℂ (K n)]
+    (h1  : NS_AubinLions_OPEN K)
+    (h2  : NS_NonlinearWeakForm_OPEN K)
+    (h3a : NS_LocalRegularity_OPEN s)
+    (h3b : NS_BKMStrong_Classical_OPEN s) :
     NS_ClayStatement s :=
-  ns_clay_all_gates_discharged K
+  ns_clay_all_gates_discharged K h1 h2 h3a h3b
 
 /-- **Updated surface count (Phase 14)**: 0 modeled open gates (4 cert axioms remain).
     Physical NS (Leray–Hopf, ℝ³, C^∞ regularity): LOCKED OPEN — Clay problem. -/
 def ns_open_surface_count_phase14_col : ℕ := 0
 
-/-- **Phase 14 cert axiom count**: 4 named certificate axioms. -/
-def ns_cert_count : ℕ := 4
+/-- **Phase 14+ cert axiom count**: 0 (all converted to explicit hypotheses 2026-06-30). -/
+def ns_cert_count : ℕ := 0
 
 end Collection
 end NS

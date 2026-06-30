@@ -11,6 +11,26 @@ No cert axioms appear in #print axioms.
   #print axioms NS_CLAY_CERTIFICATE_V2
   = {propext, Classical.choice, Quot.sound}
 
+PHASE STATUS (June 30, 2026):
+
+  CLOSED in Phase 38a (0 sorry, unconditional, classical trio):
+    NS_WeakMomentumDiffAt_PROVED : NS_WeakMomentumDiffAt_OPEN s  [B.1 HasDerivAt]
+    NS_WeakMomentumDiff_PROVED   : NS_WeakMomentumDiff_OPEN s    [scalar DiffAt]
+    HOW: Phase 37 Bochner WeakMomentum + HasDerivAt.inner + congr_deriv (3 lines).
+
+  INTRODUCED in Phase 38b (named open defs, algebraic decomposition):
+    NS_AdjointInnerDerivMap_OPEN s  -- inner(u, corrSemDerivMap T φ) = -stokes inner
+    NS_AdjointSymmetry_OPEN s        -- stokes(corrSem T u, φ) = stokes(u, corrSem T φ)
+    NS_ScalarLeibnizAdjoint_OPEN s is conditionally closed by these two + Phase 37/26.
+    Phase 39 will write the full Lean proof (Bochner chain rule + MVT).
+
+  CURRENT NAMED OPEN DEF COUNT (after Phase 38a/38b): 5
+    NS_StokesMaxReg_OPEN s           -- Hieber-Pruss, not on WeakInitCont path
+    NS_AdjointInnerDerivMap_OPEN s   -- requires NS_CorrSemigroupFourierEq_OPEN
+    NS_AdjointSymmetry_OPEN s        -- requires NS_CorrSemigroupFourierEq_OPEN
+    NS_ScalarLeibnizAdjoint_OPEN s   -- closes in Phase 39 given above two
+    NS_CorrSemigroupFourierEq_OPEN s -- deepest gap (Phase 17)
+
 The 4 explicit hypotheses (all known classical results,
 each absent from Mathlib v4.12.0 -- not Clay open problems):
 

@@ -22,14 +22,20 @@ PHASE STATUS (June 30, 2026):
     NS_AdjointInnerDerivMap_OPEN s  -- inner(u, corrSemDerivMap T φ) = -stokes inner
     NS_AdjointSymmetry_OPEN s        -- stokes(corrSem T u, φ) = stokes(u, corrSem T φ)
     NS_ScalarLeibnizAdjoint_OPEN s is conditionally closed by these two + Phase 37/26.
-    Phase 39 will write the full Lean proof (Bochner chain rule + MVT).
+    Phase 39 PROVED NS_ScalarLeibnizAdjoint_PROVED (conditional, 0 sorry).
+    Three additional named gaps introduced:
+      NS_ForcingOrbitZero_OPEN s  -- forcing term vanishes for WeakNS (Duhamel)
+      NS_BackwardDerivMap_OPEN s  -- chain rule: HasDerivAt (corrSem(T-.) phi) D_back tau
+      NS_FuncIContOn_OPEN s       -- ContinuousOn of adjoint inner product function I
 
-  CURRENT NAMED OPEN DEF COUNT (after Phase 38a/38b): 5
-    NS_StokesMaxReg_OPEN s           -- Hieber-Pruss, not on WeakInitCont path
+  CURRENT NAMED OPEN DEF COUNT (after Phase 39): 6 + deepest gap
+    NS_StokesMaxReg_OPEN s           -- Hieber-Pruss (independent, not on path)
     NS_AdjointInnerDerivMap_OPEN s   -- requires NS_CorrSemigroupFourierEq_OPEN
     NS_AdjointSymmetry_OPEN s        -- requires NS_CorrSemigroupFourierEq_OPEN
-    NS_ScalarLeibnizAdjoint_OPEN s   -- closes in Phase 39 given above two
-    NS_CorrSemigroupFourierEq_OPEN s -- deepest gap (Phase 17)
+    NS_ForcingOrbitZero_OPEN s       -- Phase 39: Duhamel + density argument
+    NS_BackwardDerivMap_OPEN s       -- Phase 39: HasDerivAt.comp + uniqueness
+    NS_FuncIContOn_OPEN s            -- Phase 39: bilinear continuity
+    NS_CorrSemigroupFourierEq_OPEN s -- deepest gap (Phase 17, drives all except MaxReg)
 
 The 4 explicit hypotheses (all known classical results,
 each absent from Mathlib v4.12.0 -- not Clay open problems):

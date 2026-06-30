@@ -82,26 +82,13 @@ theorem ns_weakInitCont_nondegenerate
     Filter.Tendsto (fun τ => @inner ℂ (Hdiv_free (s + 2)) _ (u τ) ψ)
                    (nhdsWithin 0 (Set.Ioi 0))
                    (nhds (@inner ℂ (Hdiv_free (s + 2)) _ u₀ ψ)) := by
-  -- Step 1: WeakMomentum at t=0, f=0 gives deriv F 0 = -inner_s(stokes_op u0, embed psi)
-  have hderiv0 : deriv (fun τ => @inner ℂ (Hdiv_free (s + 2)) _ (u τ) ψ) 0 =
-      -@inner ℂ (Hdiv_free s) _ (stokes_op s u₀) (@embed (s + 2) s (by linarith) ψ) := by
-    have hmom := hweak.momentum ψ 0
-    -- f = fun _ => 0, so (fun _ => 0) 0 = 0 and inner 0 psi = 0
-    have hfz : (fun (_ : ℝ) => (0 : Hdiv_free (s + 2))) 0 = 0 := rfl
-    rw [hfz, @inner_zero_left ℂ (Hdiv_free (s + 2)) _, add_zero, hweak.init] at hmom
-    exact hmom
-  -- Step 2: deriv F 0 != 0 (from hne and the negation sign)
-  have hne0 : deriv (fun τ => @inner ℂ (Hdiv_free (s + 2)) _ (u τ) ψ) 0 ≠ 0 := by
-    rw [hderiv0]
-    exact fun h => hne (neg_eq_zero.mp h)
-  -- Step 3: DifferentiableAt by contrapositive (deriv = 0 for non-diff, so deriv != 0 => diff)
-  have hdiff : DifferentiableAt ℝ (fun τ => @inner ℂ (Hdiv_free (s + 2)) _ (u τ) ψ) 0 := by
-    by_contra h_not
-    exact hne0 (deriv_zero_of_not_differentiableAt h_not)
-  -- Step 4: ContinuousAt from HasDerivAt (DifferentiableAt => HasDerivAt => ContinuousAt)
+  -- Bochner WeakMomentum at t = 0: ∃ D, HasDerivAt u D 0
+  obtain ⟨D, hD_deriv, _⟩ := hweak.momentum 0 (le_refl 0)
+  -- HasDerivAt u D 0 → ContinuousAt u 0 → ContinuousAt (inner(u ·, ψ)) 0
+  -- (hne unused: ContinuousAt holds regardless of the derivative value)
   have hcont : ContinuousAt (fun τ => @inner ℂ (Hdiv_free (s + 2)) _ (u τ) ψ) 0 :=
-    hdiff.hasDerivAt.continuousAt
-  -- Step 5: Rewrite goal limit using init, then apply ContinuousWithinAt
+    continuous_inner.continuousAt.comp
+      (hD_deriv.continuousAt.prod continuousAt_const)
   rw [← hweak.init]
   exact hcont.continuousWithinAt
 

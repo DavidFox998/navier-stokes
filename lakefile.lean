@@ -58,4 +58,8 @@ lean_lib Towers where
              `Towers.NS.NSPhase46StokesMaxReg,
              `Towers.NS.NSPhase52D5MasterBridge,
              `Towers.NS.NSPhase53GapClosure,
+             `Towers.NS.NSPhase56D1Decomposition,
+             `Towers.NS.NSPhase57PeetreDecomp,
+             `Towers.NS.NSPhase58YoungDecomp,
+             `Towers.NS.NSPhase59D1Closure,
              `Towers.NS.NSClayCertificateV2]

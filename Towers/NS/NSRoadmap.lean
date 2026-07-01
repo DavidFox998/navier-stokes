@@ -448,7 +448,7 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
       Proof: eLpNorm_norm + norm_mul + simp [weight, norm_of_nonneg]
     NS_FourierRieszRep_Conditional : conditional on 3 Fourier micro-gaps (below)
 
-  OPEN SURFACES (July 1, 2026 — updated Phase 80 + tag vD1-CLOSED):
+  OPEN SURFACES (July 1, 2026 — Phase 84 + tag vD1-CLOSED):
     [SUPERSEDED: GAP F1/F2/F3 Fourier route — absent Mathlib v4.12.0, replaced by GNS]
     GAP 2:  NS_BilinearEstimate_OPEN  *** CLOSED (Phase 79, s=0) ***
             D1 (s=0): eLpNorm_mul_le(L²×L²→L^{3/2}) + Young(Ph70, L^{3/2}⋆K→L³)
@@ -459,6 +459,11 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
     GAP 4:  NS_M6_OPEN *** SOLE REMAINING TASK (Phase 80) ***
             TAG: vD1-CLOSED (July 1, 2026) -- D1+M5 locked to Mathlib v4.12.0+Ph70+Ph77-78
 
+            Phase 84 (July 1 2026): Duhamel bound — final clean proof
+            exp confirmed -1/2 (Meta AI). 3 named gaps remain to M6:
+              NS_Duhamel_formula_OPEN   [1-2 wks]
+              NS_Minkowski_integral_OPEN [days]
+              NS_ESS_Criterion_OPEN      [months, ESS 2003]
             Route 2A (ETA 2 wks, 60%): NS_FreqLocalizedEnergy_OPEN (Tao 2014)
               Reduction: NS_M6_from_FreqLocEnergy -- proved conditional (Phase 80)
               Conjecture: ‖P_N(u·∇u)‖_{L²} ≤ C·N^{1/2}·‖u‖_{L²}·‖u‖_{H¹}

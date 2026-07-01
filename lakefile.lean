@@ -76,4 +76,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase71PlancherelClosure,
              `Towers.NS.NSPhase72FourierChain,
              `Towers.NS.NSPhase73FourierSubgaps,
+             `Towers.NS.NSPhase74FourierAudit,
              `Towers.NS.NSClayCertificateV2]

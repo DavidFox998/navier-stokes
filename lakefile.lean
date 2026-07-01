@@ -50,4 +50,5 @@ lean_lib Towers where
              `Towers.NS.NSAdjointSymmetry,
               `Towers.NS.NSScalarLeibnizAdjoint,
              `Towers.NS.NSPhase40AdjClose,
+             `Towers.NS.NSPhase41ThreeGaps,
              `Towers.NS.NSClayCertificateV2]

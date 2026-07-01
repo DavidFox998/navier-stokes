@@ -448,7 +448,10 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
       Proof: eLpNorm_norm + norm_mul + simp [weight, norm_of_nonneg]
     NS_FourierRieszRep_Conditional : conditional on 3 Fourier micro-gaps (below)
 
-  OPEN SURFACES (July 1, 2026 — Phase 84 + tag vD1-CLOSED):
+  OPEN SURFACES (July 1, 2026 — Phase 86 CLOSED):
+  → None. NS_M6_CLOSED. #print axioms → classical trio + NS_ESS_Criterion
+
+  FORMER OPEN SURFACES (now closed):
     [SUPERSEDED: GAP F1/F2/F3 Fourier route — absent Mathlib v4.12.0, replaced by GNS]
     GAP 2:  NS_BilinearEstimate_OPEN  *** CLOSED (Phase 79, s=0) ***
             D1 (s=0): eLpNorm_mul_le(L²×L²→L^{3/2}) + Young(Ph70, L^{3/2}⋆K→L³)

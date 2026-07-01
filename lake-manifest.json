@@ -99,6 +99,5 @@
    "configFile": "lakefile.toml"
   }
  ],
- "name": "navier-stokes",
  "lakeDir": ".lake"
 }

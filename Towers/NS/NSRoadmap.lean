@@ -448,11 +448,11 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
       Proof: eLpNorm_norm + norm_mul + simp [weight, norm_of_nonneg]
     NS_FourierRieszRep_Conditional : conditional on 3 Fourier micro-gaps (below)
 
-  OPEN SURFACES (July 1, 2026 — updated Phase 77):
+  OPEN SURFACES (July 1, 2026 — updated Phase 77v2):
     [SUPERSEDED: GAP F1/F2/F3 Fourier route — absent Mathlib v4.12.0, replaced by GNS]
-    GAP 2:  NS_BilinearEstimate_OPEN  *** CRITICAL — GNS route (Phase 77) ***
-            Via: GNS(Ph76) + Young(Ph70) + Holder(Ph77) + Sobolev(Ph77)
-            ETA: 1-2 months (no Fourier theory required)
+    GAP 2:  NS_BilinearEstimate_OPEN  *** CRITICAL — GNS route (Phase 77v2) ***
+            PROVED: GNS(Ph76) + Young(Ph70) + Holder(Ph77 PROVED, eLpNorm_mul_le)
+            OPEN:   GNS_Density + HolderInterp + SobolevScale (3 gaps, ETA 1-2 mo)
     GAP 1:  Cert_Arb_SurrogateSmooth  ETA 2-4 weeks  (cert axiom)
     GAP 3:  NS_StokesCoercivity_OPEN  ETA 3-6 months
     GAP 4:  NS_AubinLions_OPEN (h1)   ETA 3-6 months
@@ -472,11 +472,15 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
       ns_d1_from_product_estimate (Phase 56): ProductEstimate -> D1
       ns_banach_fpt_proved        (Phase 53): Banach FPT
 
-    OPEN (GNS route, all tractable):
+    PROVED (GNS route, 0 sorry, Mathlib):
+      NS_GNS_H1_L6_PROVED         (Phase 76): H1 -> L6  [eLpNorm_le_eLpNorm_fderiv_of_eq_inner]
+      NS_YoungConvolutionBound_PROVED (Phase 70): L2 -> L3  [convolution_eLpNorm_le_of_weak_type]
+      NS_D1_HolderProduct_PROVED  (Phase 77): Holder L6xL3->L2  [MeasureTheory.eLpNorm_mul_le] ← NEW
+
+    OPEN (3 remaining):
       NS_GNS_Density_OPEN         (Phase 76): C1_c dense in H1        ETA: weeks
       NS_HolderLp_Interp_OPEN     (Phase 76): L3 between L2 and L6    ETA: weeks
-      NS_D1_HolderProduct_OPEN    (Phase 77): Holder L6*L3->L2        ETA: days
-      NS_D1_SobolevScale_OPEN s   (Phase 77): Kato-Ponce bridge       ETA: 1-2 mo
+      NS_D1_SobolevScale_OPEN s   (Phase 77): Kato-Ponce H^{s+1}      ETA: 1-2 mo
 
     When all 4 close:
       NS_BilinearEstimate_D1_GNS_Conditional -> NS_BilinearEstimate_OPEN s (D1)

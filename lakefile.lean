@@ -81,4 +81,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase76GNSRoute,
              `Towers.NS.NSPhase77D1Closure,
              `Towers.NS.NSPhase78GNSInterpClose,
+             `Towers.NS.NSPhase79D1M5Closed,
              `Towers.NS.NSClayCertificateV2]

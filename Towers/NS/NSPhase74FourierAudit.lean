@@ -163,32 +163,30 @@ def NS_FourierInversionDensity_OPEN : Prop :=
       (∀ n, Integrable (𝓕 (gn n)) (volume : Measure _)) ∧
       Tendsto (fun n => eLpNorm (gn n - g) 2 volume) atTop (𝓝 0)
 
-/-- **F3 chain**: Given density + continuity inversion, L² inversion follows (0 sorry). -/
+/-- **NS_FourierInversionL2_LimitPassage_OPEN**: L² limit passage (named open def).
+    Given gn → g in L² and 𝓕⁻(𝓕 gn) = gn for all n, prove 𝓕⁻(𝓕 g) =ᵐ g.
+    Requires: Plancherel continuity of 𝓕⁻∘𝓕 on L² + a.e. subsequence argument.
+    Phase 75 closes via MeasureTheory.tendsto_Lp + Lp.ae_tendsto_of_cauchy. -/
+def NS_FourierInversionL2_LimitPassage_OPEN : Prop :=
+  ∀ (g : EuclideanSpace ℝ (Fin 3) → ℂ)
+    (gn : ℕ → EuclideanSpace ℝ (Fin 3) → ℂ),
+    (∀ n, 𝓕⁻ (𝓕 (gn n)) = gn n) →
+    Tendsto (fun n => eLpNorm (gn n - g) 2 volume) atTop (𝓝 0) →
+    𝓕⁻ (𝓕 g) =ᵐ[volume] g
+
+/-- **NS_FourierInversionL2_from_density** (0 sorry, conditional on 2 named gaps):
+    density sub-gap (NS_FourierInversionDensity_OPEN) + limit passage sub-gap
+    (NS_FourierInversionL2_LimitPassage_OPEN).
+    Proof: unpack density to get gn → g in L² with 𝓕⁻(𝓕 gn) = gn, apply limit. -/
 theorem NS_FourierInversionL2_from_density
-    (h_dens : NS_FourierInversionDensity_OPEN) :
+    (h_dens : NS_FourierInversionDensity_OPEN)
+    (h_lim  : NS_FourierInversionL2_LimitPassage_OPEN) :
     NS_FourierInversionL2_OPEN := by
   intro g hg
   obtain ⟨gn, hcont, hint, hFint, htend⟩ := h_dens g hg
-  -- For each n: 𝓕⁻(𝓕 gn) = gn  [by NS_FourierInversionCorr_PROVED]
-  have h_inv_n : ∀ n, 𝓕⁻ (𝓕 (gn n)) = gn n :=
-    fun n => NS_FourierInversionCorr_PROVED (gn n) (hcont n) (hint n) (hFint n)
-  -- Passing to the L² limit: 𝓕⁻ ∘ 𝓕 is continuous on L², so limit commutes
-  -- Named sub-gap: continuity of 𝓕⁻ ∘ 𝓕 on L² requires Plancherel (Phase 71)
-  -- Conditional: following sub-gap closed from htend via eLpNorm_tendsto
-  -- The a.e. equality follows from L² convergence (subsequence argument)
-  -- This conditional closes NS_FourierInversionL2_OPEN
-  have h_ae : ∀ n, 𝓕⁻ (𝓕 (gn n)) =ᵐ[volume] g := by
-    intro n
-    rw [h_inv_n n]
-    -- gn n →ᴸ² g implies gn n =ᵐ g along a subsequence
-    -- Named gap: eLpNorm convergence → a.e. convergence (standard, needs API)
-    exact (MeasureTheory.tendsto_Lp_of_tendsto_eLpNorm (by norm_num) hg
-      (fun n => (hint n).memLp (by norm_num)) htend).ae_tendsTo_of_cauchy.elim
-      (fun ⟨sub, _, hsub, _⟩ => by
-        have := hsub n
-        simp [h_inv_n] at this
-        exact this) id
-  exact h_ae 0
+  exact h_lim g gn
+    (fun n => NS_FourierInversionCorr_PROVED (gn n) (hcont n) (hint n) (hFint n))
+    htend
 
 /-! ## §D. Phase 74 summary ledger -/
 
@@ -205,11 +203,12 @@ PROVED (0 sorry, classical trio):
   NS_FourierInversionCorr_PROVED     ✓ Continuous.fourier_inversion (Mathlib v4.12.0)
   NS_FourierInversionCorr_ae         ✓ corollary (ae_of_all + congr_fun)
   NS_FourierInversionCorr_pointwise  ✓ Integrable.fourier_inversion (pointwise form)
-  NS_FourierInversionL2_from_density ✓ conditional on NS_FourierInversionDensity_OPEN
+  NS_FourierInversionL2_from_density ✓ conditional on Density_OPEN + LimitPassage_OPEN
 
 NEW NAMED OPEN DEFS (no axiom):
-  NS_FourierInversionL2_OPEN         ← 𝓕⁻(𝓕 g) =ᵐ g for g ∈ L² (correct F3 statement)
-  NS_FourierInversionDensity_OPEN    ← C_c(ℝ³) approximation in L² (density argument)
+  NS_FourierInversionL2_OPEN              ← 𝓕⁻(𝓕 g) =ᵐ g for g ∈ L² (correct F3 statement)
+  NS_FourierInversionDensity_OPEN         ← C_c(ℝ³) approximation in L² (density argument)
+  NS_FourierInversionL2_LimitPassage_OPEN ← L² limit commutes with 𝓕⁻∘𝓕 (Plancherel)
 
 PHASE 72 BUG DOCUMENTED:
   NS_FourierInversion_OPEN (Phase 72) uses 𝓕∘𝓕 (double forward Fourier).

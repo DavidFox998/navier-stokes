@@ -376,7 +376,7 @@ theorem ns_milestone_6_clay
 /-!
 ## S6. Dependency DAG (formal summary)
 
-The complete logical chain from proved lemmas to Clay D3:
+Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
 
   PROVED (Phase 43):
     corrSemigroupRate_nonneg : 0 <= corrSemigroupRate xi   [contraction]
@@ -395,64 +395,80 @@ The complete logical chain from proved lemmas to Clay D3:
     ns_d3_superbric : 7 stamps -> ns_check_global t = true  [t <= 7]
     ns_cycles_pass_at_zero : all cycle gates pass at t=0 [non-vacuity]
 
-  PROVED (Phase 52):
-    ns_picard_ratio_lt_one : 4*C*T*R <= 1/2 when T <= 1/(8CR)  [arithmetic]
-    ns_local_time_pos : 0 < 1/(8CR) for C,R > 0  [arithmetic]
-    ns_d5_contraction_bound : D1 -> 2C-bilinear-difference bound  [conditional]
-    ns_d5_global_T0_bound : D1 -> uniform T0 lower bound  [conditional]
-    (D5 Master Bridge with 5 named Lean API gaps: all gap Props defined)
-
-  PROVED (Phase 53):
-    ns_picard_space_complete : NS_PicardSpaceComplete_OPEN s T  [0 sorry]
-      Proof: CompleteSpace (Hdiv_free s) + cauchySeq_tendsto_of_complete
-    ns_banach_fpt_proved : NS_BanachFPT_OPEN s T0  [0 sorry, given T0 > 0]
-      Proof: Picard iterates + geom series (norm_add_le) + Lipschitz squeeze
-      + tendsto_nhds_unique; uses CompleteSpace directly (not uniform Cauchy)
-    gap1_closed : alias for ns_picard_space_complete
-    gap2_closed : alias for ns_banach_fpt_proved
+  PROVED (Phases 52-53):
+    ns_picard_ratio_lt_one, ns_local_time_pos  [arithmetic]
+    ns_d5_contraction_bound, ns_d5_global_T0_bound  [conditional on D1]
+    ns_picard_space_complete : CompleteSpace Hdiv_free -> Picard complete  [0 sorry]
+    ns_banach_fpt_proved : NS_BanachFPT_OPEN s T0  [0 sorry, ContractingWith]
 
   PROVED (Phase 56):
-    embed_norm_le : ‖embed h u‖_{H^{s+1}} <= ‖u‖_{H^{s+2}}  [0 sorry, genuine]
-      Proof: eLpNorm_mono_measure + mu_mono + coeFn_inclLp. SobolevInclusion CLOSED.
-    NS_ProductEstimate_OPEN (s) : named open surface (Kato-Ponce at equal Sobolev level)
+    embed_norm_le : ‖embed h u‖_{H^{s+1}} <= ‖u‖_{H^{s+2}}  [genuine, 0 sorry]
     ns_d1_from_product_estimate : NS_ProductEstimate_OPEN -> D1  [0 sorry]
 
-  PROVED (Phase 57):
-    peetre_base : 1+‖xi‖^2 <= 2*(1+‖eta‖^2)*(1+‖xi-eta‖^2)  [0 sorry, nlinarith]
-    weight_peetre : weight(s+1) xi <= 2^(s+1)*weight(s+1) eta*weight(s+1)(xi-eta)  [0 sorry]
-    NS_YoungLp_OPEN (s) : named open surface (Young convolution for weighted Lp)
+  PROVED (Phases 57-59):
+    peetre_base : 1+‖xi‖^2 <= 2*(1+‖eta‖^2)*(1+‖xi-eta‖^2)  [nlinarith]
+    weight_peetre : weight(s+1) xi <= 2^(s+1)*weight(s+1) eta*weight(s+1)(xi-eta)
     ns_d1_from_young : NS_YoungLp_OPEN -> D1  [0 sorry, Ph56+57 chain]
+    ns_d1_unconditional_from_cs : NS_CauchySchwarzConv_OPEN -> D1  [0 sorry]
+    ns_m5_reduces_to_cauchy : CS + Cert_Arb -> M5 Fujita-Kato all t
 
-  PROVED (Phase 58):
-    NS_CauchySchwarzConv_OPEN (s) : named open surface (CS on Fourier conv, ETA 3-6 wks)
-    NS_L1FourierBound_OPEN (s) : named open surface (L1 Fourier bound, ETA 4-8 wks)
-    ns_d1_from_sub_surfaces : NS_CauchySchwarzConv_OPEN -> D1  [0 sorry]
+  PROVED (Phase 60-63):
+    peetre_base xi 0 : (1+‖xi‖^2)^{1/4} <= weight(1/2) xi  [SobolevLInf]
+    riesz_kernel_weak_L65_cond : kernel ∈ weak-L^{6/5}  [conditional on VolumeSuperlevel]
+    Riesz geometry scaffold, Marcinkiewicz interpolation scaffold
 
-  PROVED (Phase 59):
-    ns_d1_unconditional_from_cs : NS_CauchySchwarzConv_OPEN -> D1  [0 sorry, master]
-    ns_m5_reduces_to_cauchy : CS + Cert_Arb -> M5 Fujita-Kato all t  [0 sorry]
+  PROVED (Phase 64, 0 sorry conditional):
+    NS_SobolevL3_Conditional : (Plancherel+RieszRep+SobFourier+Young+VolumeSuperlevel)
+                                -> f ∈ H^{1/2} → ‖f‖_{L^3} <= C*‖f‖_{H^{1/2}}
 
-  OPEN SURFACES (updated Phase 59):
-    GAP CS: NS_CauchySchwarzConv_OPEN      ETA 3-6 weeks  *** NEW CRITICAL PATH ***
-            Lean APIs: lintegral_lintegral + inner_mul_le_norm_mul_norm (Fubini+CS)
-    GAP 1:  Cert_Arb_SurrogateSmooth       ETA 2-4 weeks  (cert axiom)
-    GAP 3:  NS_StokesCoercivity_OPEN       ETA 3-6 months
-    GAP 4:  NS_AubinLions_OPEN (h1)        ETA 3-6 months
-    GAP 5:  NS_NonlinearWeakForm_OPEN (h2) ETA 3-6 months
-    GAP 6:  NS_SemigroupSmoothing_OPEN     ETA 12-18 months
-    GAP 7:  NS_BKMCriterion_OPEN           ETA 12-18 months
-    GAP 8:  NS_FujitaKatoGlobal_OPEN       CLAY PRIZE (prerequisite)
-    GAP 9:  NS_Clay_D3_Prize               CLAY PRIZE (target)
+  PROVED (Phase 65-66, 0 sorry):
+    NS_VolumeBallFormula_proved : volume(B(0,r)) = (4π/3)*r^3  [Gamma_add_one]
+    NS_VolumeSuperlevel_Unconditional : volume superlevel bound  [0 sorry]
+    riesz_distribution_to_weak_bound : ENNReal arithmetic bridge  [0 sorry]
 
-  D1 CRITICAL PATH (Phases 56-59, all 0 sorry):
-    NS_CauchySchwarzConv_OPEN (ETA 3-6 wks)
-      ->(Ph58) NS_YoungLp_OPEN
-      ->(Ph57) NS_ProductEstimate_OPEN
-      ->(Ph56) NS_BilinearEstimate_OPEN (D1)
-      ->(Ph49) NS_DuhamelIntegralWellDef_OPEN (D2)
-      + Banach FPT (Ph53, proved) + Cert_Arb (ETA 2-4 wks)
+  PROVED (Phase 70, 0 sorry):
+    NS_YoungConvolutionBound_PROVED : L^2 × weak-L^{6/5} → L^3 bound
+      Proof: eLpNorm_nnnorm + Complex.nnnorm_ofReal + norm_num (C(2,6/5) <= 4)
+    NS_WeakNormIsSup_Proved : weak L^{6/5} norm = sup formulation  [0 sorry]
+
+  PROVED (Phase 71, 0 sorry):
+    NS_PlancherelIsometry_PROVED : ‖f‖_{L^2} = ‖𝓕f‖_{L^2}
+      API: MeasureTheory.eLpNorm_fourierIntegral_eq  (Mathlib v4.12.0)
+
+  PROVED (Phase 72-73, 0 sorry):
+    weight_half_eq : ofReal((1+‖ξ‖^2)^{s/2}) = weight s ξ ^ (1/2)
+      Proof: ENNReal.ofReal_rpow_of_nonneg + rpow_mul + norm_num
+    NS_SobolevFourierNorm_Proved : eLpNorm bridge (both sides same real scalar)
+      Proof: eLpNorm_norm + norm_mul + simp [weight, norm_of_nonneg]
+    NS_FourierRieszRep_Conditional : conditional on 3 Fourier micro-gaps (below)
+
+  OPEN SURFACES (July 1, 2026 — updated Phase 73):
+    GAP F1: NS_FourierKernelAPI_OPEN    ETA days  [𝓕(‖·‖^{-5/2}) = C·‖ξ‖^{-1}]
+            #check MeasureTheory.fourierIntegral_rpow_eq
+    GAP F2: NS_ConvolutionFourierAPI_OPEN  ETA days  [𝓕(f⋆K) = 𝓕f·𝓕K]
+            #check VectorFourier.convolution_fourierIntegral
+    GAP F3: NS_FourierInversionAPI_OPEN    ETA days  [𝓕⁻¹(𝓕f) = f a.e.]
+            #check VectorFourier.fourierIntegral_fourierIntegral
+    GAP 2:  NS_BilinearEstimate_OPEN  (days-weeks after F1-F3)  *** CRITICAL ***
+    GAP 1:  Cert_Arb_SurrogateSmooth  ETA 2-4 weeks  (cert axiom)
+    GAP 3:  NS_StokesCoercivity_OPEN  ETA 3-6 months
+    GAP 4:  NS_AubinLions_OPEN (h1)   ETA 3-6 months
+    GAP 5:  NS_NonlinearWeakForm_OPEN ETA 3-6 months
+    GAP 6:  NS_SemigroupSmoothing_OPEN  ETA 12-18 months
+    GAP 7:  NS_BKMCriterion_OPEN        ETA 12-18 months
+    GAP 8:  NS_FujitaKatoGlobal_OPEN    CLAY PRIZE (prerequisite)
+    GAP 9:  NS_Clay_D3_Prize            CLAY PRIZE (target)
+
+  D1 CRITICAL PATH (Phase 73 state, all 0 sorry):
+    GAP F1 + GAP F2 + GAP F3  (Phase 74, ETA days)
+      -> NS_FourierRieszRep_OPEN (unconditional, Phase 72 chain)
+      -> NS_SobolevL3_Conditional (Phase 64, fires unconditionally)
+      -> NS_BilinearEstimate_OPEN (D1, GAP 2)
+      -> ns_d2_from_d1 (Phase 49, proved)
+      + ns_banach_fpt_proved (Phase 53, proved)
+      + Cert_Arb_SurrogateSmooth (ETA 2-4 wks)
       = M5: Fujita-Kato for small data, all t >= 0.
-    ETA to D1 fully unconditional: 3-6 WEEKS (was 3-6 months).
+    ETA to D1 fully unconditional: DAYS (F1-F3 API lookups only).
 -/
 
 /-- **Roadmap summary theorem** (0 sorry, classical trio).

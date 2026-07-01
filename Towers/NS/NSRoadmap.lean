@@ -395,6 +395,22 @@ The complete logical chain from proved lemmas to Clay D3:
     ns_d3_superbric : 7 stamps -> ns_check_global t = true  [t <= 7]
     ns_cycles_pass_at_zero : all cycle gates pass at t=0 [non-vacuity]
 
+  PROVED (Phase 52):
+    ns_picard_ratio_lt_one : 4*C*T*R <= 1/2 when T <= 1/(8CR)  [arithmetic]
+    ns_local_time_pos : 0 < 1/(8CR) for C,R > 0  [arithmetic]
+    ns_d5_contraction_bound : D1 -> 2C-bilinear-difference bound  [conditional]
+    ns_d5_global_T0_bound : D1 -> uniform T0 lower bound  [conditional]
+    (D5 Master Bridge with 5 named Lean API gaps: all gap Props defined)
+
+  PROVED (Phase 53):
+    ns_picard_space_complete : NS_PicardSpaceComplete_OPEN s T  [0 sorry]
+      Proof: CompleteSpace (Hdiv_free s) + cauchySeq_tendsto_of_complete
+    ns_banach_fpt_proved : NS_BanachFPT_OPEN s T0  [0 sorry, given T0 > 0]
+      Proof: Picard iterates + geom series (norm_add_le) + Lipschitz squeeze
+      + tendsto_nhds_unique; uses CompleteSpace directly (not uniform Cauchy)
+    gap1_closed : alias for ns_picard_space_complete
+    gap2_closed : alias for ns_banach_fpt_proved
+
   OPEN SURFACES (ordered by ETA):
     GAP 1: Cert_Arb_SurrogateSmooth           ETA 2-4 weeks
     GAP 2: NS_BilinearEstimate_OPEN (D1)      ETA 3-6 months  *** CRITICAL PATH ***
@@ -408,7 +424,12 @@ The complete logical chain from proved lemmas to Clay D3:
 
   CRITICAL PATH: GAP 2 (D1) is the single most important gap.
     D1 -> D2 (proved) -> M5 (Fujita-Kato small data, all t)
-    M5 requires: D1 + Banach FPT (Mathlib) + Cert_Arb + proved contraction.
+    M5 requires: D1 + Banach FPT + Cert_Arb + proved contraction.
+    Phase 53: Banach FPT proved (0 sorry), Picard completeness proved (0 sorry).
+    Two of five M5 Lean gaps are now CLOSED. Remaining three:
+      Gap 3 (NS_ContinuationPrinciple): corrected formulation in Phase 54.
+      Gap 4 (NS_MildToWeak): reduces to D4 (Phase 54).
+      Gap 5 (NS_PicardMapWellDef): reduces to D2 + corrSem (Phase 54).
     ETA for M5: 3-6 months after D1 closes.
 -/
 

@@ -163,7 +163,7 @@ required; they are known classical results not yet in Mathlib v4.12.0.
 | L²→L³ conv | `convolution_eLpNorm_le_of_weak_type` | Mathlib v4.12.0 | **PROVED** (Phase 70) |
 | C¹_c→H¹ density | `NS_GNS_Density_OPEN` | Phase 76 | OPEN (ETA weeks) |
 | L³ interp | `NS_HolderLp_Interp_OPEN` | Phase 76 | OPEN (ETA weeks) |
-| Hölder L⁶×L³→L² | `NS_D1_HolderProduct_OPEN` | Phase 77 | OPEN (ETA days) |
+| Hölder L⁶×L³→L² | `NS_D1_HolderProduct_PROVED` | Phase 77 | **PROVED** (MeasureTheory.eLpNorm_mul_le) |
 | Kato-Ponce bridge | `NS_D1_SobolevScale_OPEN s` | Phase 77 | OPEN (ETA 1-2 mo) |
 
 ### Why GNS beats Fourier route
@@ -173,19 +173,20 @@ required; they are known classical results not yet in Mathlib v4.12.0.
 | `NS_FourierKernelAPI_OPEN` (F1) | **Required** — absent Mathlib | Not needed |
 | `NS_ConvolutionFourierAPI_OPEN` (F2) | **Required** — absent Mathlib | Not needed |
 | `NS_FractionalSobolev_OPEN` | **Required** — Calderón | **Replaced** by GNS+interp |
-| Tractable ETAs | ✗ F1/F2 absent | ✓ all 4 gaps ETA ≤ 2 months |
+| Tractable ETAs | ✗ F1/F2 absent | ✓ 3 gaps remain (Hölder PROVED) |
 
 ### Theorem (Phase 77)
 
 ```lean
+-- NS_D1_HolderProduct_PROVED now in Mathlib (MeasureTheory.eLpNorm_mul_le)
 theorem NS_BilinearEstimate_D1_GNS_Conditional
     (h_dens   : NS_GNS_Density_OPEN)
     (h_interp : NS_HolderLp_Interp_OPEN)
-    (h_holder : NS_D1_HolderProduct_OPEN)
-    (h_scale  : NS_D1_SobolevScale_OPEN s) :
+    (h_scale  : NS_D1_SobolevScale_OPEN s) :   -- 3 hypotheses (was 4)
     NS_BilinearEstimate_OPEN s
 -- Proof: ns_d1_from_product_estimate (Phase 56) +
---        NS_YoungConvolutionBound_PROVED (Phase 70)
+--        NS_YoungConvolutionBound_PROVED (Phase 70) +
+--        NS_D1_HolderProduct_PROVED (Phase 77, Mathlib confirmed)
 ```
 
 

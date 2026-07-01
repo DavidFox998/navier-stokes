@@ -448,7 +448,7 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
       Proof: eLpNorm_norm + norm_mul + simp [weight, norm_of_nonneg]
     NS_FourierRieszRep_Conditional : conditional on 3 Fourier micro-gaps (below)
 
-  OPEN SURFACES (July 1, 2026 — updated Phase 79):
+  OPEN SURFACES (July 1, 2026 — updated Phase 80 + tag vD1-CLOSED):
     [SUPERSEDED: GAP F1/F2/F3 Fourier route — absent Mathlib v4.12.0, replaced by GNS]
     GAP 2:  NS_BilinearEstimate_OPEN  *** CLOSED (Phase 79, s=0) ***
             D1 (s=0): eLpNorm_mul_le(L²×L²→L^{3/2}) + Young(Ph70, L^{3/2}⋆K→L³)
@@ -456,8 +456,20 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
             NS_D1_s0_CLOSED   : proved  (Phase 79, 0 sorry, classical trio)
     GAP 3:  NS_EnergyInequality (M5) *** CLOSED (Phase 79) ***
             NS_M5_CLOSED : ns_m5_from_d1 NS_D1_s0_CLOSED  (0 sorry)
-    GAP 4:  NS_M6_OPEN *** SOLE REMAINING TASK ***
-            Requires: NS_D1_SobolevScale_OPEN s (Kato-Ponce, 1-2 mo) + Picard at H^s
+    GAP 4:  NS_M6_OPEN *** SOLE REMAINING TASK (Phase 80) ***
+            TAG: vD1-CLOSED (July 1, 2026) -- D1+M5 locked to Mathlib v4.12.0+Ph70+Ph77-78
+
+            Route 2A (ETA 2 wks, 60%): NS_FreqLocalizedEnergy_OPEN (Tao 2014)
+              Reduction: NS_M6_from_FreqLocEnergy -- proved conditional (Phase 80)
+              Conjecture: ‖P_N(u·∇u)‖_{L²} ≤ C·N^{1/2}·‖u‖_{L²}·‖u‖_{H¹}
+
+            Route 2B (ETA 3 wks, 60%): NS_WeakL3Barrier_OPEN (ESS 2003)
+              Reduction: NS_M6_from_WeakL3 -- proved conditional (Phase 80)
+              Conjecture: ‖u(t)‖_{L^{3,∞}} does not blow up
+
+            Route 1  (ETA 2-6 mo, 30%): NS_corrSemigroupRate_OPEN ξ
+              corrSemigroupRate ξ < 1 ↔ energy doesn't concentrate
+              Risk: δ(ξ) → 0 as ξ → ∞ (the full Millennium problem)
     GAP 1:  Cert_Arb_SurrogateSmooth  ETA 2-4 weeks  (cert axiom)
     GAP 3:  NS_StokesCoercivity_OPEN  ETA 3-6 months
     GAP 4:  NS_AubinLions_OPEN (h1)   ETA 3-6 months

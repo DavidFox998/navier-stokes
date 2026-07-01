@@ -69,4 +69,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase64FourierBridge,
              `Towers.NS.NSPhase65VolumeClosure,
              `Towers.NS.NSPhase66VolumeProof,
+             `Towers.NS.NSPhase67YoungGap,
              `Towers.NS.NSClayCertificateV2]

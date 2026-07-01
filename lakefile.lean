@@ -86,4 +86,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase81ESSRoute,
              `Towers.NS.NSPhase82HeatDuhamel,
              `Towers.NS.NSPhase83DuhamelBound,
+             `Towers.NS.NSPhase84DuhamelFinal,
              `Towers.NS.NSClayCertificateV2]

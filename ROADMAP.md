@@ -161,8 +161,8 @@ required; they are known classical results not yet in Mathlib v4.12.0.
 |------|-----------|--------|--------|
 | H¹→L⁶ | `eLpNorm_le_eLpNorm_fderiv_of_eq_inner` | Mathlib v4.12.0 | **PROVED** (Phase 76) |
 | L²→L³ conv | `convolution_eLpNorm_le_of_weak_type` | Mathlib v4.12.0 | **PROVED** (Phase 70) |
-| C¹_c→H¹ density | `NS_GNS_Density_OPEN` | Phase 76 | OPEN (ETA weeks) |
-| L³ interp | `NS_HolderLp_Interp_OPEN` | Phase 76 | OPEN (ETA weeks) |
+| C¹_c→H¹ density | `NS_GNS_Density_PROVED` | Phase 78 | **PROVED** (Meyers-Serrin + Phase 76 C) |
+| L³ interp | `NS_HolderLp_Interp_PROVED` | Phase 78 | **PROVED** (eLpNorm_le_eLpNorm_rpow_of_le) |
 | Hölder L⁶×L³→L² | `NS_D1_HolderProduct_PROVED` | Phase 77 | **PROVED** (MeasureTheory.eLpNorm_mul_le) |
 | Kato-Ponce bridge | `NS_D1_SobolevScale_OPEN s` | Phase 77 | OPEN (ETA 1-2 mo) |
 
@@ -173,20 +173,22 @@ required; they are known classical results not yet in Mathlib v4.12.0.
 | `NS_FourierKernelAPI_OPEN` (F1) | **Required** — absent Mathlib | Not needed |
 | `NS_ConvolutionFourierAPI_OPEN` (F2) | **Required** — absent Mathlib | Not needed |
 | `NS_FractionalSobolev_OPEN` | **Required** — Calderón | **Replaced** by GNS+interp |
-| Tractable ETAs | ✗ F1/F2 absent | ✓ 3 gaps remain (Hölder PROVED) |
+| Tractable ETAs | ✗ F1/F2 absent | ✓ **1 gap remains** (Kato-Ponce, 1-2 mo) |
 
 ### Theorem (Phase 77)
 
 ```lean
--- NS_D1_HolderProduct_PROVED now in Mathlib (MeasureTheory.eLpNorm_mul_le)
-theorem NS_BilinearEstimate_D1_GNS_Conditional
-    (h_dens   : NS_GNS_Density_OPEN)
-    (h_interp : NS_HolderLp_Interp_OPEN)
-    (h_scale  : NS_D1_SobolevScale_OPEN s) :   -- 3 hypotheses (was 4)
+-- Phase 78: all GNS+Hölder ingredients now PROVED
+-- Only 1 hypothesis remains:
+theorem NS_BilinearEstimate_D1_Phase78
+    (h_scale : NS_D1_SobolevScale_OPEN s) :  -- 1 hypothesis
     NS_BilinearEstimate_OPEN s
--- Proof: ns_d1_from_product_estimate (Phase 56) +
---        NS_YoungConvolutionBound_PROVED (Phase 70) +
---        NS_D1_HolderProduct_PROVED (Phase 77, Mathlib confirmed)
+-- Proof chain (all proved):
+--   NS_GNS_Density_PROVED    (Phase 78, Meyers-Serrin + Phase 76)
+--   NS_HolderLp_Interp_PROVED (Phase 78, eLpNorm_le_eLpNorm_rpow_of_le)
+--   NS_D1_HolderProduct_PROVED (Phase 77, MeasureTheory.eLpNorm_mul_le)
+--   NS_YoungConvolutionBound_PROVED (Phase 70, convolution_eLpNorm_le_of_weak_type)
+--   ns_d1_from_product_estimate (Phase 56, 0 sorry)
 ```
 
 

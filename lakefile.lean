@@ -2,7 +2,7 @@ import Lake
 open Lake DSL
 
 package «navier-stokes» where
-  name := "navier-stokes"
+  -- name field omitted: Lake infers it from the package identifier above
 
 require mathlib from git
   "https://github.com/leanprover-community/mathlib4.git" @ "v4.12.0"
@@ -48,7 +48,7 @@ lean_lib Towers where
              `Towers.NS.NSWeakInitContDirect,
              `Towers.NS.NSWeakMomentumDiffAtProved,
              `Towers.NS.NSAdjointSymmetry,
-              `Towers.NS.NSScalarLeibnizAdjoint,
+             `Towers.NS.NSScalarLeibnizAdjoint,
              `Towers.NS.NSPhase40AdjClose,
              `Towers.NS.NSPhase41ThreeGaps,
              `Towers.NS.NSClayCertificateV2]

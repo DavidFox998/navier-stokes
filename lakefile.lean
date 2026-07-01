@@ -73,4 +73,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase68YoungConditional,
              `Towers.NS.NSPhase69HLSGap,
              `Towers.NS.NSPhase70YoungClosure,
+             `Towers.NS.NSPhase71PlancherelClosure,
              `Towers.NS.NSClayCertificateV2]

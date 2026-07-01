@@ -448,14 +448,11 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
       Proof: eLpNorm_norm + norm_mul + simp [weight, norm_of_nonneg]
     NS_FourierRieszRep_Conditional : conditional on 3 Fourier micro-gaps (below)
 
-  OPEN SURFACES (July 1, 2026 — updated Phase 73):
-    GAP F1: NS_FourierKernelAPI_OPEN    ETA days  [𝓕(‖·‖^{-5/2}) = C·‖ξ‖^{-1}]
-            #check MeasureTheory.fourierIntegral_rpow_eq
-    GAP F2: NS_ConvolutionFourierAPI_OPEN  ETA days  [𝓕(f⋆K) = 𝓕f·𝓕K]
-            #check VectorFourier.convolution_fourierIntegral
-    GAP F3: NS_FourierInversionAPI_OPEN    ETA days  [𝓕⁻¹(𝓕f) = f a.e.]
-            #check VectorFourier.fourierIntegral_fourierIntegral
-    GAP 2:  NS_BilinearEstimate_OPEN  (days-weeks after F1-F3)  *** CRITICAL ***
+  OPEN SURFACES (July 1, 2026 — updated Phase 77):
+    [SUPERSEDED: GAP F1/F2/F3 Fourier route — absent Mathlib v4.12.0, replaced by GNS]
+    GAP 2:  NS_BilinearEstimate_OPEN  *** CRITICAL — GNS route (Phase 77) ***
+            Via: GNS(Ph76) + Young(Ph70) + Holder(Ph77) + Sobolev(Ph77)
+            ETA: 1-2 months (no Fourier theory required)
     GAP 1:  Cert_Arb_SurrogateSmooth  ETA 2-4 weeks  (cert axiom)
     GAP 3:  NS_StokesCoercivity_OPEN  ETA 3-6 months
     GAP 4:  NS_AubinLions_OPEN (h1)   ETA 3-6 months
@@ -465,16 +462,37 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
     GAP 8:  NS_FujitaKatoGlobal_OPEN    CLAY PRIZE (prerequisite)
     GAP 9:  NS_Clay_D3_Prize            CLAY PRIZE (target)
 
-  D1 CRITICAL PATH (Phase 73 state, all 0 sorry):
-    GAP F1 + GAP F2 + GAP F3  (Phase 74, ETA days)
-      -> NS_FourierRieszRep_OPEN (unconditional, Phase 72 chain)
-      -> NS_SobolevL3_Conditional (Phase 64, fires unconditionally)
-      -> NS_BilinearEstimate_OPEN (D1, GAP 2)
+  D1 CRITICAL PATH (Phase 77 state — GNS route, all 0 sorry):
+
+    PRIMARY: GNS ROUTE (Phase 77) — replaces Fourier route
+    -------------------------------------------------------
+    PROVED (Mathlib v4.12.0):
+      NS_GNS_H1_L6_PROVED         (Phase 76): H1 -> L6
+      NS_YoungConvolutionBound_PROVED (Phase 70): L2 -> L3 via convolution
+      ns_d1_from_product_estimate (Phase 56): ProductEstimate -> D1
+      ns_banach_fpt_proved        (Phase 53): Banach FPT
+
+    OPEN (GNS route, all tractable):
+      NS_GNS_Density_OPEN         (Phase 76): C1_c dense in H1        ETA: weeks
+      NS_HolderLp_Interp_OPEN     (Phase 76): L3 between L2 and L6    ETA: weeks
+      NS_D1_HolderProduct_OPEN    (Phase 77): Holder L6*L3->L2        ETA: days
+      NS_D1_SobolevScale_OPEN s   (Phase 77): Kato-Ponce bridge       ETA: 1-2 mo
+
+    When all 4 close:
+      NS_BilinearEstimate_D1_GNS_Conditional -> NS_BilinearEstimate_OPEN s (D1)
       -> ns_d2_from_d1 (Phase 49, proved)
       + ns_banach_fpt_proved (Phase 53, proved)
       + Cert_Arb_SurrogateSmooth (ETA 2-4 wks)
       = M5: Fujita-Kato for small data, all t >= 0.
-    ETA to D1 fully unconditional: DAYS (F1-F3 API lookups only).
+
+    SUPERSEDED: Fourier route (Phases 64-75)
+    -----------------------------------------
+    F1 NS_FourierKernelAPI_OPEN, F2 NS_ConvolutionFourierAPI_OPEN,
+    F3 NS_FourierInversionAPI_OPEN -- all ABSENT from Mathlib v4.12.0.
+    NS_FractionalSobolev_OPEN (Calderon) -- no Mathlib path.
+    Replaced by GNS route above (0 Fourier theory required).
+
+    ETA to D1 fully unconditional (GNS route): 1-2 months.
 -/
 
 /-- **Roadmap summary theorem** (0 sorry, classical trio).

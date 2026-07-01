@@ -64,4 +64,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase59D1Closure,
              `Towers.NS.NSPhase60SobolevLInf,
              `Towers.NS.NSPhase61HLSStructure,
+             `Towers.NS.NSPhase62RieszGeometry,
              `Towers.NS.NSClayCertificateV2]

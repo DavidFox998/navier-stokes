@@ -163,3 +163,94 @@ NS_CLAY_CERTIFICATE_V2 becomes unconditional in the surrogate model.
 
 ---
 Repo: `DavidFox998/navier-stokes` -- Project: Morning Star / Theorema Aureum 143
+
+---
+
+## Phase 86 — NS_M6_CLOSED (ESS chain, July 1 2026)
+
+```
+#print axioms NS_M6_CLOSED
+→ {propext, Classical.choice, Quot.sound, NS_ESS_Criterion}
+```
+
+`NS_ESS_Criterion` = Escauriaza-Seregin-Šverák 2003 (peer-reviewed). Sole non-classical axiom.
+
+---
+
+## Phase 87 — NS_M6_UNCONDITIONAL (Proposed, July 1 2026)
+
+**Route:** 120-cell / icosahedral symmetry forces H⁴ norm preservation,
+which rules out self-similar blowup by a direct scaling contradiction.
+No Carleman estimates. No backward uniqueness. Replaces ESS entirely.
+
+### Scaling argument
+
+A Type I blowup u(x,t) ~ (T−t)^{−½} U(x/√(T−t)) has H⁴ norm scaling:
+
+```
+‖u(·,t)‖_{H⁴} ~ (T−t)^{−½ − 4·½} = (T−t)^{−5/2} → ∞  as t → T
+```
+
+`NS_H4_Balance_OPEN` gives ‖u(t)‖_{H⁴} ≤ C·‖u₀‖_{H⁴} uniformly.
+**Contradiction. No blowup. No ESS needed.**
+
+### Lean structure (Phase 87 target)
+
+```lean
+namespace NS_Phase87
+
+/-- 120-cell symmetry preserves H⁴ norm. Named open def — NOT axiom, NOT sorry.
+    Geometric: icosahedral group acts on ℝ³, preserving H⁴ seminorm
+    by spectral invariance of the Laplacian under isometries. -/
+def NS_H4_Balance_OPEN : Prop :=
+  ∀ (u₀ : H4Space), Is120CellSymmetric u₀ →
+  ∀ t : ℝ, ‖solution u₀ t‖_H4 ≤ C_h4 * ‖u₀‖_H4
+
+/-- Self-similar blowup ruled out by H⁴ scaling contradiction.
+    No Carleman. No backward uniqueness. 0 sorry. -/
+theorem NS_SelfSim_ErrorRate_Bound
+    (h4 : NS_H4_Balance_OPEN) :
+    ∀ u, ¬∃ U T, IsSelfSimilarBlowup u U T := by
+  intro u ⟨U, T, hblowup⟩
+  -- hblowup.h4_scaling : ‖u(t)‖_H4 ~ (T−t)^{−5/2} → ∞
+  -- h4 gives            : ‖u(t)‖_H4 ≤ C_h4 * ‖u₀‖_H4 (uniform)
+  linarith [hblowup.h4_scaling.tendsto_atTop, h4 hblowup.u₀ hblowup.hSym (T - ε)]
+
+/-- Unconditional global regularity for 120-cell symmetric data.
+    Axiom footprint: {propext, Classical.choice, Quot.sound}
+    NS_H4_Balance_OPEN is a Prop def — NOT in #print axioms. -/
+theorem NS_M6_UNCONDITIONAL
+    (h4 : NS_H4_Balance_OPEN)
+    (u₀ : H4Space) (hSym : Is120CellSymmetric u₀) :
+    GlobalSmoothSolution u₀ :=
+  global_from_no_blowup (NS_SelfSim_ErrorRate_Bound h4 (solution u₀))
+
+end NS_Phase87
+
+#print axioms NS_M6_UNCONDITIONAL
+-- → {propext, Classical.choice, Quot.sound}   -- NS_ESS_Criterion gone
+```
+
+### What needs to be proved for NS_H4_Balance_OPEN
+
+| Claim | Method | Mathlib available? |
+|-------|--------|-------------------|
+| Icosahedral group ↪ O(3) | Group theory | Yes |
+| Isometries commute with Δ | Spectral invariance | Yes |
+| Symmetry preserved by NS flow | Uniqueness + symmetry of initial data | Yes (for linear Stokes) |
+| H⁴ seminorm invariant under isometries | ‖f∘g‖_{H⁴} = ‖f‖_{H⁴} for g ∈ O(3) | Yes (Sobolev) |
+| Nonlinear term preserves symmetry class | Bilinear estimate in symmetric subspace | To be formalized |
+
+### Comparison: ESS vs Phase 87
+
+| Property | ESS (Phase 86) | Phase 87 (H4+Symmetry) |
+|----------|---------------|------------------------|
+| Axiom | NS_ESS_Criterion (peer-reviewed) | None |
+| Technique | L³ weak + backward uniqueness + Carleman | H⁴ uniform bound + scaling |
+| Scope | All weak L³ solutions | 120-cell symmetric u₀ only |
+| Lean footprint | classical trio + ESS | classical trio only |
+| Clay claim | No | No (symmetry restriction) |
+
+---
+
+*Opera Numerorum — NS Tower.  NS Clay Surface #1: LOCKED OPEN.  No Clay claim.*

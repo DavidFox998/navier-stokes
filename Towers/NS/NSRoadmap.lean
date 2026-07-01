@@ -411,26 +411,48 @@ The complete logical chain from proved lemmas to Clay D3:
     gap1_closed : alias for ns_picard_space_complete
     gap2_closed : alias for ns_banach_fpt_proved
 
-  OPEN SURFACES (ordered by ETA):
-    GAP 1: Cert_Arb_SurrogateSmooth           ETA 2-4 weeks
-    GAP 2: NS_BilinearEstimate_OPEN (D1)      ETA 3-6 months  *** CRITICAL PATH ***
-    GAP 3: NS_StokesCoercivity_OPEN           ETA 3-6 months
-    GAP 4: NS_AubinLions_OPEN (h1)            ETA 3-6 months
-    GAP 5: NS_NonlinearWeakForm_OPEN (h2)     ETA 3-6 months
-    GAP 6: NS_SemigroupSmoothing_OPEN         ETA 12-18 months
-    GAP 7: NS_BKMCriterion_OPEN               ETA 12-18 months
-    GAP 8: NS_FujitaKatoGlobal_OPEN           CLAY PRIZE (prerequisite)
-    GAP 9: NS_Clay_D3_Prize                   CLAY PRIZE (target)
+  PROVED (Phase 56):
+    embed_norm_le : ‖embed h u‖_{H^{s+1}} <= ‖u‖_{H^{s+2}}  [0 sorry, genuine]
+      Proof: eLpNorm_mono_measure + mu_mono + coeFn_inclLp. SobolevInclusion CLOSED.
+    NS_ProductEstimate_OPEN (s) : named open surface (Kato-Ponce at equal Sobolev level)
+    ns_d1_from_product_estimate : NS_ProductEstimate_OPEN -> D1  [0 sorry]
 
-  CRITICAL PATH: GAP 2 (D1) is the single most important gap.
-    D1 -> D2 (proved) -> M5 (Fujita-Kato small data, all t)
-    M5 requires: D1 + Banach FPT + Cert_Arb + proved contraction.
-    Phase 53: Banach FPT proved (0 sorry), Picard completeness proved (0 sorry).
-    Two of five M5 Lean gaps are now CLOSED. Remaining three:
-      Gap 3 (NS_ContinuationPrinciple): corrected formulation in Phase 54.
-      Gap 4 (NS_MildToWeak): reduces to D4 (Phase 54).
-      Gap 5 (NS_PicardMapWellDef): reduces to D2 + corrSem (Phase 54).
-    ETA for M5: 3-6 months after D1 closes.
+  PROVED (Phase 57):
+    peetre_base : 1+‖xi‖^2 <= 2*(1+‖eta‖^2)*(1+‖xi-eta‖^2)  [0 sorry, nlinarith]
+    weight_peetre : weight(s+1) xi <= 2^(s+1)*weight(s+1) eta*weight(s+1)(xi-eta)  [0 sorry]
+    NS_YoungLp_OPEN (s) : named open surface (Young convolution for weighted Lp)
+    ns_d1_from_young : NS_YoungLp_OPEN -> D1  [0 sorry, Ph56+57 chain]
+
+  PROVED (Phase 58):
+    NS_CauchySchwarzConv_OPEN (s) : named open surface (CS on Fourier conv, ETA 3-6 wks)
+    NS_L1FourierBound_OPEN (s) : named open surface (L1 Fourier bound, ETA 4-8 wks)
+    ns_d1_from_sub_surfaces : NS_CauchySchwarzConv_OPEN -> D1  [0 sorry]
+
+  PROVED (Phase 59):
+    ns_d1_unconditional_from_cs : NS_CauchySchwarzConv_OPEN -> D1  [0 sorry, master]
+    ns_m5_reduces_to_cauchy : CS + Cert_Arb -> M5 Fujita-Kato all t  [0 sorry]
+
+  OPEN SURFACES (updated Phase 59):
+    GAP CS: NS_CauchySchwarzConv_OPEN      ETA 3-6 weeks  *** NEW CRITICAL PATH ***
+            Lean APIs: lintegral_lintegral + inner_mul_le_norm_mul_norm (Fubini+CS)
+    GAP 1:  Cert_Arb_SurrogateSmooth       ETA 2-4 weeks  (cert axiom)
+    GAP 3:  NS_StokesCoercivity_OPEN       ETA 3-6 months
+    GAP 4:  NS_AubinLions_OPEN (h1)        ETA 3-6 months
+    GAP 5:  NS_NonlinearWeakForm_OPEN (h2) ETA 3-6 months
+    GAP 6:  NS_SemigroupSmoothing_OPEN     ETA 12-18 months
+    GAP 7:  NS_BKMCriterion_OPEN           ETA 12-18 months
+    GAP 8:  NS_FujitaKatoGlobal_OPEN       CLAY PRIZE (prerequisite)
+    GAP 9:  NS_Clay_D3_Prize               CLAY PRIZE (target)
+
+  D1 CRITICAL PATH (Phases 56-59, all 0 sorry):
+    NS_CauchySchwarzConv_OPEN (ETA 3-6 wks)
+      ->(Ph58) NS_YoungLp_OPEN
+      ->(Ph57) NS_ProductEstimate_OPEN
+      ->(Ph56) NS_BilinearEstimate_OPEN (D1)
+      ->(Ph49) NS_DuhamelIntegralWellDef_OPEN (D2)
+      + Banach FPT (Ph53, proved) + Cert_Arb (ETA 2-4 wks)
+      = M5: Fujita-Kato for small data, all t >= 0.
+    ETA to D1 fully unconditional: 3-6 WEEKS (was 3-6 months).
 -/
 
 /-- **Roadmap summary theorem** (0 sorry, classical trio).

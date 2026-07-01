@@ -4,7 +4,7 @@
 Formal Lean 4 / Mathlib v4.12.0 tower for the Clay Millennium Prize
 Navier-Stokes existence-and-smoothness problem.
 
-## Status: OPEN (Clay) -- Phase 14+ Certificate v2 Complete
+## Status: OPEN (Clay) -- Phase 77 Complete (D1 conditional via GNS route)
 
 NS global regularity (physical R^3) is an open problem.
 
@@ -106,6 +106,10 @@ Towers/NS/
   NSPhase44ExpIntegral.lean   Phase 44 -- Cert_Arb_ExpIntegralZero; NS_ExpIntegralZero_OPEN CLOSED
   NSPhase45WeakForcingIsZero.lean Phase 45 -- Cert_Arb_WeakForcingIsZero; NS_WeakInitCont_PROVED
   NSPhase46StokesMaxReg.lean  Phase 46 -- Cert_Arb_StokesMaxReg; 0 named open defs remaining
+  NSPhase70YoungClosure.lean  Phase 70 -- NS_YoungConvolutionBound_PROVED (L2->L3, Mathlib Young API)
+  NSPhase71PlancherelClosure.lean Phase 71 -- NS_PlancherelIsometry_PROVED (Mathlib Plancherel)
+  NSPhase76GNSRoute.lean      Phase 76 -- NS_GNS_H1_L6_PROVED (H1->L6, Mathlib GNS)
+  NSPhase77D1Closure.lean     Phase 77 -- D1 conditional via GNS route (0 sorry, 4 named gaps)
   LEDGER.md                   Full certification table (CLAY_VALID / CLAY_CONDITIONAL)
 ```
 
@@ -126,7 +130,20 @@ This tower does NOT prove:
 | NS_WeakInitCont_OPEN | ns_weakInitCont_unconditional | 45 | via Cert_Arb_WeakForcingIsZero |
 | NS_StokesMaxReg_OPEN | Cert_Arb_StokesMaxReg | 46 | independent chain |
 
-After Phase 46: **0 named open defs remaining** in the NS Tower.
+After Phase 46: **0 named open defs remaining** in the semigroup/adjoint chain.
+
+**Phase 77 (D1 — GNS route): 4 named open defs on critical path to M5:**
+
+| Named open def | Phase | ETA | What's needed |
+|----------------|-------|-----|---------------|
+| `NS_GNS_Density_OPEN` | 76 | weeks | C¹_c dense in H¹ |
+| `NS_HolderLp_Interp_OPEN` | 76 | weeks | L³ between L² and L⁶ |
+| `NS_D1_HolderProduct_OPEN` | 77 | days | Hölder L⁶×L³→L² (Holder.lean API) |
+| `NS_D1_SobolevScale_OPEN s` | 77 | 1-2 mo | Kato-Ponce bridge to H^{s+1} |
+
+`NS_YoungConvolutionBound_PROVED` (Phase 70) and `NS_GNS_H1_L6_PROVED` (Phase 76)
+are both **unconditional, 0 sorry** — real Mathlib v4.12.0 theorems.
+
 NS_CLAY_CERTIFICATE_V2: #print axioms = classical trio (unaffected).
 Cert_Arb footprint (supporting/independent only):
   Cert_Arb_ExpIntegralZero   ETA closure: 1-2 days   (integral API)

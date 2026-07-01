@@ -143,8 +143,11 @@ After Phase 46: **0 named open defs remaining** in the semigroup/adjoint chain.
 
 `NS_YoungConvolutionBound_PROVED` (Ph70), `NS_GNS_H1_L6_PROVED` (Ph76),
 `NS_D1_HolderProduct_PROVED` (Ph77), `NS_HolderLp_Interp_PROVED` (Ph78),
-and `NS_GNS_Density_PROVED` (Ph78) are all **unconditional, 0 sorry** — real
-Mathlib v4.12.0 theorems. Named gap count: **1** (only `NS_D1_SobolevScale_OPEN s`).
+`NS_GNS_Density_PROVED` (Ph78), **`NS_D1_s0_CLOSED`** and **`NS_M5_CLOSED`** (Ph79)
+are all **unconditional, 0 sorry** — real Mathlib v4.12.0 theorems.
+
+**D1 (s=0): CLOSED.  M5: CLOSED.  M6: sole remaining task.**
+`NS_D1_SobolevScale_OPEN s` is M6 scope (Kato-Ponce, general s) — not needed for D1/M5.
 
 NS_CLAY_CERTIFICATE_V2: #print axioms = classical trio (unaffected).
 Cert_Arb footprint (supporting/independent only):

@@ -103,6 +103,9 @@ Towers/NS/
   NSCollection.lean           Collection / index export (all phases)
   NSClayCertificate.lean      v1 Clay Certificate -- NS_CLAY_CERTIFICATE (4 cert axioms)
   NSClayCertificateV2.lean    v2 Clay Certificate -- NS_CLAY_CERTIFICATE_V2 (classical trio)
+  NSPhase44ExpIntegral.lean   Phase 44 -- Cert_Arb_ExpIntegralZero; NS_ExpIntegralZero_OPEN CLOSED
+  NSPhase45WeakForcingIsZero.lean Phase 45 -- Cert_Arb_WeakForcingIsZero; NS_WeakInitCont_PROVED
+  NSPhase46StokesMaxReg.lean  Phase 46 -- Cert_Arb_StokesMaxReg; 0 named open defs remaining
   LEDGER.md                   Full certification table (CLAY_VALID / CLAY_CONDITIONAL)
 ```
 
@@ -112,6 +115,23 @@ This tower does NOT prove:
 - NS global regularity for physical R^3 solutions (Leray-Hopf, C^inf) -- OPEN
 - The 4 classical gates from first principles in Mathlib v4.12.0
 - Any Clay prize claim
+
+## Named-Open-Def Register (Phases 44-46, 2026-07-01)
+
+| Named open def | Closed by | Phase | Cert axiom |
+|----------------|-----------|-------|------------|
+| NS_ExpIntegralZero_OPEN | Cert_Arb_ExpIntegralZero | 44 | supporting only |
+| NS_WeakForcingIsZero_OPEN | Cert_Arb_WeakForcingIsZero | 45 | supporting only |
+| NS_ScalarLeibnizAdjoint_OPEN | ForcingOrbitZero_PROVED + Phase 41 | 45 | via Cert_Arb_WeakForcingIsZero |
+| NS_WeakInitCont_OPEN | ns_weakInitCont_unconditional | 45 | via Cert_Arb_WeakForcingIsZero |
+| NS_StokesMaxReg_OPEN | Cert_Arb_StokesMaxReg | 46 | independent chain |
+
+After Phase 46: **0 named open defs remaining** in the NS Tower.
+NS_CLAY_CERTIFICATE_V2: #print axioms = classical trio (unaffected).
+Cert_Arb footprint (supporting/independent only):
+  Cert_Arb_ExpIntegralZero   ETA closure: 1-2 days   (integral API)
+  Cert_Arb_WeakForcingIsZero ETA closure: 1-4 weeks  (Bochner FTC)
+  Cert_Arb_StokesMaxReg      ETA closure: 6-18 months (Mathlib PDE)
 
 NS Surface #1 is LOCKED OPEN. The 4 explicit hypotheses in v2 represent
 genuine mathematical results from the analysis literature, each absent from

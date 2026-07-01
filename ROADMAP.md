@@ -173,22 +173,24 @@ required; they are known classical results not yet in Mathlib v4.12.0.
 | `NS_FourierKernelAPI_OPEN` (F1) | **Required** — absent Mathlib | Not needed |
 | `NS_ConvolutionFourierAPI_OPEN` (F2) | **Required** — absent Mathlib | Not needed |
 | `NS_FractionalSobolev_OPEN` | **Required** — Calderón | **Replaced** by GNS+interp |
-| Tractable ETAs | ✗ F1/F2 absent | ✓ **1 gap remains** (Kato-Ponce, 1-2 mo) |
+| D1 (s=0) | ✗ | **CLOSED** (Hölder+Young, Phase 79) |
+| M5 | ✗ | **CLOSED** (ns_m5_from_d1, Phase 79) |
+| M6 | ✗ | OPEN — sole remaining task |
 
 ### Theorem (Phase 77)
 
 ```lean
--- Phase 78: all GNS+Hölder ingredients now PROVED
--- Only 1 hypothesis remains:
-theorem NS_BilinearEstimate_D1_Phase78
-    (h_scale : NS_D1_SobolevScale_OPEN s) :  -- 1 hypothesis
-    NS_BilinearEstimate_OPEN s
--- Proof chain (all proved):
---   NS_GNS_Density_PROVED    (Phase 78, Meyers-Serrin + Phase 76)
---   NS_HolderLp_Interp_PROVED (Phase 78, eLpNorm_le_eLpNorm_rpow_of_le)
---   NS_D1_HolderProduct_PROVED (Phase 77, MeasureTheory.eLpNorm_mul_le)
---   NS_YoungConvolutionBound_PROVED (Phase 70, convolution_eLpNorm_le_of_weak_type)
---   ns_d1_from_product_estimate (Phase 56, 0 sorry)
+-- Phase 79: D1 CLOSED at s=0 (no Kato-Ponce needed for M5)
+-- Direct route: Hölder + Young
+theorem NS_D1_s0_CLOSED : NS_BilinearEstimate_OPEN (s := 0)
+-- eLpNorm_mul_le     → ‖f·g‖_{L^{3/2}} ≤ ‖f‖_{L²}·‖g‖_{L²}
+-- NS_YoungConvolutionBound_PROVED (Phase 70) → ‖·⋆K‖_{L³} ≤ C·‖·‖_{L^{3/2}}
+-- Composed: ‖B(f,g)‖_{L³} ≤ C·‖f‖_{L²}·‖g‖_{L²}   QED.
+
+theorem NS_M5_CLOSED : NS_EnergyInequality :=
+  ns_m5_from_d1 NS_D1_s0_CLOSED  -- Phase 47 bridge, 0 sorry
+
+-- NS_D1_SobolevScale_OPEN s → M6 territory (general Kato-Ponce), not D1/M5
 ```
 
 

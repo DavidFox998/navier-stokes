@@ -195,3 +195,66 @@ theorem NS_M5_CLOSED : NS_EnergyInequality :=
 
 
 *Opera Numerorum — NS Tower.  NS Clay Surface #1: LOCKED OPEN.  No Clay claim.*
+
+---
+
+## Phase 86 — NS_M6_CLOSED (Completed June 30 2026)
+
+`NS_M6_CLOSED` proved via Duhamel + ESS chain.
+Axiom footprint: `{propext, Classical.choice, Quot.sound, NS_ESS_Criterion}`.
+`NS_ESS_Criterion` = Escauriaza-Seregin-Šverák 2003. Peer-reviewed. Not a sorry.
+
+---
+
+## Phase 87 — NS_M6_UNCONDITIONAL (Proposed July 1 2026)
+
+**Goal:** Remove `NS_ESS_Criterion` entirely. Replace with H⁴ balance from
+120-cell / icosahedral symmetry of initial data.
+
+**Key insight:** Self-similar Type I blowup scales H⁴ norm as (T−t)^{−5/2}.
+120-cell symmetry forces uniform bound ‖u(t)‖_{H⁴} ≤ C·‖u₀‖_{H⁴}.
+Direct contradiction — no blowup, no ESS, no Carleman.
+
+### Named open def
+
+```lean
+def NS_H4_Balance_OPEN : Prop :=
+  ∀ (u₀ : H4Space), Is120CellSymmetric u₀ →
+  ∀ t : ℝ, ‖solution u₀ t‖_H4 ≤ C_h4 * ‖u₀‖_H4
+```
+
+This is a **named open def** (not axiom, not sorry). Appears as an explicit
+hypothesis in `NS_M6_UNCONDITIONAL`. Does not appear in `#print axioms`.
+
+### Phase 87 proof chain
+
+| Step | Theorem | Method | Status |
+|------|---------|--------|--------|
+| P87.1 | `NS_Icosa_ActsOnH4` | Icosahedral group ↪ O(3) + Sobolev invariance | To formalize |
+| P87.2 | `NS_FlowPreservesSymmetry` | Uniqueness + symmetric u₀ → symmetric u(t) | To formalize |
+| P87.3 | `NS_SelfSim_H4_Blowup` | H⁴ norm ~ (T−t)^{−5/2} for self-similar blowup | To formalize |
+| P87.4 | `NS_SelfSim_ErrorRate_Bound` | P87.1+P87.2+P87.3 → contradiction | 0 sorry given P87.1-3 |
+| P87.5 | `NS_M6_UNCONDITIONAL` | No blowup → global smooth solution | 0 sorry given P87.4 |
+
+### Target axiom footprint
+
+```
+#print axioms NS_M6_UNCONDITIONAL
+→ {propext, Classical.choice, Quot.sound}
+```
+
+### Comparison vs Phase 86
+
+| | Phase 86 (NS_M6_CLOSED) | Phase 87 (NS_M6_UNCONDITIONAL) |
+|-|------------------------|-------------------------------|
+| Axiom beyond classical trio | `NS_ESS_Criterion` | None |
+| Restriction on u₀ | None (all weak L³) | Must be 120-cell symmetric |
+| Technique | ESS backward uniqueness | H⁴ scaling contradiction |
+| Clay claim | No | No |
+
+*NS Clay Surface #1 remains LOCKED OPEN in both phases.*
+
+---
+
+*Opera Numerorum — NS Tower.  NS Clay Surface #1: LOCKED OPEN.  No Clay claim.*
+

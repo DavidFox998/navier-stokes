@@ -254,3 +254,23 @@ end NS_Phase87
 ---
 
 *Opera Numerorum — NS Tower.  NS Clay Surface #1: LOCKED OPEN.  No Clay claim.*
+
+---
+
+## Yang-Mills Tower Status (July 1 2026)
+
+The YM Tower for this project network reached formalization complete on July 1 2026.
+
+**Clay YM Problem — Two Parts:**
+
+**Part 1 (Existence):** Lattice SU(3) YM existence infrastructure proved in Lean:
+`haarSU3` + `PeterWeyl_Summable_SU3` + `kp_lattice_gap_certified` (all 0 sorry, classical trio).
+OS / Wightman continuum reconstruction: OPEN (Clay Surface #1).
+
+**Part 2 (Mass Gap):** Lattice lower bound proved in Lean:
+`rho_SU3 < 1/7` via `bb_w1_weyl_lt` + `Cert_Arb_SzegoGap` (Gross-Witten 1980)
+→ `mass_gap_lb_pos_cert` → `ym_gap_exists_cert: EXISTS Delta > 0`.
+Axioms: `{propext, Classical.choice, Quot.sound, Cert_Arb_SzegoGap}`. 0 sorry.
+YM Surface #1 (continuum mass gap): LOCKED OPEN — Clay Millennium Problem.
+
+Repo: [yang-mills-gap](https://github.com/DavidFox998/yang-mills-gap) | DOI: 10.5281/zenodo.20670857

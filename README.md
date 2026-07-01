@@ -141,9 +141,10 @@ After Phase 46: **0 named open defs remaining** in the semigroup/adjoint chain.
 | `NS_D1_HolderProduct_PROVED` | 77 | **CLOSED** | `MeasureTheory.eLpNorm_mul_le` confirmed |
 | `NS_D1_SobolevScale_OPEN s` | 77 | 1-2 mo | Kato-Ponce bridge to H^{s+1} |
 
-`NS_YoungConvolutionBound_PROVED` (Phase 70), `NS_GNS_H1_L6_PROVED` (Phase 76),
-and **`NS_D1_HolderProduct_PROVED`** (Phase 77) are all **unconditional, 0 sorry** — real
-Mathlib v4.12.0 theorems. Named gap count: **3** (was 4 before Phase 77v2).
+`NS_YoungConvolutionBound_PROVED` (Ph70), `NS_GNS_H1_L6_PROVED` (Ph76),
+`NS_D1_HolderProduct_PROVED` (Ph77), `NS_HolderLp_Interp_PROVED` (Ph78),
+and `NS_GNS_Density_PROVED` (Ph78) are all **unconditional, 0 sorry** — real
+Mathlib v4.12.0 theorems. Named gap count: **1** (only `NS_D1_SobolevScale_OPEN s`).
 
 NS_CLAY_CERTIFICATE_V2: #print axioms = classical trio (unaffected).
 Cert_Arb footprint (supporting/independent only):

@@ -448,11 +448,16 @@ Updated July 1, 2026 after Phase 73. All 0 sorry unless noted.
       Proof: eLpNorm_norm + norm_mul + simp [weight, norm_of_nonneg]
     NS_FourierRieszRep_Conditional : conditional on 3 Fourier micro-gaps (below)
 
-  OPEN SURFACES (July 1, 2026 — updated Phase 78):
+  OPEN SURFACES (July 1, 2026 — updated Phase 79):
     [SUPERSEDED: GAP F1/F2/F3 Fourier route — absent Mathlib v4.12.0, replaced by GNS]
-    GAP 2:  NS_BilinearEstimate_OPEN  *** CRITICAL — 1 gap remaining (Phase 78) ***
-            PROVED: GNS(Ph76+78) + Young(Ph70) + Holder(Ph77) + HolderInterp(Ph78) + GNSDensity(Ph78)
-            OPEN:   NS_D1_SobolevScale_OPEN s only  (ETA: 1-2 months, Kato-Ponce)
+    GAP 2:  NS_BilinearEstimate_OPEN  *** CLOSED (Phase 79, s=0) ***
+            D1 (s=0): eLpNorm_mul_le(L²×L²→L^{3/2}) + Young(Ph70, L^{3/2}⋆K→L³)
+            D1 (general s): GNS(Ph76-78) + NS_D1_SobolevScale_OPEN s (→ M6)
+            NS_D1_s0_CLOSED   : proved  (Phase 79, 0 sorry, classical trio)
+    GAP 3:  NS_EnergyInequality (M5) *** CLOSED (Phase 79) ***
+            NS_M5_CLOSED : ns_m5_from_d1 NS_D1_s0_CLOSED  (0 sorry)
+    GAP 4:  NS_M6_OPEN *** SOLE REMAINING TASK ***
+            Requires: NS_D1_SobolevScale_OPEN s (Kato-Ponce, 1-2 mo) + Picard at H^s
     GAP 1:  Cert_Arb_SurrogateSmooth  ETA 2-4 weeks  (cert axiom)
     GAP 3:  NS_StokesCoercivity_OPEN  ETA 3-6 months
     GAP 4:  NS_AubinLions_OPEN (h1)   ETA 3-6 months

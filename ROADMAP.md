@@ -148,3 +148,45 @@ required; they are known classical results not yet in Mathlib v4.12.0.
 ---
 
 *Opera Numerorum — NS Tower.  NS Clay Surface #1: LOCKED OPEN.  No Clay claim.*
+
+---
+
+## D1 Closure — GNS Route (Phase 77, July 1 2026)
+
+**Status:** Conditional closure. 0 sorry. Classical trio.
+
+### Route
+
+| Step | Ingredient | Source | Status |
+|------|-----------|--------|--------|
+| H¹→L⁶ | `eLpNorm_le_eLpNorm_fderiv_of_eq_inner` | Mathlib v4.12.0 | **PROVED** (Phase 76) |
+| L²→L³ conv | `convolution_eLpNorm_le_of_weak_type` | Mathlib v4.12.0 | **PROVED** (Phase 70) |
+| C¹_c→H¹ density | `NS_GNS_Density_OPEN` | Phase 76 | OPEN (ETA weeks) |
+| L³ interp | `NS_HolderLp_Interp_OPEN` | Phase 76 | OPEN (ETA weeks) |
+| Hölder L⁶×L³→L² | `NS_D1_HolderProduct_OPEN` | Phase 77 | OPEN (ETA days) |
+| Kato-Ponce bridge | `NS_D1_SobolevScale_OPEN s` | Phase 77 | OPEN (ETA 1-2 mo) |
+
+### Why GNS beats Fourier route
+
+| Property | Fourier route (Phases 64-75) | GNS route (Phase 77) |
+|----------|------------------------------|----------------------|
+| `NS_FourierKernelAPI_OPEN` (F1) | **Required** — absent Mathlib | Not needed |
+| `NS_ConvolutionFourierAPI_OPEN` (F2) | **Required** — absent Mathlib | Not needed |
+| `NS_FractionalSobolev_OPEN` | **Required** — Calderón | **Replaced** by GNS+interp |
+| Tractable ETAs | ✗ F1/F2 absent | ✓ all 4 gaps ETA ≤ 2 months |
+
+### Theorem (Phase 77)
+
+```lean
+theorem NS_BilinearEstimate_D1_GNS_Conditional
+    (h_dens   : NS_GNS_Density_OPEN)
+    (h_interp : NS_HolderLp_Interp_OPEN)
+    (h_holder : NS_D1_HolderProduct_OPEN)
+    (h_scale  : NS_D1_SobolevScale_OPEN s) :
+    NS_BilinearEstimate_OPEN s
+-- Proof: ns_d1_from_product_estimate (Phase 56) +
+--        NS_YoungConvolutionBound_PROVED (Phase 70)
+```
+
+
+*Opera Numerorum — NS Tower.  NS Clay Surface #1: LOCKED OPEN.  No Clay claim.*

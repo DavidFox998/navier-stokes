@@ -89,4 +89,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase84DuhamelFinal,
              `Towers.NS.NSPhase85Minkowski,
              `Towers.NS.NSPhase86M6Close,
+             `Towers.NS.NSPhase87AdjSymmetry,
              `Towers.NS.NSClayCertificateV2]

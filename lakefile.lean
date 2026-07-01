@@ -52,4 +52,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase40AdjClose,
              `Towers.NS.NSPhase41ThreeGaps,
              `Towers.NS.NSPhase42ZeroForcing,
+             `Towers.NS.NSPhase43ForcingOrbitZero,
              `Towers.NS.NSClayCertificateV2]

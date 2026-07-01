@@ -203,8 +203,10 @@ theorem NS_ScalarLeibnizDerivZero_PROVED
        @inner ℂ (Hdiv_free (s + 2)) _ (u τ) ((-1 : ℝ) • D_g))
       τ := hD_u.inner hback_τ
   -- Rewrite the derivative value to 0
-  apply hLeibniz.congr_deriv
-  -- Rewrite g_max → g_sub throughout
+  -- Show the derivative value is 0 (ring over ℂ replaces broken congr_deriv+linarith)
+  suffices hzero : @inner ℂ (Hdiv_free (s + 2)) _ D g_max +
+      @inner ℂ (Hdiv_free (s + 2)) _ (u τ) ((-1 : ℝ) • D_g) = 0 by
+    rwa [hzero] at hLeibniz
   rw [hg_eq]
   -- TERM1: inner D g_sub = -stokes(u τ, embed g_sub) + inner(f τ, g_sub)
   have hT1 : @inner ℂ (Hdiv_free (s + 2)) _ D g_sub =
@@ -228,18 +230,11 @@ theorem NS_ScalarLeibnizDerivZero_PROVED
       (@embed (s + 2) s (by linarith) g_sub) :=
     hsym (T - τ) hTτ_pos.le (u τ) φ
   -- FORCING ZERO: inner(f τ, g_sub) = 0
-  -- NS_ForcingOrbitZero_OPEN uses corrSem(T-τ) with (by linarith) proof;
-  -- hfz T τ hτ hτT φ gives: inner(f τ, corrSem s (T-τ) (by linarith) φ) = 0
-  have hfz_t : @inner ℂ (Hdiv_free (s + 2)) _ (f τ) g_sub =
-      0 :=
+  have hfz_t : @inner ℂ (Hdiv_free (s + 2)) _ (f τ) g_sub = 0 :=
     hfz u u₀ f hweak T τ hτ hτT φ
-  -- Combine: TERM1 + TERM2 = (-stokes + 0) + (-(-stokes)) = 0
-  linarith [hT1, hT2neg, hT2b, hcanc, hfz_t,
-    @inner_add_right ℂ (Hdiv_free (s + 2)) _ D (u τ) g_sub]
-  -- NOTE: linarith works on ℂ via real/imag parts; ring or simp+ring may be needed
-  -- in full Lean 4 compilation. The algebraic identity is:
-  --   (-stokes_val + 0) + (- (- stokes_val)) = 0
-  -- where stokes_val = inner_s(stokes_op(u τ), embed g_sub).
+  -- Algebraic closure: (-stokes_val + 0) + stokes_val = 0  [ring over ℂ]
+  rw [hT2neg, hT2b, neg_neg, hcanc, hT1, hfz_t, add_zero]
+  ring
 
 /-! ## III. MVT closure: NS_ScalarLeibnizAdjoint_OPEN proved -/
 

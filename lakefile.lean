@@ -23,4 +23,5 @@ lean_lib Towers where
              `Towers.NS.NSLittlewoodPaley,
              `Towers.NS.NSLPKPCertificate,
              `Towers.NS.NSCollection,
-             `Towers.NS.NSPhase102ZeroInitPointwise]
+             `Towers.NS.NSPhase102ZeroInitPointwise,
+             `Towers.NS.NSPhase103ESSRescaling]

@@ -400,3 +400,26 @@ theorem NS_HaarPreimage_PROVED : NS_HaarPreimage_OPEN
 
 Sorry: **0** | Axiom keyword: **0**
 `#print axioms NS_M6_CLOSED_v98` → `{propext, Classical.choice, Quot.sound}`
+
+---
+
+## Phase 99: Path A -- NS_WeakSolInitCond_PROVED (July 2, 2026)
+
+**Status:** NS_WeakSolInitCond_PROVED (1 line, h.init, 0 sorry); NS_M6_CLOSED_v99 (8 deps, 0 sorry, classical trio)
+
+CLOSED: NS_WeakSolInitCond_PROVED -- fun _v0 _v h => h.init (API: WeakSolution.init field)
+OBSOLETE: NS_WeakSol_L2weakstar_OPEN, NS_WeakSol_L2trace_OPEN (Phase 98 sub-gaps)
+DECOMPOSED: NS_ZeroInitToZero_OPEN --> NS_ZeroInit_L2Zero_OPEN (3-5 days) + NS_ZeroInit_Pointwise_OPEN (1-2 weeks)
+
+Path A gap table (Phase 99, 8 deps):
+1. NS_ZeroInit_L2Zero_OPEN       -- 3-5 days (IMMEDIATE)
+2. NS_ZeroInit_Pointwise_OPEN    -- 1-2 weeks (NEAR)
+3. NS_ESSRescaleNS_OPEN          -- 2-4 weeks
+4. NS_Carleman_SmoothApprox_OPEN -- 3-6 weeks
+5. NS_BlowupConcentration_OPEN   -- 2-3 months
+6. NS_Carleman_LimitPass_OPEN    -- 2-4 months
+7. NS_CarlemanHeat_OPEN          -- 3-6 months (CRITICAL PATH)
+8. NS_CarlemanDriftAbsorption_OPEN -- after heat
+
+Sorry: 0 | Axiom keyword: 0 | Gap count: 10 (v98) -> 8 (v99)
+#print axioms NS_M6_CLOSED_v99 --> {propext, Classical.choice, Quot.sound}

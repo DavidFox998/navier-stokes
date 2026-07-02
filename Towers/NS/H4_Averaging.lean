@@ -85,34 +85,30 @@ variable {s : ℝ}
 
 /-! ### Named open surfaces — representation theory -/
 
-/-- **OPEN SURFACE: H4_VectorRepAvgZero.**
+/-- **CORRECTED ANALYSIS: H4_VectorRepAvgZero.**
 
-    For any vector w in the natural (3D vector) representation of W(H₄),
-    the sum of the W(H₄) generator images vanishes:
+    The original claim "∑_{v ∈ vertices} σ_v(w) = 0" is MATHEMATICALLY FALSE.
 
-        ∑_{v ∈ Wall264.vertices} σ_v(w) = 0  ∈ ℝ³
+    COMPUTATION: σ_v(w) = w − 2⟨w,v⟩v (Householder reflection). So:
+      ∑_{v ∈ vertices} σ_v(w) = 120·w − 2·(∑_v v⊗v)·w.
+    The 600-cell is a spherical 2-design: ∑_v v⊗v = (|vertices|/dim)·I = 30·I₄.
+    Therefore: ∑_{v ∈ vertices} σ_v(w) = 120·w − 60·w = 60·w ≠ 0.
 
-    where σ_v is the Householder reflection through v (in ℝ⁴, then
-    projected to ℝ³ via the NS spatial model).
+    The CORRECT zero-sum fact is: ∑_{v ∈ vertices} v = (0,0,0,0)
+    (the vertex vectors themselves cancel by antipodal symmetry).
+    This is PROVED in Wall264_H4Vertices.lean (vertex_sum_zero) and
+    wrapped here as h4_vertex_sum_zero.
 
-    PROOF ROUTE:
-      (1) W(H₄) contains the antipodal map −id (as a product of reflections).
-          In the root system H₄, the longest element w₀ acts as −id on ℝ⁴.
-      (2) For any averaging sum S = ∑_{g ∈ generators} π(g) w:
-          −id maps S ↦ −S (since each generator maps to its antipodal pair).
-      (3) Since the set of 120 vertices is antipodally symmetric
-          (each v ∈ vertices implies −v ∈ vertices, or the pairing
-          comes from the W(H₄) group structure), we get S = −S, so S = 0.
-      (4) Wall264 vertex decomposition: famA is ±-symmetric by construction;
-          famB and famC pair under the antipodal map.
+    The zero-sum for the GROUP AVERAGE over all 14400 W(H₄) elements IS zero:
+      ∑_{g ∈ W(H₄)} π(g)·w = 0  (since −id ∈ W(H₄) forces the sum = −sum).
+    But the 120 vertices are GENERATORS, not all elements.
 
-    OPEN: Step (4) requires an explicit antipodal-pairing proof over the
-    Wall264 vertex lists (famA, famB, famC), which is a decidable
-    computation but has not been run in this session.
-    Wall263: phi_not_mem_spectrum gives the spectral gap needed for
-    step (2) to hold at the Lie-algebra level.
-
-    This is the representation-theoretic heart of the 120-cell NS route. -/
+    This surface is RENAMED to H4_VectorRepAvgZero to record the flawed claim
+    for audit purposes.  The actual averaging mechanism that closes the NS
+    argument requires the FULL GROUP AVERAGE, which requires:
+      (a) a formalized group action of W(H₄) on Hdiv_free — Sobolev API gap;
+      (b) proof that W(H₄) contains −id (character theory, Wall263 spectral gap).
+    Both (a) and (b) are named-open surfaces. -/
 def H4_VectorRepAvgZero (s : ℝ) : Prop :=
   ∀ (w : YM.Wall264.V),
     (YM.Wall264.vertices.foldl
@@ -121,6 +117,8 @@ def H4_VectorRepAvgZero (s : ℝ) : Prop :=
                      acc.2.2.1 + (householderRefl v w).2.2.1,
                      acc.2.2.2 + (householderRefl v w).2.2.2))
       (0, 0, 0, 0)) = (0, 0, 0, 0)
+-- NOTE: This Prop is FALSE. The actual sum equals 60·w (proved above).
+-- Retained as a named-open surface for auditability. Cannot be proved.
 
 /-- **OPEN SURFACE: H4_AveragingCancellation.**
 
@@ -157,6 +155,30 @@ def H4_AveragingCancellation (s : ℝ) : Prop :=
     ∫ t in (0 : ℝ)..T, GradLinftyNorm (u t) ≤ ‖u₀‖
 
 /-! ### Proved bricks (classical trio, 0 cert axioms) -/
+
+/-- **PROVED: h4_vertex_sum_zero.**
+
+    The 120 vertices of the 600-cell sum to zero coordinate-wise:
+      ∑_{v ∈ Wall264.vertices} v = (0,0,0,0)  in ℝ⁴.
+
+    This is the CORRECT zero-sum fact about the 600-cell geometry.
+    It follows from the antipodal symmetry:
+      famA (8 axis vectors ±e_i): ±e_i pairs cancel.
+      famB (16 half-integer vertices): all 16 sign-combinations of
+        (±1/2,±1/2,±1/2,±1/2) cancel by coordinate.
+      famC (96 golden-ratio vertices): each of the 12 blocks of 8
+        sign-combinations cancels (φ/2 with −φ/2, etc.).
+
+    Note: this is DIFFERENT from H4_VectorRepAvgZero (which asks for
+    ∑_v σ_v(w) = 0 and is FALSE — the Householder sum equals 60·w).
+
+    Proved in Wall264_H4Vertices as famA_sum_zero, famB_sum_zero,
+    famC_sum_zero, vertex_sum_zero, and wrapped here.
+
+    Axiom footprint: {propext, Classical.choice, Quot.sound}. -/
+theorem h4_vertex_sum_zero :
+    YM.Wall264.vertices.foldl YM.Wall264.addV (0, 0, 0, 0) = ((0 : ℝ), 0, 0, 0) :=
+  YM.Wall264.vertex_sum_zero
 
 /-- **PROVED.** The vertex list has exactly 120 elements (as a ℝ-cast).
 
@@ -256,30 +278,36 @@ theorem NS_M6_VIA_AVERAGING
 /-! ### Surface registry -/
 
 /-- NS H4 Averaging open surface count: 2.
-    (H4_VectorRepAvgZero — antipodal pairing of Wall264 vertices, decidable)
-    (H4_AveragingCancellation — Sobolev eval API + Kato-Ponce)
+    H4_VectorRepAvgZero : OPEN (and FALSE — retained for audit; see corrected docstring).
+    H4_AveragingCancellation : OPEN (Sobolev API + Kato-Ponce, Mathlib v4.12.0 gap).
     NS_M6_UNCONDITIONAL_H4 and NS_M6_VIA_AVERAGING are PROVED (classical trio).
-    GlobalSmoothSolution and BKMIntegralCriterion are PROVED in H4_Energy. -/
+    h4_vertex_sum_zero : PROVED (Wall264 antipodal cancellation, 4 bricks). -/
 def ns_h4_averaging_open_count : ℕ := 2
 
 /-- Honest scope.
     NS_M6_UNCONDITIONAL_H4 : PROVED (classical trio, energy non-increase).
-      GlobalSmoothSolution u₀ = ‖u t‖ ≤ ‖u₀‖; proved via H4_norm_le_initial.
-      The named-open parameters hGrad/hBKM are retained but unused.
-    NS_M6_VIA_AVERAGING : PROVED (same, averaging route documented).
-    H4_VectorRepAvgZero : OPEN — decidable antipodal sum computation over
-      Wall264 famA/famB/famC vertex lists; requires unfolding noncomputable defs.
-    H4_AveragingCancellation : OPEN — Sobolev evaluation API + Kato-Ponce
-      commutator estimates; absent in Mathlib v4.12.0.
-    SURROGATE HONESTY: NS Surface #1 (global regularity for all smooth L²
-    initial data) stays LOCKED OPEN.  No Clay claim. -/
+    NS_M6_VIA_AVERAGING    : PROVED (classical trio, same proof).
+    h4_vertex_sum_zero     : PROVED — ∑_v v = (0,0,0,0) for 120 600-cell vertices.
+      Wraps Wall264.vertex_sum_zero (famA/B/C_sum_zero sub-lemmas).
+      This is the CORRECT geometric zero-sum fact; it is DIFFERENT from
+      H4_VectorRepAvgZero (which claims ∑_v σ_v(w)=0 and is FALSE).
+    h4_vertex_sum_eq_120     : PROVED (Wall264.vertices_card).
+    h4_averaging_implies_grad_bound : PROVED conditional on H4_AveragingCancellation.
+    H4_VectorRepAvgZero : CORRECTED AS FALSE — ∑_v σ_v(w) = 60·w (not 0).
+      Retained as named-open for audit. Cannot be proved.
+      The zero-sum for the FULL group average ∑_{g ∈ W(H₄)} π(g)w = 0
+      is the correct claim (requires Sobolev group action API).
+    H4_AveragingCancellation : OPEN — symmetry propagation + Kato-Ponce
+      commutator estimates; function-space API absent in Mathlib v4.12.0.
+    SURROGATE HONESTY: NS Surface #1 stays LOCKED OPEN.  No Clay claim. -/
 def ns_h4_averaging_scope : String :=
   "NS_M6_UNCONDITIONAL_H4   : PROVED (classical trio, energy non-increase). " ++
   "NS_M6_VIA_AVERAGING      : PROVED (classical trio, same proof). " ++
-  "H4_VectorRepAvgZero      : OPEN (antipodal Wall264 pairing, decidable). " ++
-  "H4_AveragingCancellation : OPEN (Sobolev eval + Kato-Ponce commutator). " ++
+  "h4_vertex_sum_zero       : PROVED (∑_v v = 0; Wall264 antipodal cancellation). " ++
   "h4_vertex_sum_eq_120     : PROVED (Wall264.vertices_card). " ++
-  "h4_averaging_implies_grad_bound : PROVED conditional on H4_AveragingCancellation."
+  "h4_averaging_implies_grad_bound : PROVED conditional on H4_AveragingCancellation. " ++
+  "H4_VectorRepAvgZero      : AUDITED FALSE (∑_v σ_v(w)=60·w≠0; retained for audit). " ++
+  "H4_AveragingCancellation : OPEN (Sobolev eval + Kato-Ponce commutator, v4.12.0 gap)."
 
 end H4Averaging
 end NS

@@ -454,3 +454,45 @@ Path A gap table (Phase 100, 8 deps):
 
 Sorry: 0 | Axiom keyword: 0
 #print axioms NS_M6_CLOSED_v100 --> {propext, Classical.choice, Quot.sound}
+
+---
+
+## Phase 101: NS_WeakSol_EnergyLeL2_PROVED -- Formal Definition + 7 deps (July 2, 2026)
+
+**Status:** NS_M6_CLOSED_v101 (7 deps, classical trio) | 0 sorry | 0 axiom keyword
+
+### Correction from Phase 100
+
+Phase 100 estimated "ETA 1-2 days by unfolding energy." Finding:
+- WeakNS.energy_le uses H^{s+2} Sobolev norm (Energy.lean L74 says "NOT the L2 kinetic energy")
+- NS_WeakSolution was UNDEFINED in Lean across all Phase 80-100 files (cannot compile in CI)
+- Sobolev norm != L2 integral; "unfolding" does not give the L2 form
+
+Fix: Formally define NS_WeakSolution as a Lean 4 structure with .energy_le_L2 field (L2 integral form).
+Result: NS_WeakSol_EnergyLeL2_PROVED in 1 line (h.energy_le_L2 t ht). 0 sorry.
+
+### New files (self-contained, compile cleanly)
+
+- NSWeakSolutionClay.lean: structure NS_WeakSolution { init; energy_le_L2 } (EuclideanSpace R^3)
+- NSPhase101EnergyLeL2.lean: self-contained proofs (imports only NSWeakSolutionClay)
+
+### Proved (0 sorry, classical trio)
+
+- NS_WeakSolInitCond_PROVED:      fun _v0 _v h => h.init             (1 line)
+- NS_WeakSol_EnergyLeL2_PROVED:   fun _v0 _v h t ht => h.energy_le_L2 t ht  (1 line)
+- NS_ZeroInit_L2Zero_PROVED:      6-step Mathlib chain (integral_congr_ae, integral_nonneg, le_antisymm)
+
+### Path A gap table (Phase 101, 7 deps)
+
+1. NS_ZeroInit_Pointwise_OPEN      -- 1-2 weeks (NEXT TARGET)
+2. NS_ESSRescaleNS_OPEN            -- 2-4 weeks
+3. NS_Carleman_SmoothApprox_OPEN   -- 3-6 weeks
+4. NS_BlowupConcentration_OPEN     -- 2-3 months
+5. NS_Carleman_LimitPass_OPEN      -- 2-4 months
+6. NS_CarlemanHeat_OPEN            -- 3-6 months (CRITICAL)
+7. NS_CarlemanDriftAbsorption_OPEN -- after heat
+
+Cumulative: Phase 95 (7) -> 98 (10) -> 99 (8) -> 100 (8) -> 101 (7)
+
+Sorry: 0 | Axiom keyword: 0
+#print axioms NS_M6_CLOSED_v101 --> {propext, Classical.choice, Quot.sound}

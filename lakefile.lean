@@ -98,4 +98,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase93BlowupSubgaps,
              `Towers.NS.NSPhase94BackwardUniqSubgaps,
              `Towers.NS.NSPhase95CarlemanSubgaps,
+             `Towers.NS.NSPhase96H4BalancePath,
              `Towers.NS.NSClayCertificateV2]

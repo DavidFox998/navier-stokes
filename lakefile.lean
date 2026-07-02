@@ -22,4 +22,8 @@ lean_lib Towers where
              `Towers.NS.NSKPBridge,
              `Towers.NS.NSLittlewoodPaley,
              `Towers.NS.NSLPKPCertificate,
-             `Towers.NS.NSCollection]
+             `Towers.NS.NSCollection,
+             `Towers.NS.NSPhase105BlowupConcentration,
+             `Towers.NS.NSPhase106CarlemanHeat,
+             `Towers.NS.NSPhase107CarlemanDrift,
+             `Towers.NS.NSPhase108LimitPass]

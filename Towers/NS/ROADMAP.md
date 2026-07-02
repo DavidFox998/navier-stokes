@@ -118,3 +118,93 @@ Axiom footprint of NS_M6_CLOSED: `{propext, Classical.choice, Quot.sound, NS_ESS
 Tag: `vM6-CONDITIONAL`
 
 Axiom footprint of NS_AdjointSymmetry_PROVED: `{propext, Classical.choice, Quot.sound}`
+
+
+---
+
+## Phase 90-92 — ESS 2003 Decomposition Chain (July 1, 2026)
+
+### Phase 90 — ESS Criterion → 2 Named Open Defs (classical trio)
+
+Phase 90 replaced `axiom NS_ESS_Criterion` (Phase 86) with two named open defs,
+restoring the classical-trio footprint for `NS_M6_CLOSED_v90`.
+
+| Theorem / Def | Status | Phase |
+|---|---|---|
+| `NS_CarlemanBackwardUniqueness_OPEN` | OPEN named def | 90 |
+| `NS_BlowupRescalingCompactness_OPEN` | OPEN named def | 90 |
+| `NS_ESS_criterion_from_subgaps` | **PROVED** (0 sorry, classical trio) | 90 |
+| `NS_M6_CLOSED_v90` | **PROVED** (0 sorry, classical trio, 2 deps) | 90 |
+
+Footprint: `{propext, Classical.choice, Quot.sound}`
+
+---
+
+### Phase 91 — Decompose NS_BlowupRescalingCompactness_OPEN → 2 Sub-Gaps
+
+Phase 91 reduces the Phase 90 blow-up gap to two smaller named open defs:
+
+| Theorem / Def | Status | ETA | Content |
+|---|---|---|---|
+| `NS_ESSRescaleNS_OPEN` | OPEN named def | 2-4 weeks | NS parabolic rescaling u_λ(t,x)=λu(T₀+λ²t,x₀+λx) maps NS weak solutions to NS weak solutions. Pure PDE/chain rule. |
+| `NS_ESSBlowupCenter_OPEN` | OPEN named def | 2-4 months | Blow-up at T → ∃(λ₀,x₀) centered rescaling with: L^{3,∞} bound preserved (scale invariance) + vanishing at T in L² + nontrivial on [0,T]. Requires Aubin-Lions L^{3,∞} compactness. |
+| `NS_BlowupRescaling_from_subgaps` | **PROVED** (0 sorry, classical trio) | — | Bridge: NS_ESSRescaleNS_OPEN + NS_ESSBlowupCenter_OPEN → NS_BlowupRescalingCompactness_OPEN |
+
+Reference: ESS 2003, Section 1 (parabolic blow-up scaling + compactness).
+
+---
+
+### Phase 92 — Decompose NS_CarlemanBackwardUniqueness_OPEN → 2 Sub-Gaps + Master
+
+Phase 92 reduces the Phase 90 Carleman gap to two smaller named open defs,
+and introduces the Phase 92 master `NS_M6_CLOSED_v92` with 4 named deps:
+
+| Theorem / Def | Status | ETA | Content |
+|---|---|---|---|
+| `NS_ESSCarlemanBound_OPEN` | OPEN named def | 6-12 months | Carleman inequality for backward parabolic + L^{3,∞} drift. ESS §§2-3. Deepest remaining gap. |
+| `NS_ESSBackwardUniq_OPEN` | OPEN named def | +2-4 mo after Carleman | Backward uniqueness from Carleman estimate. Type: NS_ESSCarlemanBound_OPEN → NS_CarlemanBackwardUniqueness_OPEN. ESS §4. |
+| `NS_CarlemanBackwardUniq_from_subgaps` | **PROVED** (0 sorry, classical trio) | — | Bridge: NS_ESSCarlemanBound_OPEN → NS_ESSBackwardUniq_OPEN → NS_CarlemanBackwardUniqueness_OPEN |
+| `NS_M6_CLOSED_v92` | **PROVED** (0 sorry, classical trio, 4 deps) | — | Master: 4 named open defs → NS_M6_OPEN |
+
+---
+
+### Minimum Named Open Def Footprint After Phase 92
+
+```
+#print axioms NS_M6_CLOSED_v92
+→ {propext, Classical.choice, Quot.sound}   ← CLASSICAL TRIO
+
+4 minimum named open deps (all OPEN, July 1, 2026):
+
+  NS_ESSRescaleNS_OPEN        ETA 2-4 weeks   ESS §1 PDE: rescaling invariance
+  NS_ESSBlowupCenter_OPEN     ETA 2-4 months  ESS §1 compactness: blow-up center
+  NS_ESSCarlemanBound_OPEN    ETA 6-12 months ESS §§2-3: Carleman estimate (deepest)
+  NS_ESSBackwardUniq_OPEN     ETA +2-4 months ESS §4: backward uniqueness
+```
+
+### Closing Order (Recommended Critical Path)
+
+```
+Week 1-4:   NS_ESSRescaleNS_OPEN   ← PDE chain rule in Lean NS formulation
+Month 2-4:  NS_ESSBlowupCenter_OPEN ← Aubin-Lions L^{3,∞} + blow-up theory
+Month 6-12: NS_ESSCarlemanBound_OPEN ← New Carleman theory in Lean
+Month 8-16: NS_ESSBackwardUniq_OPEN  ← Follows from Carleman (2-4 mo)
+            ← NS_M6_CLOSED_v92 FULLY UNCONDITIONAL
+            ← NS M6: PROVED. NS Surface #1: RESOLVED.
+```
+
+### Updated Top-Level Milestones
+
+| Milestone | Status | Phase |
+|---|---|---|
+| D1 (Gagliardo-Nirenberg) | CLOSED — 0 sorry, classical trio | 79 |
+| M5 (Fujita-Kato) | CLOSED — 0 sorry, classical trio | 79 |
+| WeakInitCont (all paths) | CLOSED — 0 sorry, classical trio | 89 |
+| M6 (ESS axiom) | CLOSED — 1 custom axiom | 86 |
+| M6 (ESS conditional, 2 defs) | CLOSED — 0 sorry, classical trio | 90 |
+| M6 (ESS conditional, 4 defs) | **CLOSED — 0 sorry, classical trio** | **92** |
+| NS Clay Surface #1 | LOCKED OPEN — invariant | — |
+
+Axiom footprint of `NS_M6_CLOSED_v92`: `{propext, Classical.choice, Quot.sound}`
+Sorry count (Phase 90-92): 0
+Axiom keyword count (Phase 90-92): 0

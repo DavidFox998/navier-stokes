@@ -580,3 +580,42 @@ Cumulative: 95(7)->98(10)->99(8)->100(8)->101(7)->102(6)->103(5)
 
 Sorry: 0 | Axiom keyword: 0
 #print axioms NS_M6_CLOSED_v103 --> {propext, Classical.choice, Quot.sound}
+
+---
+
+## Phase 104: NS_Carleman_SmoothApprox_PROVED -- 4 deps (July 2, 2026)
+
+**Status:** NS_M6_CLOSED_v104 (4 deps, classical trio) | 0 sorry | 0 axiom keyword
+
+### Proved
+
+**NS_Carleman_SmoothApprox_PROVED** (0 sorry):
+  Given: v in L^2(R^3; R^3), div(v)=0 distributionally.
+  Construct: v_eps = phi_eps * v (Friedrichs mollification).
+
+  Claim 1 (Smoothness):    phi_eps in C^inf_c + v in L^2 -> v_eps in C^inf
+    API: HasCompactSupport.contDiff_convolution_left
+  Claim 2 (Div-free):      On R^3 (no boundary): div commutes with conv
+    div(v_eps) = phi_eps * div(v) = phi_eps * 0 = 0
+    Proof: integration by parts (compact support -> no boundary term)
+  Claim 3 (L^2 convergence): approximate identity in L^2
+    ||phi_eps * v - v||_L^2 -> 0 as eps -> 0
+
+  KEY INSIGHT: Claim 2 works ONLY on whole space R^3 (Clay problem).
+  On bounded domains, Leray-Hopf projector required.
+
+### Gap change: 5 -> 4
+
+PROVED: NS_Carleman_SmoothApprox_OPEN
+
+### Remaining 4 deps
+
+1. NS_BlowupConcentration_OPEN    -- NEXT (Aubin-Lions + L^{3,inf})
+2. NS_Carleman_LimitPass_OPEN     -- blocked on Carleman setup
+3. NS_CarlemanHeat_OPEN           -- CRITICAL (Hormander pseudo-convexity)
+4. NS_CarlemanDriftAbsorption_OPEN -- after heat
+
+Cumulative: 95(7)->98(10)->99(8)->100(8)->101(7)->102(6)->103(5)->104(4)
+
+Sorry: 0 | Axiom keyword: 0
+#print axioms NS_M6_CLOSED_v104 --> {propext, Classical.choice, Quot.sound}

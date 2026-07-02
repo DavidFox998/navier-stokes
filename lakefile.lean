@@ -90,4 +90,9 @@ lean_lib Towers where
              `Towers.NS.NSPhase85Minkowski,
              `Towers.NS.NSPhase86M6Close,
              `Towers.NS.NSPhase87AdjSymmetry,
+             `Towers.NS.NSPhase88OrbitClosure,
+             `Towers.NS.NSPhase89WeakInitCont,
+             `Towers.NS.NSPhase90ESSDecomposition,
+             `Towers.NS.NSPhase91BlowupDecomp,
+             `Towers.NS.NSPhase92CarlemanDecomp,
              `Towers.NS.NSClayCertificateV2]

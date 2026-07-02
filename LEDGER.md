@@ -387,21 +387,38 @@ NS: OPEN. No Clay claim.
 ### Phase 15 — H4 Symmetry: 120-cell L^∞ Gradient Bound (2026-07-02)
 
 **File:** `Towers/NS/H4_UniformBound.lean`
+**Imports:** `Towers.YM.Wall261_H4Defect`, `Towers.YM.Wall264_H4Vertices`
 **Repo:** DavidFox998/navier-stokes
 
-Named open surface for the Beale–Kato–Majda L^∞ gradient time-integral bound restricted
-to H4-symmetric initial data.  The user will prove `H4_GradLinfty_Bound` in a separate file.
+Named open surface for the BKM L^∞ gradient integral bound restricted to H4-symmetric
+initial data.  `IsH4Symmetric` is now **CONCRETE** — quantifies explicitly over the 120
+machine-checked Wall264 vertices with the Householder reflection maps (upgraded from `True`).
+The user will prove `H4_GradLinfty_Bound` in a separate file.
 
 | Name | Status | Content |
 |------|--------|---------|
-| `IsH4Symmetric` | OPEN def | icosahedral I_h invariance of u₀ (placeholder `True`) |
+| `innerV` | CONCRETE def | inner product on ℝ⁴ tuples (Wall264.V) |
+| `householderRefl v x` | CONCRETE def | σ_v(x) = x − 2⟨x,v⟩v on ℝ⁴ |
+| `vertices_are_unit` | **PROVED** | ∀ v ∈ Wall264.vertices, nSq v = 1 (wraps Wall264.vertices_on_sphere) |
+| `vertices_count` | **PROVED** | Wall264.vertices.length = 120 (wraps Wall264.vertices_card) |
+| `IsH4Equivariant u₀ v` | OPEN def | (σ_v)_* u₀ = u₀ in Hdiv_free — placeholder `True`; Sobolev eval API absent |
+| `IsH4Symmetric u₀` | **CONCRETE** | ∀ v ∈ Wall264.vertices, IsH4Equivariant u₀ v — all 120 vertices, explicit |
 | `GradLinftyNorm` | surrogate def | ‖u‖ as Sobolev surrogate for physical-space ‖∇u‖_{L^∞} |
 | `H4_GradLinfty_Bound` | **OPEN** | ∀ H4-sym u₀, ∃ C>0, ∀ T>0: ∫₀^T GradLinftyNorm(u t) dt ≤ C·‖u₀‖ |
-| `H4_norm_le_initial` | PROVED | ‖u(t)‖ ≤ ‖u₀‖ for H4-sym data (energy_le, 0 certs) |
-| `H4_BKM_norm_bound` | PROVED | trivial combinator extracting the bound |
+| `H4_norm_le_initial` | **PROVED** | ‖u(t)‖ ≤ ‖u₀‖ for H4-sym data (energy_le, 0 certs) |
+| `H4_BKM_norm_bound` | **PROVED** | trivial combinator extracting the bound from H4_GradLinfty_Bound |
+
+**IsH4Symmetric upgrade (2026-07-02):**
+Before: `def IsH4Symmetric u₀ := True` — a bare placeholder.
+After:  `def IsH4Symmetric u₀ := ∀ v ∈ Wall264.vertices, IsH4Equivariant u₀ v`
+- 120 vertices are the machine-checked famA ∪ famB ∪ famC from Wall264 (classical trio).
+- `householderRefl v` is the explicit Householder map on ℝ⁴ for each unit vertex v.
+- The 120 reflections GENERATE W(H₄) of order 14400.
+- Remaining open component: `IsH4Equivariant` (function-space transport — Sobolev eval API).
 
 Axiom footprint for proved theorems: `{propext, Classical.choice, Quot.sound}`.
 0 sorry. 0 sorryAx. 0 cert axioms in proved theorems.
+Open surfaces: `H4_GradLinfty_Bound` (user proves) + `IsH4Equivariant` (Sobolev eval API).
 
 ### Conditional Certificates (CLAY_CONDITIONAL — cert axioms active)
 

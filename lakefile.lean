@@ -25,4 +25,5 @@ lean_lib Towers where
              `Towers.NS.NSCollection,
              `Towers.NS.NSPhase97M6Unconditional,
              `Towers.NS.NSPhase98PathAClosure,
-             `Towers.NS.NSPhase99InitCondClose]
+             `Towers.NS.NSPhase99InitCondClose,
+             `Towers.NS.NSPhase100L2ZeroClose]

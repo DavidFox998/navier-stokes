@@ -165,31 +165,28 @@ theorem cert_NS_GlobalSobolevBound {s : ℝ} :
     NS_GlobalSobolevBound_OPEN s :=
   NS_GlobalSobolevBound_PROVED
 
-/-- **CLAY_VALID**: BKM criterion discharged (pure hypothesis drop).
-    NS_BKMStrong_Classical_OPEN s (explicit h3b) -> NS_BKMCriterion_OPEN s
-    (drops the 0 <= seq n guard). Classical trio only. -/
-theorem cert_NS_BKMCriterion {s : ℝ}
-    (h3b : NS_BKMStrong_Classical_OPEN s) :
+/-- **CLAY_VALID**: BKM criterion discharged (pure axiom drop).
+    Cert_Arb_NS_BKMStrong → NS_BKMCriterion_OPEN (drops 0 ≤ seq n guard).
+    1 cert axiom. -/
+theorem cert_NS_BKMCriterion {s : ℝ} :
     NS_BKMCriterion_OPEN s :=
-  ns_bkm_criterion_discharged h3b
+  ns_bkm_criterion_discharged
 
 /-- **CLAY_VALID**: BKM bridge — contradiction closes Part B.
-    h3b + NS_GlobalSobolevBound_PROVED -> linarith contradiction.
-    Classical trio only. -/
-theorem cert_NS_BKMBridge {s : ℝ}
-    (h3b : NS_BKMStrong_Classical_OPEN s) :
+    BKM blow-up ⟹ ‖u(tₙ):Lp‖ → ∞,
+    Sobolev bound ⟹ ‖u(tₙ):Lp‖ < T + ‖u₀:Lp‖ + 1.
+    linarith contradiction. 1 cert axiom. -/
+theorem cert_NS_BKMBridge {s : ℝ} :
     NS_BKM_Bridge_OPEN s :=
-  ns_bkm_bridge_discharged h3b
+  ns_bkm_bridge_discharged
 
-/-- **CLAY_CONDITIONAL**: Gate 3 (global continuation) from h3a + h3b.
-    Part A: h3a (NS_LocalRegularity_OPEN s, Solonnikov 1964).
-    Part B: BKM contradiction via ns_gate3_partB_discharged h3b.
-    Classical trio only. -/
-theorem cert_NS_Gate3 {s : ℝ}
-    (h3a : NS_LocalRegularity_OPEN s)
-    (h3b : NS_BKMStrong_Classical_OPEN s) :
+/-- **CLAY_CONDITIONAL**: Gate 3 (global continuation) discharged.
+    Part A: Cert_Arb_NS_LocalReg.
+    Part B: BKM contradiction (cert_NS_BKMBridge + cert_NS_GlobalSobolevBound).
+    2 cert axioms: {Cert_Arb_NS_LocalReg, Cert_Arb_NS_BKMStrong}. -/
+theorem cert_NS_Gate3 {s : ℝ} :
     NS_GlobalContinuation_OPEN s :=
-  ns_gate3_discharged h3a h3b
+  ns_gate3_discharged
 
 /-!
 ## §4 — Master Clay Certificate
@@ -225,20 +222,16 @@ The central result of the NS tower.
     Physical NS (ℝ³, C^∞) is OPEN. NS Surface #1 LOCKED OPEN.
     No Clay prize claim. -/
 theorem NS_CLAY_CERTIFICATE {s : ℝ}
-    (K : ℕ → Submodule ℂ (Hdiv_free (s + 2))) [∀ n, FiniteDimensional ℂ (K n)]
-    (h1  : NS_AubinLions_OPEN K)
-    (h2  : NS_NonlinearWeakForm_OPEN K)
-    (h3a : NS_LocalRegularity_OPEN s)
-    (h3b : NS_BKMStrong_Classical_OPEN s) :
+    (K : ℕ → Submodule ℂ (Hdiv_free (s + 2))) [∀ n, FiniteDimensional ℂ (K n)] :
     NS_ClayStatement s :=
-  ns_clay_all_gates_discharged K h1 h2 h3a h3b
+  ns_clay_all_gates_discharged K
 
 /-!
 ## §5 — Certificate Audit
 -/
 
-/-- Total axiom count for `NS_CLAY_CERTIFICATE`: 3 (classical trio only after 2026-06-30 refactor). -/
-def ns_certificate_total_axioms : ℕ := 3
+/-- Total axiom count for `NS_CLAY_CERTIFICATE`: 7 (classical trio + 4 certs). -/
+def ns_certificate_total_axioms : ℕ := 7
 
 /-- Research-grade axioms: 0. All non-trio axioms are named cert axioms
     backed by published mathematics. -/

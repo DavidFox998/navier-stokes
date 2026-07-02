@@ -420,6 +420,64 @@ Axiom footprint for proved theorems: `{propext, Classical.choice, Quot.sound}`.
 0 sorry. 0 sorryAx. 0 cert axioms in proved theorems.
 Open surfaces: `H4_GradLinfty_Bound` (user proves) + `IsH4Equivariant` (Sobolev eval API).
 
+### Phase 15 sub-scaffolds — H4 three-lemma architecture (2026-07-02)
+
+**Repo:** DavidFox998/navier-stokes
+
+Three scaffold files that flesh out the proof architecture for
+`NS_M6_UNCONDITIONAL_H4` — the 120-cell regularity route.
+
+---
+
+**File:** `Towers/NS/H4_Forcing.lean`
+
+| Name | Status | Content |
+|------|--------|---------|
+| `IsH4SymmetricForcing f` | OPEN def | ∀ t, IsH4Symmetric (f t) — equivariant forcing |
+| `H4_SymForcing_IsZero s` | **OPEN** | H4-sym + div-free forcing must be 0 (antipodal map −id ∈ W(H₄), vector rep) |
+| `zero_forcing_is_h4_symmetric` | **PROVED** | 0 : ExternalForce s is trivially H4-symmetric |
+| `h4_forcing_zero_momentum` | **PROVED** | ⟪(fun _ => 0) t, φ⟫ = 0 (inner_zero_left) |
+| `h4_sym_forcing_energy_bound` | **PROVED** | ‖u t‖ ≤ ‖u₀‖ for any WeakNS solution (wraps H4_norm_le_initial) |
+
+Honesty: "f = 0 from H4 symmetry" is a representation-theoretic claim (trivial rep has multiplicity 0 in div-free H4-modules). The key geometric fact: −id ∈ W(H₄), so any H4-symmetric div-free field f satisfies f(x) = f(−x) AND f(x) = −f(x) → f = 0.
+
+---
+
+**File:** `Towers/NS/H4_Energy.lean`
+
+| Name | Status | Content |
+|------|--------|---------|
+| `GlobalSmoothSolution u₀` | **OPEN** | Clay Surface #1 surrogate — global smooth extension exists |
+| `BKMIntegralCriterion s` | **OPEN** | BKM 1984: uniform L^∞ gradient integral bound → GlobalSmoothSolution |
+| `h4_energy_nonincreasing` | **PROVED** | ‖u t‖ ≤ ‖u₀‖ for H4-sym weak NS (wraps H4_norm_le_initial) |
+| `h4_linfty_integral_bound` | **PROVED** | ∃ C, ∀ T, ∫₀^T GradLinftyNorm ≤ C (conditional on H4_GradLinfty_Bound) |
+
+Honesty: GlobalSmoothSolution is a surrogate (‖u t‖ > 0 for t > 0); the genuine Clay surface requires the full Sobolev regularity cascade. BKMIntegralCriterion is the BKM 1984 continuation principle, unproved in Mathlib v4.12.0.
+
+---
+
+**File:** `Towers/NS/H4_Averaging.lean`
+
+| Name | Status | Content |
+|------|--------|---------|
+| `H4_VectorRepAvgZero s` | **OPEN** | ∑_{v ∈ vertices} σ_v(w) = 0 ∈ ℝ⁴ — antipodal pairing of Wall264 vertex families |
+| `H4_AveragingCancellation s` | **OPEN** | Symmetrized (u·∇)u = 0 for H4-sym u (Sobolev eval + Kato-Ponce) |
+| `h4_vertex_sum_eq_120` | **PROVED** | (vertices.length : ℝ) = 120 (Wall264.vertices_card) |
+| `h4_vertex_avg_denominator` | **PROVED** | (120 : ℝ) ≠ 0 |
+| `h4_averaging_implies_grad_bound` | **PROVED** | H4_AveragingCancellation → H4_GradLinfty_Bound (conditional) |
+| `NS_M6_UNCONDITIONAL_H4` | **PROVED** (conditional) | H4_GradLinfty_Bound ∧ BKMIntegralCriterion → GlobalSmoothSolution |
+| `NS_M6_VIA_AVERAGING` | **PROVED** (conditional) | H4_AveragingCancellation ∧ BKMIntegralCriterion → GlobalSmoothSolution |
+
+**`NS_M6_UNCONDITIONAL_H4` footprint:**
+```
+{propext, Classical.choice, Quot.sound,
+ H4_GradLinfty_Bound, BKMIntegralCriterion}
+```
+"Unconditional" = unconditional for H4-symmetric initial data IN THE FOURIER MODEL, given the two named-open inputs. The general NS Clay problem stays OPEN. NS Surface #1/#2 LOCKED OPEN. No Clay claim.
+
+Axiom footprint for proved bricks: `{propext, Classical.choice, Quot.sound}`.
+0 sorry. 0 sorryAx. 0 cert axioms in proved bricks.
+
 ### Conditional Certificates (CLAY_CONDITIONAL — cert axioms active)
 
 | Theorem | Cert Axioms | What it proves | Clay Status |

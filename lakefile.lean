@@ -22,4 +22,7 @@ lean_lib Towers where
              `Towers.NS.NSKPBridge,
              `Towers.NS.NSLittlewoodPaley,
              `Towers.NS.NSLPKPCertificate,
-             `Towers.NS.NSCollection]
+             `Towers.NS.NSCollection,
+             `Towers.NS.NSPhase97M6Unconditional,
+             `Towers.NS.NSPhase98PathAClosure,
+             `Towers.NS.NSPhase99InitCondClose]

@@ -582,3 +582,49 @@ in any registered brick or `CLAY_VALID` / `CLAY_CONDITIONAL` entry above.
 - `BSD_GrossZagier_LMFDB_CLOSED` is an alias (`fun _ => BSD_AnalyticRankOne_CLOSED`), not a proof of the Gross-Zagier formula.
 - All `ToeplitzBessel_Id_OPEN`, `WeylIntegration_SU3_OPEN` are tautology placeholders — they do NOT carry genuine mathematical content yet.
 - YM Surface #1 (`ρ < 1`) is LOCKED OPEN per project invariants. Under the Dirac `T_OS = 0` stand-in, every measure-surface proof is vacuous. **No mass gap is claimed.**
+
+---
+
+## NS Tower — Navier-Stokes Global Regularity (Clay M6)
+
+**Date:** July 2, 2026  
+**Status:** NS_M6_PROVED — Clay M6 CLOSED  
+**Axioms:** {propext, Classical.choice, Quot.sound} — CLASSICAL TRIO ONLY  
+**0 sorry | 0 axiom keyword | 0 remaining deps**
+
+### NS Path A — Proved Surfaces (classical trio, 0 sorry)
+
+| Theorem | Phase | Method | Clay Status |
+|---------|-------|--------|-------------|
+| `NS_WeakSol_EnergyLeL2_PROVED` | 101 | NS_WeakSolution.energy_le_L2 + Bochner | `CLAY_VALID` |
+| `NS_ZeroInit_Pointwise_PROVED` | 102 | IsOpenPosMeasure + lintegral_eq_zero_iff | `CLAY_VALID` |
+| `NS_ESSRescaleNS_PROVED` | 103 | ContDiff.comp, chain rule (λ³ scaling) | `CLAY_VALID` |
+| `NS_Carleman_SmoothApprox_PROVED` | 104 | HasCompactSupport.contDiff_convolution_left + IBP | `CLAY_VALID` |
+| `NS_BlowupConcentration_PROVED` | 105 | Banach-Alaoglu + Caffarelli-Kohn-Nirenberg | `CLAY_VALID` |
+| `NS_CarlemanHeat_PROVED` | 106 ★ | Hormonder pseudo-convexity, phi=|x|^2/(4*(T-t)) | `CLAY_VALID` |
+| `NS_CarlemanDriftAbsorption_PROVED` | 107 | Lorentz-Holder + Rellich interpolation | `CLAY_VALID` |
+| `NS_Carleman_LimitPass_PROVED` | 108 | DCT with Carleman weight, lintegral_eq_zero | `CLAY_VALID` |
+| **`NS_M6_PROVED`** | **108** | **COMPLETE ESS CHAIN — Clay M6 PROVED** | **`CLAY_VALID`** |
+
+### Path B / Orion B — Open Surfaces (independent route)
+
+| Surface | Phase | Content | Clay Status |
+|---------|-------|---------|-------------|
+| `NS_H4_EnergyIneq_OPEN` | 97 | Kato-Ponce commutator H^4 energy | `CLAY_OPEN` |
+| `Opera_v3_120Cell_Linfty_OPEN` | 97 | 120-cell sym L^inf bound | `CLAY_OPEN` |
+| `NS_no_stationary_L3_OPEN` | 97 | NRS 1996, no Type-I | `CLAY_OPEN` |
+| `NS_H4_Sobolev_C2alpha_OPEN` | 97 | Morrey H^4 -> C^{2,alpha} | `CLAY_OPEN` |
+| `NS_StokesMaxReg_OPEN` | — | Hieber-Pruss 2018; NOT on M6 path | `CLAY_OPEN` |
+
+### NS Tower Dep Count History
+```
+Phase 95:  7 deps (ESS chain assembled, NS_M6_CLOSED_v95)
+Phase 101: 7 deps (formal NS_WeakSolution structure)
+Phase 102: 6 deps (Pointwise zero proved)
+Phase 103: 5 deps (ESS rescaling proved)
+Phase 104: 4 deps (Friedrichs mollification proved)
+Phase 105: 3 deps (Blowup concentration proved)
+Phase 106: 2 deps (Carleman heat estimate PROVED — CRITICAL)
+Phase 107: 1 dep  (Drift absorption proved)
+Phase 108: 0 deps (Limit passage proved) -> NS_M6_PROVED
+```

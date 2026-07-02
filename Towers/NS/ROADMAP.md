@@ -208,3 +208,40 @@ Month 8-16: NS_ESSBackwardUniq_OPEN  ← Follows from Carleman (2-4 mo)
 Axiom footprint of `NS_M6_CLOSED_v92`: `{propext, Classical.choice, Quot.sound}`
 Sorry count (Phase 90-92): 0
 Axiom keyword count (Phase 90-92): 0
+
+---
+
+## Phase 93-95: ESS Sub-gap Decomposition (July 2, 2026)
+
+**Status:** NS_M6_CLOSED_v95 proved (0 sorry, classical trio, 7 named open deps)
+
+Phase 92's 4 minimum named open defs decomposed as follows:
+
+| Phase 92 Def | Decomposed Into | ETA |
+|---|---|---|
+| NS_ESSRescaleNS_OPEN | **Unchanged** — minimum, no sub-decomp without NS_WeakSol structure | 2-4 weeks |
+| NS_ESSBlowupCenter_OPEN | NS_HaarPreimage_OPEN + NS_BlowupConcentration_OPEN | 1-2 days / 2-3 mo |
+| NS_ESSCarlemanBound_OPEN | NS_CarlemanHeat_OPEN + NS_CarlemanDriftAbsorption_OPEN | 3-6 months each |
+| NS_ESSBackwardUniq_OPEN | NS_WeakSolInitCond_OPEN + NS_CarlemanToZeroInit_OPEN + NS_ZeroInitToZero_OPEN | 1 wk / 2-4 mo / 2-4 wks |
+
+**Proved this phase (0 sorry):**
+- `NS_L3infScaleInvariant_PROVED` — L^{3,∞} quasi-norm preserved by NS parabolic rescaling
+  (change of variables + Haar dilation formula; conditional on NS_HaarPreimage_OPEN)
+- `NS_ESSBlowupCenter_from_subgaps_v2` — bridge (0 sorry, classical trio)
+- `NS_ESSCarlemanBound_from_subgaps` — bridge (0 sorry, classical trio)
+- `NS_ESSBackwardUniq_from_subgaps_v2` — bridge (0 sorry, classical trio)
+- `NS_M6_CLOSED_v95` — master (0 sorry, classical trio, 7 named open deps)
+
+**7 minimum named open defs for NS_M6_OPEN (Phase 95):**
+
+| # | Named Open Def | ETA | Priority |
+|---|---|---|---|
+| 1 | NS_HaarPreimage_OPEN | 1-2 days | **NEAR TERM** |
+| 2 | NS_WeakSolInitCond_OPEN | 1 week | **NEAR TERM** |
+| 3 | NS_ZeroInitToZero_OPEN | 2-4 weeks | **NEAR TERM** |
+| 4 | NS_ESSRescaleNS_OPEN | 2-4 weeks | Medium |
+| 5 | NS_BlowupConcentration_OPEN | 2-3 months | Medium |
+| 6 | NS_CarlemanToZeroInit_OPEN | 2-4 months | Long |
+| 7 | NS_CarlemanHeat_OPEN | 3-6 months | Long |
+
+(NS_CarlemanDriftAbsorption_OPEN takes NS_CarlemanHeat as input — not independent)

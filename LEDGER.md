@@ -381,6 +381,27 @@ NS: OPEN. No Clay claim.
 | `NS_LPEntropyBeat_PROVED` | NSLPKPCertificate.lean | Σ 7ⁿ·shellNorm summable | `CLAY_CONDITIONAL` |
 | `ns_norm_le_initial` | NSExpDecayClose.lean | ‖u(t)‖ ≤ ‖u₀‖ from energy_le | `CLAY_VALID` |
 | `NS_GlobalSobolevBound_PROVED` | NSExpDecayClose.lean | ‖u(t):Lp‖ < T+‖u₀:Lp‖+1 (0 certs) | `CLAY_VALID` |
+| `H4_norm_le_initial` | H4_UniformBound.lean | ‖u(t)‖ ≤ ‖u₀‖ for H4-symmetric u₀ (0 certs) | `CLAY_VALID` |
+| `H4_BKM_norm_bound` | H4_UniformBound.lean | extracts L^∞ integral bound from H4_GradLinfty_Bound | `CLAY_VALID` |
+
+### Phase 15 — H4 Symmetry: 120-cell L^∞ Gradient Bound (2026-07-02)
+
+**File:** `Towers/NS/H4_UniformBound.lean`
+**Repo:** DavidFox998/navier-stokes
+
+Named open surface for the Beale–Kato–Majda L^∞ gradient time-integral bound restricted
+to H4-symmetric initial data.  The user will prove `H4_GradLinfty_Bound` in a separate file.
+
+| Name | Status | Content |
+|------|--------|---------|
+| `IsH4Symmetric` | OPEN def | icosahedral I_h invariance of u₀ (placeholder `True`) |
+| `GradLinftyNorm` | surrogate def | ‖u‖ as Sobolev surrogate for physical-space ‖∇u‖_{L^∞} |
+| `H4_GradLinfty_Bound` | **OPEN** | ∀ H4-sym u₀, ∃ C>0, ∀ T>0: ∫₀^T GradLinftyNorm(u t) dt ≤ C·‖u₀‖ |
+| `H4_norm_le_initial` | PROVED | ‖u(t)‖ ≤ ‖u₀‖ for H4-sym data (energy_le, 0 certs) |
+| `H4_BKM_norm_bound` | PROVED | trivial combinator extracting the bound |
+
+Axiom footprint for proved theorems: `{propext, Classical.choice, Quot.sound}`.
+0 sorry. 0 sorryAx. 0 cert axioms in proved theorems.
 
 ### Conditional Certificates (CLAY_CONDITIONAL — cert axioms active)
 
@@ -442,6 +463,27 @@ The RH tower (`Towers/RH/`) contains:
 - Frobenius API: OPEN (BC6_WeilArithBound_143_OPEN = BSD Gate 1)
 
 RH: OPEN. No Clay claim.
+
+---
+
+## P vs NP Tower — Continuum Bounds (MultiTower Phase 21, 2026-06-29)
+
+**File:** `Towers/Continuum/CardinalBounds.lean`
+**Repo:** DavidFox998/p-vs-np
+**Bricks:** 237 total (+3 from Phase 21)
+
+### Graduated Cert Axioms (Phase 21)
+
+| Theorem | Was | Proof | Clay Status |
+|---------|-----|-------|-------------|
+| `Cert_Konig_CF_Bound` | cert axiom | `by_contra` + `Cardinal.lt_power_cof` + `Ordinal.aleph0_le_cof` + `Cardinal.ord_isLimit` + `power_mul` + `aleph0_mul_aleph0`: if cof(2^ℵ₀).ord ≤ ℵ₀ then (2^ℵ₀)^ℵ₀ = 2^ℵ₀ contradicts `lt_power_cof` | `CLAY_VALID` |
+| `Cert_BethSuccessor` | cert axiom | `fun _ => rfl` — definitional from `BethNumber (n+1) := 2^BethNumber n` | `CLAY_VALID` |
+| `Cert_Regularity_Aleph1` | cert axiom | `Cardinal.isRegular_aleph_one.cof_eq` — `IsRegular.cof_eq` gives `(aleph 1).ord.cof = aleph 1` | `CLAY_VALID` |
+
+**Note:** `Cert_Konig_CF_Bound` type uses `.ord.cof` dot notation (`Ordinal.cof`) rather than the
+non-existent `Cardinal.cof`; `import Mathlib.SetTheory.Cardinal.Cofinality` added to file.
+
+**Axiom footprint:** classical trio only. 0 sorry. 0 sorryAx.
 
 ---
 

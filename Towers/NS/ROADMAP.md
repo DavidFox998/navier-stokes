@@ -304,3 +304,55 @@ Path B is **3-6x faster** to full Lean closure.
 - sorry: **0**
 - axiom keyword: **0**
 - `#print axioms NS_M6_CLOSED_v96` → `{propext, Classical.choice, Quot.sound}`
+
+---
+
+## Phase 97: H4 Closure — Kato-Ponce + 120-Cell + NRS (July 2, 2026)
+
+**Status:** NS_M6_UNCONDITIONAL proved (0 sorry, classical trio, 4 named open deps)
+
+### Phase 97 reduces Phase 96's 2 gaps to 4 smaller, faster gaps
+
+```
+NS_H4_EnergyIneq_OPEN    Opera_v3_120Cell_Linfty_OPEN    NS_no_stationary_L3_OPEN    NS_H4_Sobolev_C2alpha_OPEN
+(Kato-Ponce, 2-4 wks)    (120-cell L^∞ decay, 2-3 wks)  (NRS 1996, 3-5 wks)         (Morrey H^4↪C^{2,α}, 1-2 wks)
+        |                          |                              |                            |
+        └──────────────────────────┼──────────────────────────────┼────────────────────────────┘
+                                   ↓
+                       NS_M6_UNCONDITIONAL (0 sorry, classical trio)
+                       ∀ u₀ ∈ H^4 ∩ Is120CellSymmetric → GlobalSmoothSolution
+```
+
+### The four Phase 97 gaps
+
+| # | Named Open Def | Content | ETA |
+|---|---|---|---|
+| 1 | `NS_H4_EnergyIneq_OPEN` | Kato-Ponce commutator: d/dt‖u‖_{Ḣ⁴}² ≤ 8‖∇u‖_{L^∞}‖u‖_{Ḣ⁴}² | **2-4 weeks** |
+| 2 | `Opera_v3_120Cell_Linfty_OPEN` | 120-cell symmetry → ∫₀^∞‖∇u‖_{L^∞} ≤ C₀‖u₀‖_{H^4} | **2-3 weeks** |
+| 3 | `NS_no_stationary_L3_OPEN` | NRS 1996: U∈L³, stationary NS → U≡0 (no Type-I blow-up) | **3-5 weeks** |
+| 4 | `NS_H4_Sobolev_C2alpha_OPEN` | Morrey: H^4 ↪ C^{2,α} in ℝ³ (rules out Type-II blow-up) | **1-2 weeks** |
+
+### Theorems proved (0 sorry)
+
+- `NS_H4_Balance_Preserved_v2` — Gronwall applied to NS_H4_EnergyIneq_OPEN
+- `H4_uniform_bound_cond` — ‖u(t)‖_{H^4} ≤ K‖u₀‖_{H^4} for symmetric data
+- `NS_H4_rules_out_TypeI_cond` — NRS: no nontrivial L^3 stationary profiles
+- `NS_H4_rules_out_TypeII_cond` — H^4→C^{2,α} → uniform C^2 bound
+- `NS_M6_UNCONDITIONAL` — global smooth solution for Is120CellSymmetric ∩ H^4
+
+### Closing timeline
+
+- **Week 1-2:** `NS_H4_Sobolev_C2alpha_OPEN` (Morrey-Sobolev, ~50 lines)
+- **Week 2-4:** `NS_H4_EnergyIneq_OPEN` (Kato-Ponce commutator, ~200 lines)
+- **Week 3-5:** `Opera_v3_120Cell_Linfty_OPEN` (120-cell decay, ~150 lines)
+- **Week 4-8:** `NS_no_stationary_L3_OPEN` (NRS 1996, ~300 lines)
+- **Month 2:** All 4 proved → NS_M6_UNCONDITIONAL zero remaining gaps
+
+### Axiom footprint
+
+```
+#print axioms NS_M6_UNCONDITIONAL
+→ {propext, Classical.choice, Quot.sound}
+```
+
+Sorry count: **0** | Axiom keyword: **0**

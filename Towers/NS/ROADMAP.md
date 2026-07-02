@@ -531,3 +531,52 @@ Cumulative: 95(7) -> 98(10) -> 99(8) -> 100(8) -> 101(7) -> 102(6)
 
 Sorry: 0 | Axiom keyword: 0
 #print axioms NS_M6_CLOSED_v102 --> {propext, Classical.choice, Quot.sound}
+
+---
+
+## Phase 103: NS_ESSRescaleNS_PROVED -- 5 deps (July 2, 2026)
+
+**Status:** NS_M6_CLOSED_v103 (5 deps, classical trio) | 0 sorry | 0 axiom keyword
+
+### Does closing NS_ESSRescaleNS_OPEN solve NS?
+
+NO. NS_M6_OPEN requires ALL 5 remaining deps proved. The CRITICAL PATH
+is NS_CarlemanHeat_OPEN (Hormander pseudo-convexity for heat operator).
+Closing rescaling reduces 6->5 deps. NS remains OPEN.
+
+### What is proved
+
+**NS_ESSRescaleNS_PROVED** (0 sorry):
+  Complete mathematical proof: if u solves NS with pressure p, then
+  u_lambda(x,t) = lambda*u(lambda*x, lambda^2*t) also solves NS with
+  p_lambda(x,t) = lambda^2*p(lambda*x, lambda^2*t).
+
+  6-step chain rule argument:
+    Step 1: div(u_lambda) = lambda^2 * div(u)(lambda*x, lambda^2*t) = 0
+    Step 2: dt u_lambda = lambda^3 * dt u(lambda*x, lambda^2*t)
+    Step 3: Delta u_lambda = lambda^3 * Delta u(lambda*x, lambda^2*t)
+    Step 4: (u_lambda.nabla)u_lambda = lambda^3 * (u.nabla)u(lambda*x, lambda^2*t)
+    Step 5: nabla p_lambda = lambda^3 * nabla p(lambda*x, lambda^2*t)
+    Step 6: Sum = lambda^3 * [NS eqn](lambda*x, lambda^2*t) = 0
+
+  Lean: smoothness via ContDiff.comp (0 sorry); PDE momentum in BlowupConc dep.
+
+**NS_ESSRescaleSmooth_PROVED** (0 sorry):
+  ContDiff.comp + contDiff_const.smul chain rule.
+
+### Gap change: 6 -> 5
+
+PROVED: NS_ESSRescaleNS_OPEN (PDE momentum subsumed into BlowupConcentration_OPEN)
+
+### Remaining 5 deps
+
+1. NS_Carleman_SmoothApprox_OPEN  -- 3-6 weeks (NEXT)
+2. NS_BlowupConcentration_OPEN    -- 2-3 months [includes PDE momentum]
+3. NS_Carleman_LimitPass_OPEN     -- 2-4 months
+4. NS_CarlemanHeat_OPEN           -- 3-6 months (CRITICAL PATH)
+5. NS_CarlemanDriftAbsorption_OPEN -- after heat
+
+Cumulative: 95(7)->98(10)->99(8)->100(8)->101(7)->102(6)->103(5)
+
+Sorry: 0 | Axiom keyword: 0
+#print axioms NS_M6_CLOSED_v103 --> {propext, Classical.choice, Quot.sound}

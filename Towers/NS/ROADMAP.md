@@ -356,3 +356,47 @@ NS_H4_EnergyIneq_OPEN    Opera_v3_120Cell_Linfty_OPEN    NS_no_stationary_L3_OPE
 ```
 
 Sorry count: **0** | Axiom keyword: **0**
+
+---
+
+## Phase 98: Path A Closure — Haar PROVED + Gap Decompositions (July 2, 2026)
+
+**Status:** NS_HaarPreimage_PROVED (0 sorry), NS_M6_CLOSED_v98 (10 named deps, 0 sorry, classical trio)
+
+### What changed
+
+**CLOSED:** `NS_HaarPreimage_OPEN` — now `NS_HaarPreimage_PROVED` (0 sorry, classical trio)
+
+```lean
+-- Proof: addHaar_smul (dilation) + measure_preimage_add_right (translation)
+theorem NS_HaarPreimage_PROVED : NS_HaarPreimage_OPEN
+-- #print axioms → {propext, Classical.choice, Quot.sound}
+```
+
+**DECOMPOSED:**
+
+| Was | Now (2 sub-gaps) | ETAs |
+|---|---|---|
+| `NS_WeakSolInitCond_OPEN` (1 week) | `NS_WeakSol_L2weakstar_OPEN` + `NS_WeakSol_L2trace_OPEN` | 2-3 days each |
+| `NS_ZeroInitToZero_OPEN` (2-4 weeks) | `NS_ZeroInit_EnergyDecay_OPEN` + `NS_ZeroInit_Gronwall_OPEN` | 1 week each |
+| `NS_CarlemanToZeroInit_OPEN` (2-4 months) | `NS_Carleman_SmoothApprox_OPEN` + `NS_Carleman_LimitPass_OPEN` | 3-6wk + 2-4mo |
+
+### Path A gap table (after Phase 98)
+
+| Priority | Named Open Def | ETA |
+|---|---|---|
+| **IMMEDIATE** | `NS_WeakSol_L2weakstar_OPEN` | 2-3 days |
+| **IMMEDIATE** | `NS_WeakSol_L2trace_OPEN` | 2-3 days |
+| NEAR | `NS_ZeroInit_EnergyDecay_OPEN` | 1 week |
+| NEAR | `NS_ZeroInit_Gronwall_OPEN` | 1 week |
+| MEDIUM | `NS_ESSRescaleNS_OPEN` | 2-4 weeks |
+| MEDIUM | `NS_Carleman_SmoothApprox_OPEN` | 3-6 weeks |
+| LONG | `NS_BlowupConcentration_OPEN` | 2-3 months |
+| LONG | `NS_Carleman_LimitPass_OPEN` | 2-4 months |
+| **CRITICAL** | `NS_CarlemanHeat_OPEN` | 3-6 months |
+| AFTER HEAT | `NS_CarlemanDriftAbsorption_OPEN` | after heat |
+
+### Sorry / Axiom count
+
+Sorry: **0** | Axiom keyword: **0**
+`#print axioms NS_M6_CLOSED_v98` → `{propext, Classical.choice, Quot.sound}`

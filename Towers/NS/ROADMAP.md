@@ -423,3 +423,34 @@ Path A gap table (Phase 99, 8 deps):
 
 Sorry: 0 | Axiom keyword: 0 | Gap count: 10 (v98) -> 8 (v99)
 #print axioms NS_M6_CLOSED_v99 --> {propext, Classical.choice, Quot.sound}
+
+---
+
+## Phase 100: Path A -- NS_ZeroInit_L2Zero_PROVED (July 2, 2026)
+
+**Status:** NS_ZeroInit_L2Zero_from_EnergyLe (0 sorry, 6-step Mathlib proof); NS_M6_CLOSED_v100 (8 deps, classical trio)
+
+PROVED: NS_ZeroInit_L2Zero_from_EnergyLe (conditional on NS_WeakSol_EnergyLeL2_OPEN)
+
+Proof steps (all Mathlib v4.12.0):
+  A: v 0 = v0 (NS_WeakSolInitCond_PROVED / h.init)
+  B: v0=0 a.e. -> ||v0 x||^2=0 a.e. (norm_zero + sq)
+  C: integral ||v 0||^2 = 0 (integral_congr_ae + integral_zero)
+  D: integral ||v t||^2 <= 0 (energy ineq + C)
+  E: 0 <= integral ||v t||^2 (integral_nonneg + sq_nonneg)
+  F: integral ||v t||^2 = 0 (le_antisymm D E)
+
+New named dep: NS_WeakSol_EnergyLeL2_OPEN (ETA 1-2 days, unfold energy field)
+
+Path A gap table (Phase 100, 8 deps):
+1. NS_WeakSol_EnergyLeL2_OPEN       -- 1-2 days (IMMEDIATE)
+2. NS_ZeroInit_Pointwise_OPEN       -- 1-2 weeks
+3. NS_ESSRescaleNS_OPEN             -- 2-4 weeks
+4. NS_Carleman_SmoothApprox_OPEN    -- 3-6 weeks
+5. NS_BlowupConcentration_OPEN      -- 2-3 months
+6. NS_Carleman_LimitPass_OPEN       -- 2-4 months
+7. NS_CarlemanHeat_OPEN             -- 3-6 months (CRITICAL)
+8. NS_CarlemanDriftAbsorption_OPEN  -- after heat
+
+Sorry: 0 | Axiom keyword: 0
+#print axioms NS_M6_CLOSED_v100 --> {propext, Classical.choice, Quot.sound}

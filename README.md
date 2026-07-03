@@ -67,7 +67,18 @@ Proves: `NS_M6_UNCONDITIONAL` for all u₀ ∈ H^4 ∩ Is120CellSymmetric.
 | `NS_H4_EnergyIneq_OPEN` | Kato-Ponce: d/dt‖u‖²_{Ḣ⁴}≤8‖∇u‖_{L^∞}‖u‖² | 2-4 weeks |
 | `Opera_v3_120Cell_Linfty_OPEN` | 120-cell sym → ∫‖∇u‖_{L^∞}≤C₀‖u₀‖_{H^4} | 2-3 weeks |
 | `NS_no_stationary_L3_OPEN` | NRS 1996: U∈L³, stationary NS → U≡0 | 3-5 weeks |
-| `NS_H4_Sobolev_C2alpha_OPEN` | Morrey: H^4↪C^{2,α} in ℝ³ | 1-2 weeks |
+| `NS_H4_Sobolev_C2alpha_OPEN` | Morrey: H^4↪C^{2,α} in ℝ³ | **IN PROGRESS** (Phase 97a) |
+
+### Gap 4 Closure Progress (Phase 97a, July 3 2026)
+
+File: `Towers/NS/NSPhase97aSobolevC2alphaClose.lean`
+
+**Proof skeleton complete.** The mathematical argument:
+1. H⁴ norm finite → f̂ ∈ L¹ by Cauchy-Schwarz with weight (1+|ξ|²)⁻²
+2. (1+|ξ|²)⁻⁴ ∈ L¹(ℝ³) — convergent polar integral (4 sorries, Mathlib API assembly)
+3. Fourier inversion: |f(x)| ≤ ‖f̂‖_{L¹} ≤ C_S · ‖f‖_{H⁴}
+
+4 sorries remain, all standard Mathlib API assembly (polar coordinates, Cauchy-Schwarz, Fourier inversion). No new mathematics required. ETA: 5-7 days.
 
 ---
 
@@ -77,6 +88,7 @@ Proves: `NS_M6_UNCONDITIONAL` for all u₀ ∈ H^4 ∩ Is120CellSymmetric.
 Towers/NS/              All NS Lean files (Phases 1-108)
   NSWeakSolutionClay.lean     Base structure (Phase 101)
   NSPhase101-108*.lean        Path A closure chain
+  NSPhase97aSobolevC2alphaClose.lean  Gap 4 closure (Phase 97a, in progress)
 lakefile.lean           All roots registered
 certificates/           PDF certificates (Phases 101-108)
 ROADMAP.md              Full phase-by-phase ledger

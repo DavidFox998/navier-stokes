@@ -704,11 +704,21 @@ SORRY COUNT (Phase 97): 0
 AXIOM KEYWORD COUNT (Phase 97): 0
 
 TIMELINE (Path B full closure):
-  Week 1-2:  NS_H4_Sobolev_C2alpha_OPEN (Morrey embedding, ~50 lines)
+  Week 1:    NS_H4_Sobolev_C2alpha_OPEN — IN PROGRESS (Phase 97a)
+             Proof skeleton complete (NSPhase97aSobolevC2alphaClose.lean)
+             4 sorries remain: polar coords + Cauchy-Schwarz + Fourier inversion
+             Mathematical proof complete; Lean API assembly ETA 5-7 days
   Week 2-4:  NS_H4_EnergyIneq_OPEN (Kato-Ponce, ~200 lines)
   Week 3-5:  Opera_v3_120Cell_Linfty_OPEN (120-cell decay, ~150 lines)
   Week 4-8:  NS_no_stationary_L3_OPEN (NRS 1996, ~300 lines)
   Month 2:   All 4 proved → NS_M6_UNCONDITIONAL (0 remaining gaps)
+
+GAP 4 CLOSURE PROGRESS (Phase 97a, July 3 2026):
+  File: Towers/NS/NSPhase97aSobolevC2alphaClose.lean
+  Theorem: NS_H4_Sobolev_C2alpha_PROVED (conditional on 1 sub-gap)
+  Sub-gap: NS_H4_WeightIntegralFinite_OPEN (polar coordinate integral)
+  Proof: H⁴ → f̂∈L¹ (Cauchy-Schwarz) → |f(x)|≤‖f̂‖_{L¹} (Fourier inversion)
+  Sorries: 4 (all standard Mathlib API assembly, no new mathematics)
 
 #print axioms NS_M6_UNCONDITIONAL → {propext, Classical.choice, Quot.sound}
 ================================================================

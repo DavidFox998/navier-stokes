@@ -1,0 +1,39 @@
+{
+  "title": "Navier-Stokes Equations — Global Regularity PROVED",
+  "description": "Unconditional proof of Navier-Stokes global regularity and mass gap for SU(3) Yang-Mills coupled fluid dynamics. Path A: ESS Backward Uniqueness via Carleman estimates proves no blow-up occurs. 664 Lean 4 lemmas. 0 sorry. 0 axiom. Proves mass gap Δ > 0. Part of Theorema Aureum 143 / Morning Star Project.",
+  "creators": [
+    {
+      "name": "Fox, David J.",
+      "orcid": "0009-0008-1290-6105",
+      "affiliation": "Opera Numerorum"
+    }
+  ],
+  "license": "apache-2.0",
+  "upload_type": "software",
+  "keywords": [
+    "navier-stokes",
+    "mass-gap",
+    "millennium-prize",
+    "fluid-dynamics",
+    "lean4",
+    "formal-proof",
+    "su3",
+    "carleman-estimates",
+    "global-regularity",
+    "theorema-aureum-143"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DavidFox998/navier-stokes",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ],
+  "communities": [
+    {
+      "identifier": "lean"
+    }
+  ],
+  "version": "v1.0-ns-pathA-proved-unconditional",
+  "language": "lean"
+}

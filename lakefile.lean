@@ -27,5 +27,5 @@ lean_lib Towers where
              `Towers.NS.NSPhase106CarlemanHeat,
              `Towers.NS.NSPhase107CarlemanDrift,
              `Towers.NS.NSPhase108LimitPass,
-             `Towers.NS.NSPhase97aSobolevC2alphaClose
+             `Towers.NS.NSPhase97aSobolevC2alphaClose,
              'Towers.NS.NSPhase97bH4EnergyClose]

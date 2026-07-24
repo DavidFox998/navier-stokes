@@ -1,0 +1,47 @@
+%PDF-1.1
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 /Courier /F2 /Courier-Bold >> >> >>
+endobj
+4 0 obj
+<< /Length 800 >>
+stream
+BT
+/F2 12 Tf
+50 730 Td
+(OPERA NUMERORUM - Phase 97a - NS_H4_Sobolev_C2alpha_PROVED) Tj
+/F1 9 Tf
+0 -20 Td
+(Author: David J Fox ORCID 0009-0008-1290-6105 July 03 2026) Tj
+0 -14 Td
+(Green CI #225 184bedf Path B 4/4 CLOSED) Tj
+0 -14 Td
+(File: Towers/NS/NSPhase97aSobolevC2alphaClose.lean) Tj
+0 -20 Td
+(Theorem: NS_H4_Sobolev_C2alpha_PROVED - Gap 4 CLOSED) Tj
+0 -14 Td
+(Math: H4 -> C2alpha, C_S approx 1.11, (1+|xi|^2)^-4 in L1 polar) Tj
+0 -14 Td
+(AXIOMS: {propext, Classical.choice, Quot.sound} TRIO ONLY) Tj
+0 -14 Td
+(SORRY: 0 AXIOM KEYWORD: 0 STATUS: PROVED) Tj
+ET
+endstream
+endobj
+xref
+0 5
+0000000000 65535 f
+0000000009 00000 n
+0000000056 00000 n
+0000000111 00000 n
+0000000266 00000 n
+trailer
+<< /Size 5 /Root 1 0 R >>
+startxref
+1100
+%%EOF

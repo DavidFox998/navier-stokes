@@ -2,11 +2,9 @@
 
 **Status:** Path A 8/8 CLOSED (July 2), Path B 4/4 CLOSED (July 3) — CI #229 green.
 
-## Layperson Map
-
 Imagine proving water never blows up. We have 80 small bricks, each proves one tiny fact. Stack them into a tower — top brick = Clay theorem.
 
-## Referee Map — Dependency Order
+Dependency Order
 
 ### Layer 0 — Foundation (last month)
 - `Compactness.lean` — Rellich-Kondrachov compactness

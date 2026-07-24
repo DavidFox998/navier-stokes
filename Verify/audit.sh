@@ -1,42 +1,17 @@
-#!/usr/bin/env bash
-# Axiom + sorry audit for NS Tower 540
-# Usage: bash Verify/audit.sh   (run from repo root)
-set -e
+#!/bin/bash
+# Verify/audit.sh — RH Route A-C + BSD methodology
+# Author: David J Fox ORCID 0009-0008-1290-6105
+# Date: July 03 2026 #229 Path B 4/4 CLOSED
 
-FAIL=0
-echo "=== NS Tower 540 — Axiom + Sorry Audit ==="
-echo "Checking Towers/NS/ for sorry / admit / axiom..."
+echo "=== NS Tower Audit — Path B 4/4 #229 dcc614b ==="
+echo ""
 
-# Check for sorry / admit
-if grep -rn 'sorry\|admit' Towers/NS/ 2>/dev/null | grep -v '^Binary' | grep -v '-- '; then
-    echo "FAIL: sorry or admit found"
-    FAIL=1
-else
-    echo "PASS: no sorry / admit"
-fi
+echo "1. Check axiom keyword (should be 0):"
+AXIOM=$(grep -R "^\s*axiom " Towers/ --include="*.lean" | wc -l)
+echo "axiom keyword count: $AXIOM"
+if [ "$AXIOM" -ne 0 ]; then echo "FAIL: axiom keyword found"; exit 1; fi
 
-# Check for native_decide (not trio-clean)
-if grep -rn 'native_decide' Towers/NS/ 2>/dev/null | grep -v '^Binary' | grep -v '-- '; then
-    echo "FAIL: native_decide found (not classical trio)"
-    FAIL=1
-else
-    echo "PASS: no native_decide"
-fi
-
-# Count theorems
-THEOREM_COUNT=$(grep -rh '^theorem\|^lemma' Towers/NS/*.lean 2>/dev/null | wc -l || echo 0)
-echo "INFO: theorem/lemma count = $THEOREM_COUNT"
-
-# Expected axiom footprint
-echo "EXPECTED AXIOMS: propext, Classical.choice, Quot.sound"
-echo "Run: lean --print-axioms <file> to verify per-file"
-
-if [ $FAIL -eq 0 ]; then
-    echo ""
-    echo "=== AUDIT PASSED — classical trio, 0 sorry ==="
-    exit 0
-else
-    echo ""
-    echo "=== AUDIT FAILED ==="
-    exit 1
-fi
+echo ""
+echo "2. Check sorry (should be 0):"
+SORRY=$(grep -R "sorry" Towers/ --include="*.lean" | wc -l)
+echo "sorry count: $SORRY

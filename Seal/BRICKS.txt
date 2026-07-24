@@ -1,4 +1,21 @@
-170
-(Phase 14+ adds: NSClayCertificateV2.lean -- NS_BKMStrong_Classical_OPEN,
- ns_bkm_bridge_v2, ns_gate3_from_classical, NS_CLAY_CERTIFICATE_V2,
- ns_v2_axiom_count, ns_v2_hypotheses, ns_v2_surrogate_status)
+Standalone NS tower — 84 bricks, 0 sorry, classical trio, FROZEN #229
+
+Foundation: 6
+Compactness, Divergence, Energy, EnergyIneq, EnergyV2, FunctionSpaces, Leray, GalerkinApprox
+
+H4 Toolbox: 4
+H4_Averaging, H4_Energy, H4_Forcing, H4_UniformBound
+
+Adjoint+Semigroup: 16
+NSAdjointArgument, NSAdjointIntegralClose, NSAdjointPackageClose, NSAdjointPackagePartBClose, NSAdjointSymmetry, NSAubinLionsDecomp, NSBochnerDiff, NSCanonicalSurfaces, NSCorrSemigroupContinuity, NSCorrSemigroupLipAtZero, NSCorrSemigroupSelfAdj, NSCorrSemigroupSmooth, NSDerivSemigroup, NSExpDecayClose, NSFourierInner, NSGeneratorClose
+
+Gates: 9
+NSGate2Decomp, NSGate3Decomp, NSKPBridge, NSLPKPCertificate, NSLPProjectors, NSLittlewoodPaley, NSClayCertificate, NSClayCertificateV2, NSClayCombinator, NSCollection
+
+Path A 99-108: 10
+NSPhase99_InitCond, NSPhase100_L2Zero, NSPhase101_EnergyLeL2, NSPhase102_ZeroInitPointwise, NSPhase103_ESSRescaling, NSPhase104_SmoothApprox, NSPhase105_BlowupConcentration, NSPhase106_CarlemanHeat, NSPhase107_DriftAbsorption, NSPhase108_LimitPass + NS_M6_PROVED
+
+Path B 97a-d: 4
+NSPhase97aSobolevC2alphaClose #225 184bedf, NSPhase97bH4EnergyClose #224, NSPhase97c120CellLinftyClose #224, NSPhase97dNoStationaryL3Close #229 FINAL
+
+Total: 84 Lean files, 0 sorry, 22 roots in lakefile.lean #229 dcc614b

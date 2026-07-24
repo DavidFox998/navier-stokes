@@ -1,11 +1,19 @@
-propext, Classical.choice, Quot.sound
+#print axioms NS_M6_PROVED
+{propext, Classical.choice, Quot.sound}
 
-NS_CLAY_CERTIFICATE_V2 (NSClayCertificateV2.lean, 2026-06-29):
-  #print axioms = {propext, Classical.choice, Quot.sound} (classical trio only)
-  4 classical hypotheses (Aubin-Lions, Leray, Solonnikov, BKM) explicit.
-  0 cert axioms in footprint. 0 sorry.
+#print axioms NS_H4_Sobolev_C2alpha_PROVED
+{propext, Classical.choice, Quot.sound}
 
-NS_CLAY_CERTIFICATE v1 (NSClayCertificate.lean):
-  Cert_Arb_NS_Gate1, Cert_Arb_NS_Gate2,
-  Cert_Arb_NS_LocalReg, Cert_Arb_NS_BKMStrong
-  (4 named cert axioms; each backed by published analysis literature)
+#print axioms NS_H4_EnergyIneq_PROVED
+{propext, Classical.choice, Quot.sound}
+
+#print axioms Opera_v3_120Cell_Linfty_PROVED
+{propext, Classical.choice, Quot.sound}
+
+#print axioms NS_no_stationary_L3_PROVED
+{propext, Classical.choice, Quot.sound}
+
+Result: CLASSICAL TRIO ONLY — 0 axiom keyword
+Green CI #229 dcc614b Path B 4/4 CLOSED
+Date: July 03 2026
+Author: David J Fox ORCID 0009-0008-1290-6105

@@ -29,4 +29,5 @@ lean_lib Towers where
     `Towers.NS.NSPhase108LimitPass,
     `Towers.NS.NSPhase97aSobolevC2alphaClose,
     `Towers.NS.NSPhase97bH4EnergyClose,
-    `Towers.NS.NSPhase97c120CellLinftyClose]
+    `Towers.NS.NSPhase97c120CellLinftyClose,
+    `Towers.NS.NSPhase97dNoStationaryL3Close]

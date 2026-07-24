@@ -1,0 +1,26 @@
+%PDF-1.1
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 /Courier /F2 /Courier-Bold >> >> >> endobj
+4 0 obj << /Length 700 >> stream
+BT
+/F2 12 Tf 50 730 Td (OPERA NUMERORUM - Phase 97b - NS_H4_EnergyIneq_PROVED) Tj
+/F1 9 Tf 0 -20 Td (Author: David J Fox ORCID 0009-0008-1290-6105 July 03 2026) Tj
+0 -14 Td (Green CI #224 becc11e Path B) Tj
+0 -14 Td (File: Towers/NS/NSPhase97bH4EnergyClose.lean) Tj
+0 -20 Td (Theorem: NS_H4_EnergyIneq_PROVED Gap 2 CLOSED) Tj
+0 -14 Td (Math: d/dt||u||^2_H4 <=8||Grad u||_inf ||u||^2 Kato-Ponce s=4) Tj
+0 -14 Td (AXIOMS: {propext, Classical.choice, Quot.sound} SORRY 0) Tj
+ET
+endstream endobj
+xref
+0 5
+0000000000 65535 f
+0000000009 00000 n
+0000000056 00000 n
+0000000111 00000 n
+0000000266 00000 n
+trailer << /Size 5 /Root 1 0 R >>
+startxref
+900
+%%EOF

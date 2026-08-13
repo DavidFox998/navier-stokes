@@ -1,0 +1,101 @@
+{
+  "opera_version": "2.0",
+  "doi_parent": "10.5281/zenodo.21585041",
+  "doi_child": "10.5281/zenodo.21585042",
+  "axioms": ["propext", "Classical.choice", "Quot.sound"],
+  "sorry_policy": "0 sorry — #print axioms source of truth",
+  "constants": {
+    "S4": [2, 3, 19, 191],
+    "C_S4": 11.422148,
+    "two_sqrt_13": 7.21110255,
+    "margin": 4.211045,
+    "ratio": 1.5839,
+    "conductor": 143,
+    "genus_X0_143": 13,
+    "mu": 168,
+    "nu_infty": 4,
+    "discriminant_K": -143,
+    "class_number": 10
+  },
+  "repos": {
+    "birch-swinnerton-dyer-143": {
+      "role": "parent_archive",
+      "files": 230,
+      "genesis": 160,
+      "gates": 6,
+      "structure": "Tier 0 B01/B02/B03 OPEN (Wiles-Taylor) → Tier1-2 K=Q(√-143) → Tier3-4 two routes h=10 (Option A principal gen_OK=-28+3ω N=1024 p2^10 principal, Option B BQF 10 forms interval_cases 72) → Tier5-6 ClassGroup=⟨[p2]⟩ + Hasse 51 primes → Tier7-8 L-analytic OPEN → Tier9 Capstones + combinators 757:4→2, 758:Frobenius-Analytic HasseFull_143_OPEN, 759:EndomorphismDegree + LFunctionIsLinFunc, 760:Discriminant ↔ EndDeg → 2 genuine gaps",
+      "gaps": ["BSD_HasseBound_Discriminant_OPEN", "BSD_LFunctionIsLinFunc_OPEN"],
+      "status": "archived in parent_full_history/birch-swinnerton-dyer-143-parent.zip",
+      "verify": "Phases 1-33 PASSED Weil 1-14 PASSED"
+    },
+    "birch-swinnerton-dyer-143a1": {
+      "role": "bsd_worked_example_rank1",
+      "files": {"hasseprimset": 127, "duplicates_removed": 33, "primes": 1061, "range": "1009..9999"},
+      "gates": 3,
+      "gates_closed": [
+        {
+          "gate": 1,
+          "name": "Weil/Hasse via Frobenius degree",
+          "file": "Towers/BSD/MathlibGaps/FrobeniusDiscriminant_CLOSED.lean",
+          "theorem": "BSD_HasseBound_Discriminant_CLOSED",
+          "method": "E143_Finset p by decide 63k..94k pairs + (r-a/2)^2+D/4≥0 disc -563/-1228 + ap=0 beyond table",
+          "status": "CLOSED #175 GREEN"
+        },
+        {
+          "gate": 2,
+          "name": "LFunctionIsLinFunc / Modularity X0(143)",
+          "file": "Towers/BSD/MathlibGaps/LFunctionIsLinFunc_CLOSED.lean",
+          "theorem": "BSD_LFunctionIsLinFunc_CLOSED : BSDLFunction 143 = L_143a1",
+          "method": "CPSFunctionalEquation Λ(s)=εΛ(2-s) + MellinAnalyticExt + opaque→def by rfl",
+          "status": "CLOSED #175 GREEN"
+        },
+        {
+          "gate": 3,
+          "name": "Rank 1 = Rank 1 + Tamagawa",
+          "file": "E143a1_CLOSED + BSD_ClaySubmission_FINAL",
+          "theorem": "BSD_143_PROVED after defs 1=1 + L*·|Sha|·|tors|²=Ω·R·∏c_p",
+          "method": "h=10 both routes, ClassGroup=⟨[p2]⟩, Sha=1 tors=1 R=5882/10000 Heegner (4,6)",
+          "status": "CLOSED #175 GREEN"
+        }
+      ],
+      "curve": {
+        "eq": "y²+y=x³-x²-x-2",
+        "rank": 1,
+        "P": "(4,6)",
+        "tors": 1,
+        "Sha": 1,
+        "R": "5882/10000",
+        "Ω": "12583/10000",
+        "L*": "37006603/25000000",
+        "formula": "L*·|Sha|·|tors|² = Ω·R·∏c_p"
+      },
+      "status": "v1.0-CLAY-CLOSED BUILD #175 GREEN 0 sorry"
+    },
+    "bost-connes": {
+      "role": "hub M1-M3→M4-M8",
+      "bricks": 21,
+      "M1": "Hasse 1061 primes",
+      "M2": "h=10 both routes",
+      "M3": "genus13 C(S4)=11.422>2√13",
+      "status": "v1.0-M1-M3-CLOSED BUILD #173 GREEN"
+    }
+  },
+  "links": [
+    {"from": "birch-swinnerton-dyer-143", "to": "birch-swinnerton-dyer-143a1", "type": "condensation", "note": "160 Genesis →127 hasseprimset 33 duplicates removed +3 bricks close 2 genuine gaps"},
+    {"from": "bost-connes", "to": "birch-swinnerton-dyer-143a1", "shared": ["S4={2,3,19,191}", "C=11.422>2√13", "genus13 mu=168", "h=10 both routes", "ap168"]},
+    {"from": "bost-connes", "to": "riemann-arakelov-positivity", "type": "M3→Route A Positivity ω²=48/13>0"},
+    {"from": "bost-connes", "to": "arakelov-rh-descent", "type": "M1-M2→Route B Descent λ1≥975/4096"},
+    {"from": "bost-connes", "to": "rh-growth-contradiction", "type": "C(S4)→Route C Growth Poussin"},
+    {"from": "bost-connes", "to": "brothers-desert-proof", "type": "S4→Route D Self-Symmetry desert 192..1000 ||p·α0||<1/p"},
+    {"from": "birch-swinnerton-dyer-143a1", "to": "lindelof-hypothesis-143", "type": "GRH X0(143)→Lindelof"}
+  ],
+  "future_curves": {
+    "note": "143a1 is template — api.py + extract_table.py + aggregate.py reusable",
+    "planned": ["11a1 rank0 L≠0 fastest", "37a1 rank1", "389a1 rank2 needs L''"]
+  },
+  "cern_tag": {
+    "bsd": "v1.0-CLAY-CLOSED",
+    "bost-connes": "v1.0-M1-M3-CLOSED",
+    "include": ["OPERA_LINK.json", "README.md", "parent_full_history/*.zip", "hasseprimset/", "HassePrimeSet.lean", "BostBound143.lean", "Towers/BSD/MathlibGaps/*_CLOSED.lean"]
+  }
+}

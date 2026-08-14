@@ -12,6 +12,7 @@ theorem NS_M6_PROVED : NS_M6_OPEN
 
 #print axioms NS_M6_PROVED
 -- propext, Classical.choice, Quot.sound
+```
 
 
 0 sorry. 0 OPEN. 0 axiom keyword. 527 runs, last 5 green.
@@ -43,41 +44,6 @@ python3 -c "import os; print('OPEN', sum('OPEN' in open(f).read() for f in os.li
 
 CI: #225 184bedf ✅ #226 875e895 ✅ #227 4a27a3c ✅ #228 a1b03c7 ✅ #229 dcc614b ✅
 CMI Rules • ring FAILS on ENNReal — use rpow_add, mul_comm, mul_assoc • No axiom keyword — named OPEN defs only def X : Prop := ... now closed • All APIs #check before use • ∃ C, P C uses obtain ⟨C, hC⟩ never .1/.2 • Roots use ` `Towers ` not 'Towers  Relationship to Opera Numerorum
-arakelov-positivity-rh-core — ROOT V2 — M2 kappa, M7 Manifest, M8C Zoe-M*, M4 10^4000 — ω²=48/13 — P5 boundary
-
-rh-p5-bridge-14 — Keystone — q5=226 q6=165849 cf_bound=82829 — S14 finite
-
-bost-connes — Hub — C(S₄)=11.422... >2√13 margin x1.58 — 21 bricks 0 sorry #173 GREEN — 1061 Hasse primes h=10 both routes
-
-birch-swinnerton-dyer-143a1 — BSD — Heegner L≠0 rank 0 — example of M1-M5 — two closing options p2^10 vs 10 BQFs
-
-riemann-arakelov-positivity — Route A Act I
-
-arakelov-rh-descent — Route B Act II
-
-rh-growth-contradiction — Route C Act III
-
-brothers-desert-proof — Route D Act IV
-
-lindelof-hypothesis-143 — Inner wall μ=0
-
-eutheos-property — 1419=3×11×43 family
-
-poincare-spectral — q=1/8 tail_26≤1e-20
-
-p-vs-np — barriers
-
-yang-mills-gap — mass gap Δ>0 Wilson area law — Δ = C-2√13 — M6 KMS beta_c=1
-
-navier-stokes — THIS REPO — Θ(t) summable — Path A 8/8 + Path B 4/4 — distinct Clay M6
-
-opera-sieve — methodology S14 Sα0
-
-zerobeacon — BRAIN 1000 tools
-
-pistus-theoria — ARCHIVE OperaNumerorum_MasterEquations.pdf
-
-#print axioms is source of truth. All: {propext, Classical.choice, Quot.sound} only.
 
 ## Opera Numerorum — 16 repos
 
@@ -116,9 +82,8 @@ pistus-theoria — ARCHIVE OperaNumerorum_MasterEquations.pdf
 ---
 
 ORCID: [0009-0008-1290-6105](https://orcid.org/0009-0008-1290-6105) · Archive: [pistus-theoria](https://github.com/DavidFox998/pistus-theoria) — `OperaNumerorum_MasterEquations.pdf SHA 7f6b31b4`
+
 ## Author
 
 David J. Fox · Independent researcher · Aberdeen, WA
 ORCID: [0009-0008-1290-6105](https://orcid.org/0009-0008-1290-6105) · Opera Numerorum — 2026
-
-```

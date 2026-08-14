@@ -14,7 +14,6 @@ theorem NS_M6_PROVED : NS_M6_OPEN
 -- propext, Classical.choice, Quot.sound
 ```
 
-
 0 sorry. 0 OPEN. 0 axiom keyword. 527 runs, last 5 green.
 
 This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills. It reuses heat-trace Θ(t) summability as explicit bound — analogous gap to C(S₄)-2√13 in bost-connes but proved independently.
@@ -82,6 +81,7 @@ CMI Rules • ring FAILS on ENNReal — use rpow_add, mul_comm, mul_assoc • No
 ---
 
 ORCID: [0009-0008-1290-6105](https://orcid.org/0009-0008-1290-6105) · Archive: [pistus-theoria](https://github.com/DavidFox998/pistus-theoria) — `OperaNumerorum_MasterEquations.pdf SHA 7f6b31b4`
+**Ensemble:** `sha256:e1617bc96018da4577f153f2e0cd8cc4eda1183434a9624b6cefaedc655db6c5` · hub [`rh-p5-bridge-14`](https://github.com/DavidFox998/rh-p5-bridge-14) · anchor `d04e4bd1`
 
 ## Author
 

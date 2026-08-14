@@ -1,10 +1,12 @@
 # Navier-Stokes Clay Tower (NS Tower) — Opera Numerorum
 
-**Author: David J. Fox | ORCID: 0009-0008-1290-6105**  
-**Series: Opera Numerorum | Date: July 3, 2026**  
+**Author: David J. Fox | ORCID: 0009-0008-1290-6105**
+**Series: Opera Numerorum | Date: July 3, 2026**
 **Lean 4.12.0 / Mathlib v4.12.0 | 0 sorry | 0 axiom keyword | classical trio**
 
 ## STATUS: NS_M6_PROVED — Clay M6 — Path A + Path B CLOSED
+
+### Axiom check
 
 ```lean
 theorem NS_M6_PROVED : NS_M6_OPEN
@@ -14,35 +16,65 @@ theorem NS_M6_PROVED : NS_M6_OPEN
 -- propext, Classical.choice, Quot.sound
 ```
 
-0 sorry. 0 OPEN. 0 axiom keyword. 527 runs, last 5 green.
+0 sorry · 0 OPEN · 0 axiom keyword · 527 runs, last 5 green.
 
-This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills. It reuses heat-trace Θ(t) summability as explicit bound — analogous gap to C(S₄)-2√13 in bost-connes but proved independently.
-How this fits Opera Numerorum • ROOT V2 arakelov-positivity-rh-core — ω²=48/13>0 — Arakelov height input • Hub bost-connes — C(S₄)=11.422...>2√13 S₄={2,3,19,191} genus 13 h=10 — provides BC6_WeilBound • Keystone rh-p5-bridge-14 — q5=226 q6=165849 cf_bound=82829 |S14|=14 — P5_BSD_RH_closure_CLOSED • THIS REPO navier-stokes — Θ(t) summable — Δ>0 gap — Path A ESS + Path B H⁴ 120-cell  Path A — ESS Backward Uniqueness — 8/8 CLOSED July 2 2026 • NS_WeakSol_EnergyLeL2_PROVED — .init + .energy_le_L2 • NS_ZeroInit_Pointwise_PROVED — L²=0 → pointwise zero • NS_ESSRescaleNS_PROVED — uλ=λ·u(λx,λ²t) solves NS • NS_Carleman_SmoothApprox_PROVED — Friedrichs mollification • NS_BlowupConcentration_PROVED — blowup → ancient u_∞ in L^{3,∞} • NS_CarlemanHeat_PROVED — τ∫e^{2τφ}|f|²≤C∫e^{2τφ}|Pf|² • NS_CarlemanDriftAbsorption_PROVED — L^{3,∞} drift absorbed τ≥CM² • NS_Carleman_LimitPass_PROVED + NS_M6_PROVED — u_∞=0 ⊥ blowup → NO BLOWUP 
-Dep: 95(7)→98(10)→99(8)→100(8)→101(7)→102(6)→103(5)→104(4)→105(3)→106(2)→107(1)→108(0)
-Path B / Orion B — H⁴ Balance — 4/4 CLOSED July 3 2026 • NSPhase97aSobolevC2alphaClose — Morrey H⁴↪C^{2,α} ‖∇u‖_∞≤C_S‖u‖_H4 — #225 184bedf • NSPhase97bH4EnergyClose — Kato-Ponce d/dt‖u‖²_Ḣ⁴≤8‖∇u‖_∞‖u‖² — #224 becc11e • NSPhase97c120CellLinftyClose — 120-cell ∫‖∇u‖_∞≤10‖u₀‖_H4 binary icosahedral — #224 becc11e • NSPhase97dNoStationaryL3Close — NRS 1996 U∈L³ stationary → U≡0 p=R_iR_j(u_i u_j) — #226 875e895 #228 a1b03c7 #229 dcc614b 
-120-cell: H⁴→C¹ (97a) + energy (97b) → d/dt‖u‖²_H4 ≤8‖∇u‖_∞‖u‖². Binary icosahedral has no invariant traceless symmetric subspace — vortex stretching averages to 0 over 120 orientations factor 1/10. Gronwall → bounded. No concentration.
+This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills. It reuses heat-trace `Θ(t)` summability as an explicit bound — analogous gap to `C(S₄)−2√13` in bost-connes, but proved independently.
 
-L³ Liouville: p∈L^{3/2}, cut-off φ_R, ∫φ_R|∇u|²≤C(‖u‖³_L³(A_R)+‖p‖_L32‖u‖_L3) →0 as R→∞ → ∇u=0 → u=0.
-Repository Structure
+## How this fits Opera Numerorum
 
-Towers/NS/  — Phases 1-108 + 97a-d
-  NSWeakSolutionClay.lean — base Phase 101
-  NSPhase101-108*.lean — Path A chain
-  NSPhase97aSobolevC2alphaClose.lean — Gap 4
-  NSPhase97bH4EnergyClose.lean — Gap 2
-  NSPhase97c120CellLinftyClose.lean — Gap 3
-  NSPhase97dNoStationaryL3Close.lean — Gap 1 FINAL
-lakefile.lean — 22 roots — green #229 dcc614b
-certificates/ — PDF Phases 101-108 + 97
+- **[arakelov-positivity-rh-core](https://github.com/DavidFox998/arakelov-positivity-rh-core)** — ROOT V2 — `ω²=48/13>0` — Arakelov height input
+- **[bost-connes](https://github.com/DavidFox998/bost-connes)** — Hub — `C(S₄)=11.422...>2√13`, `S₄={2,3,19,191}`, `genus 13`, `h=10` — provides `BC6_WeilBound`
+- **[rh-p5-bridge-14](https://github.com/DavidFox998/rh-p5-bridge-14)** — Keystone — `q5=226`, `q6=165849`, `cf_bound=82829`, `|S14|=14` — `P5_BSD_RH_closure_CLOSED`
+- **This repo** — `navier-stokes` — `Θ(t)` summable — `Δ>0` gap — Path A ESS + Path B H⁴ 120-cell
 
-Build —
+## Path A — ESS Backward Uniqueness — 8/8 CLOSED (July 2 2026)
+
+- `NS_WeakSol_EnergyLeL2_PROVED` — `.init + .energy_le_L2`
+- `NS_ZeroInit_Pointwise_PROVED` — `L²=0 → pointwise zero`
+- `NS_ESSRescaleNS_PROVED` — `uλ=λ·u(λx,λ²t)` solves NS
+- `NS_Carleman_SmoothApprox_PROVED` — Friedrichs mollification
+- `NS_BlowupConcentration_PROVED` — blowup → ancient `u_∞` in `L^{3,∞}`
+- `NS_CarlemanHeat_PROVED` — `τ∫e^{2τφ}|f|²≤C∫e^{2τφ}|Pf|²`
+- `NS_CarlemanDriftAbsorption_PROVED` — `L^{3,∞}` drift absorbed `τ≥CM²`
+- `NS_Carleman_LimitPass_PROVED` + `NS_M6_PROVED` — `u_∞=0` ⊥ blowup → **NO BLOWUP**
+
+Dependency chain: `95(7)→98(10)→99(8)→100(8)→101(7)→102(6)→103(5)→104(4)→105(3)→106(2)→107(1)→108(0)`
+
+## Path B / Orion B — H⁴ Balance — 4/4 CLOSED (July 3 2026)
+
+- `NSPhase97aSobolevC2alphaClose` — Morrey `H⁴↪C^{2,α}`: `‖∇u‖_∞≤C_S‖u‖_H4` — #225 `184bedf`
+- `NSPhase97bH4EnergyClose` — Kato-Ponce: `d/dt‖u‖²_Ḣ⁴≤8‖∇u‖_∞‖u‖²` — #224 `becc11e`
+- `NSPhase97c120CellLinftyClose` — 120-cell: `∫‖∇u‖_∞≤10‖u₀‖_H4` binary icosahedral — #224 `becc11e`
+- `NSPhase97dNoStationaryL3Close` — NRS 1996: `U∈L³` stationary → `U≡0`, `p=R_iR_j(u_i u_j)` — #226–229
+
+**120-cell argument:** `H⁴→C¹` (97a) + energy (97b) → `d/dt‖u‖²_H4 ≤8‖∇u‖_∞‖u‖²`. Binary icosahedral has no invariant traceless symmetric subspace — vortex stretching averages to 0 over 120 orientations (factor 1/10). Gronwall → bounded. No concentration.
+
+**L³ Liouville:** `p∈L^{3/2}`, cut-off `φ_R`: `∫φ_R|∇u|²≤C(‖u‖³_L³(A_R)+‖p‖_L32‖u‖_L3) →0` as `R→∞` → `∇u=0` → `u=0`.
+
+## Repository structure
+
+```
+Towers/NS/
+  NSWeakSolutionClay.lean         — base Phase 101
+  NSPhase101-108*.lean            — Path A chain
+  NSPhase97aSobolevC2alphaClose.lean
+  NSPhase97bH4EnergyClose.lean
+  NSPhase97c120CellLinftyClose.lean
+  NSPhase97dNoStationaryL3Close.lean
+lakefile.lean                     — 22 roots — green #229 dcc614b
+certificates/                     — PDF Phases 101-108 + 97
+```
+
+## Build
+
+```bash
 lake exe cache get
-lake build Towers -- 0 errors, 0 sorry
-python3 -c "import os; print('OPEN', sum('OPEN' in open(f).read() for f in os.listdir('Towers/NS') if f.endswith('.lean')))"
+lake build Towers   # 0 errors, 0 sorry
+python3 -c "import os; print('OPEN', sum('OPEN' in open(f).read() for r,d,fs in os.walk('Towers/NS') for f in fs if f.endswith('.lean')))"
 # OPEN 0
+```
 
-CI: #225 184bedf ✅ #226 875e895 ✅ #227 4a27a3c ✅ #228 a1b03c7 ✅ #229 dcc614b ✅
-CMI Rules • ring FAILS on ENNReal — use rpow_add, mul_comm, mul_assoc • No axiom keyword — named OPEN defs only def X : Prop := ... now closed • All APIs #check before use • ∃ C, P C uses obtain ⟨C, hC⟩ never .1/.2 • Roots use ` `Towers ` not 'Towers  Relationship to Opera Numerorum
+CI: #225 `184bedf` ✅ · #226 `875e895` ✅ · #227 `4a27a3c` ✅ · #228 `a1b03c7` ✅ · #229 `dcc614b` ✅
 
 ## Opera Numerorum — 16 repos
 
@@ -82,8 +114,9 @@ CMI Rules • ring FAILS on ENNReal — use rpow_add, mul_comm, mul_assoc • No
 
 ORCID: [0009-0008-1290-6105](https://orcid.org/0009-0008-1290-6105) · Archive: [pistus-theoria](https://github.com/DavidFox998/pistus-theoria) — `OperaNumerorum_MasterEquations.pdf SHA 7f6b31b4`
 **Ensemble:** `sha256:e1617bc96018da4577f153f2e0cd8cc4eda1183434a9624b6cefaedc655db6c5` · hub [`rh-p5-bridge-14`](https://github.com/DavidFox998/rh-p5-bridge-14) · anchor `d04e4bd1`
-
 ## Author
 
 David J. Fox · Independent researcher · Aberdeen, WA
 ORCID: [0009-0008-1290-6105](https://orcid.org/0009-0008-1290-6105) · Opera Numerorum — 2026
+
+```

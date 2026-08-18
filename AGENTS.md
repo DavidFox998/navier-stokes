@@ -35,8 +35,8 @@ Look for `NavierStokes` or `NS` Lean files.
 ## Full chain
 
 ```
-CHAIN SHA256 (all 12 repos locked 2026-08-05):
-c79c94e7676a10b1cfb5afc75b7346b9b5b8589dee9b679db230ba3b8034e6d1
+CHAIN SHA256 (all 19 repos locked 2026-08-15):
+f39ed9a9bd7cc02c6cf415f40b3faaa3c627a5a0d53621766466f31a2211e7ce
 See CHAIN.md for all 12 repo HEADs at lock time.
 ```
 
@@ -46,5 +46,5 @@ See CHAIN.md for all 12 repo HEADs at lock time.
 T            = 1419 = 0x58B    (the circuit witness)
 α₀           = 299 + π/10     (the generating irrational)
 φ            = (1+√5)/2        (golden ratio, H4 throat slope)
-chain SHA256 = c79c94e7676a10b1cfb5afc75b7346b9b5b8589dee9b679db230ba3b8034e6d1
+chain SHA256 = f39ed9a9bd7cc02c6cf415f40b3faaa3c627a5a0d53621766466f31a2211e7ce
 ```

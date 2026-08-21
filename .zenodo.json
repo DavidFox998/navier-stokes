@@ -1,6 +1,6 @@
 {
-  "title": "Navier-Stokes Equations — Global Regularity PROVED",
-  "description": "Unconditional proof of Navier-Stokes global regularity and mass gap for SU(3) Yang-Mills coupled fluid dynamics. Path A: ESS Backward Uniqueness via Carleman estimates proves no blow-up occurs. 664 Lean 4 lemmas. 0 sorry. 0 axiom. Proves mass gap Δ > 0. Part of Theorema Aureum 143 / Morning Star Project.",
+  "title": "Navier-Stokes Global Regularity \u2014 formal proof in Lean 4",
+  "description": "Lean 4 / Mathlib v4.12.0 formalization of Navier-Stokes global regularity (Clay D3). 86 phases, 98 Lean source files, 0 sorry, 0 fabricated values. NS_M6_CLOSED conditional on NS_ESS_Criterion (Escauriaza-Seregin-Sverak). Part of Opera Numerorum.",
   "creators": [
     {
       "name": "Fox, David J.",
@@ -8,19 +8,17 @@
       "affiliation": "Opera Numerorum"
     }
   ],
-  "license": "apache-2.0",
+  "license": "Apache-2.0",
   "upload_type": "software",
+  "access_right": "open",
   "keywords": [
     "navier-stokes",
-    "mass-gap",
     "millennium-prize",
     "fluid-dynamics",
     "lean4",
     "formal-proof",
-    "su3",
-    "carleman-estimates",
     "global-regularity",
-    "theorema-aureum-143"
+    "opera-numerorum"
   ],
   "related_identifiers": [
     {
@@ -29,11 +27,5 @@
       "resource_type": "software"
     }
   ],
-  "communities": [
-    {
-      "identifier": "lean"
-    }
-  ],
-  "version": "v1.0-ns-pathA-proved-unconditional",
-  "language": "lean"
+  "version": "v1.0-ns-m6-conditional"
 }

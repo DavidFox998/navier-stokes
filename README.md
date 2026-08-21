@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22049018.svg)](https://doi.org/10.5281/zenodo.22049018) [![CI](https://github.com/DavidFox998/navier-stokes/actions/workflows/ns-tower-ci.yml/badge.svg)](https://github.com/DavidFox998/navier-stokes/actions/workflows/ns-tower-ci.yml)
+
 # Navier-Stokes Clay Tower (NS Tower) — Opera Numerorum
 
 > **Opera Numerorum ensemble** — 19 repos · chain `7472f4e5` · [REPOS.md →](https://github.com/DavidFox998/rh-p5-bridge-14/blob/main/REPOS.md)

@@ -23,6 +23,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
         run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "GH_PUSH_TOKEN not configured — skipping bridge dispatch"
+            exit 0
+          fi
           curl -sf -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GH_TOKEN" \

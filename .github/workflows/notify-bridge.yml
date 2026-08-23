@@ -19,14 +19,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Guard — fail fast if GH_PUSH_TOKEN is absent
+        env:
+          TOKEN_CHECK: ${{ secrets.GH_PUSH_TOKEN }}
+        run: |
+          if [ -z "$TOKEN_CHECK" ]; then
+            echo "::error::GH_PUSH_TOKEN is empty — dispatch will be skipped (add the secret to this repo's Settings → Secrets)"
+            exit 1
+          fi
+
       - name: Fire repository_dispatch to bridge
         env:
           GH_TOKEN: ${{ secrets.GH_PUSH_TOKEN }}
         run: |
-          if [ -z "$GH_TOKEN" ]; then
-            echo "GH_PUSH_TOKEN not configured — skipping bridge dispatch"
-            exit 0
-          fi
           curl -sf -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GH_TOKEN" \

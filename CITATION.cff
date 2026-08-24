@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+title: "Navier–Stokes Regularity and Yang–Mills Mass Gap — Lean 4 Formalization"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Fox
+    given-names: David
+    orcid: "https://orcid.org/0009-0008-1290-6105"
+    affiliation: "Opera Numerorum"
+license: MIT
+repository-code: "https://github.com/DavidFox998/navier-stokes"
+keywords:
+  - "Navier–Stokes equations"
+  - "global regularity"
+  - "Yang–Mills mass gap"
+  - "SU(3)"
+  - "Lean 4"
+  - "formal verification"
+  - "mathematical physics"
+abstract: "Lean 4 formalization of the Lean 4 formalization of Navier–Stokes global-regularity and SU(3) Yang–Mills mass-gap statements. This repository is part of David Fox's Opera Numerorum ensemble."

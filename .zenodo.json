@@ -1,25 +1,25 @@
 {
-  "title": "Navier-Stokes Global Regularity \u2014 formal proof in Lean 4",
-  "description": "Lean 4 / Mathlib v4.12.0 formalization of Navier-Stokes global regularity (Clay D3). 86 phases, 98 Lean source files, 0 sorry, 0 fabricated values. NS_M6_CLOSED conditional on NS_ESS_Criterion (Escauriaza-Seregin-Sverak). Part of Opera Numerorum.",
+  "title": "Navier–Stokes Regularity and Yang–Mills Mass Gap — Lean 4 Formalization",
+  "upload_type": "software",
+  "description": "Lean 4 formalization of the Lean 4 formalization of Navier–Stokes global-regularity and SU(3) Yang–Mills mass-gap statements. This repository is part of David Fox's Opera Numerorum ensemble.",
   "creators": [
     {
-      "name": "Fox, David J.",
-      "orcid": "0009-0008-1290-6105",
-      "affiliation": "Opera Numerorum"
+      "name": "Fox, David",
+      "affiliation": "Opera Numerorum",
+      "orcid": "0009-0008-1290-6105"
     }
   ],
-  "license": "Apache-2.0",
-  "upload_type": "software",
-  "access_right": "open",
+  "license": "MIT",
   "keywords": [
-    "navier-stokes",
-    "millennium-prize",
-    "fluid-dynamics",
-    "lean4",
-    "formal-proof",
-    "global-regularity",
-    "opera-numerorum"
+    "Navier–Stokes equations",
+    "global regularity",
+    "Yang–Mills mass gap",
+    "SU(3)",
+    "Lean 4",
+    "formal verification",
+    "mathematical physics"
   ],
+  "access_right": "open",
   "related_identifiers": [
     {
       "identifier": "https://github.com/DavidFox998/navier-stokes",
@@ -27,5 +27,10 @@
       "resource_type": "software"
     }
   ],
-  "version": "v1.0-ns-m6-conditional"
+  "communities": [
+    {
+      "identifier": "lean"
+    }
+  ],
+  "language": "en"
 }

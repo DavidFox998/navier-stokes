@@ -81,40 +81,37 @@ python3 -c "import os; print('OPEN', sum('OPEN' in open(f).read() for r,d,fs in 
 
 CI: #225 `184bedf` ✅ · #226 `875e895` ✅ · #227 `4a27a3c` ✅ · #228 `a1b03c7` ✅ · #229 `dcc614b` ✅
 
-## Opera Numerorum — 16 repos
+## Opera Numerorum — ensemble map
 
-**[arakelov-positivity-rh-core](https://github.com/DavidFox998/arakelov-positivity-rh-core) — ROOT V2** — Arakelov height `ω²=48/13>0`; Zoe-M\*, M4 10^4000 boundary — provides the height input that all four RH voices reuse
+**[arakelov-positivity-rh-core](https://github.com/DavidFox998/arakelov-positivity-rh-core) — Core** — RH positivity, `ω² = 48/13 > 0` — the root every repo connects to
 
-**[rh-p5-bridge-14](https://github.com/DavidFox998/rh-p5-bridge-14) — Keystone** — `q5=226`, `q6=165849`, `cf_bound=82829` — reduces infinite `S_α0` to finite `S₁₄`; closes `BSD_143_PROVED → RiemannHypothesis`
+**[rh-p5-bridge-14](https://github.com/DavidFox998/rh-p5-bridge-14) — Keystone** — ensemble manifest (`REPOS.md`) and chain lock; reduces infinite `S_α₀` to finite `S₁₄`
 
-**[riemann-arakelov-positivity](https://github.com/DavidFox998/riemann-arakelov-positivity) — Route A · Act I** — Abbes-Ullmo `ω²=48/13>0`; a Siegel zero would force negative height — CLOSED via S₄
+**[bost-connes](https://github.com/DavidFox998/bost-connes) — Arithmetic hub** — `C(S₄) = 11.422 > 2√13`; Bost–Connes spectral analysis for X₀(143)
 
-**[arakelov-rh-descent](https://github.com/DavidFox998/arakelov-rh-descent) — Route B · Act II** — Kim-Sarnak `λ₁≥975/4096` → Selberg trace = Bost-Connes → GRH for X₀(143) → RH — 35pp BC6 CLOSED via S₄
+**[birch-swinnerton-dyer-143](https://github.com/DavidFox998/birch-swinnerton-dyer-143) — BSD** — BSD for curve 143a1 — recorded OPEN (formalization exceeds what Mathlib currently supports)
 
-**[rh-growth-contradiction](https://github.com/DavidFox998/rh-growth-contradiction) — Route C · Act III** — Littlewood Ω `exp(c√(log t / log log t))` beats `(log t)²`; zero repulsion → RH — CLOSED via S₄
+**[birch-swinnerton-dyer-143a1](https://github.com/DavidFox998/birch-swinnerton-dyer-143a1) — BSD worked example** — Heegner point `(4,6)`, `L(143a1,1) ≠ 0`, `|Sha| = 1`
 
-**[brothers-desert-proof](https://github.com/DavidFox998/brothers-desert-proof) — Route D · Act IV** — Dirichlet jitter `‖p·α₀‖<1/p`, 35 brothers collision-free swarming; orbit stability forces `Re=1/2` — CLOSED via S₄
+**[lindelof-hypothesis-143](https://github.com/DavidFox998/lindelof-hypothesis-143) — Lindelöf** — `μ = 0` for X₀(143) via S₄ = {2, 3, 19, 191}
 
-**[bost-connes](https://github.com/DavidFox998/bost-connes) — Arithmetic hub** — `C(S₄)=11.422...>2√13`, Gates M1–M3→M4–M8, 21 bricks 0 sorry — #173 GREEN
+**[yang-mills-gap](https://github.com/DavidFox998/yang-mills-gap) — Yang–Mills** — SU(3) lattice mass gap at `β₀ = ln 8`
 
-**[birch-swinnerton-dyer-143a1](https://github.com/DavidFox998/birch-swinnerton-dyer-143a1) — BSD 143a1** — rank 1, Heegner point `(4,6)`, `L(143a1,1)≠0`, `|Sha|=1` — worked example of M1–M5 arithmetic in action
+**[navier-stokes](https://github.com/DavidFox998/navier-stokes) — Navier–Stokes** — global regularity formalization ← **this repo**
 
-**[lindelof-hypothesis-143](https://github.com/DavidFox998/lindelof-hypothesis-143) — Lindelöf for X₀(143)** — GRH → `μ=0` → `|ζ(½+it)|=O(t^ε)` unconditional via S₄
+**[p-vs-np](https://github.com/DavidFox998/p-vs-np) — P vs NP** — mechanics; conditional `SAT ∉ P → P ≠ NP`
 
-**[eutheos-property](https://github.com/DavidFox998/eutheos-property) — Barrier bypass** — `1419=3×11×43`, 35 brothers `≡153 mod 211`, barriers BGS/RR/AW all PASS — P vs NP study side
+**[eutheos-property](https://github.com/DavidFox998/eutheos-property) — Barrier bypass** — witness `T = 1419 = 3·11·43`
 
-**[poincare-spectral](https://github.com/DavidFox998/poincare-spectral) — Spectral gap** — `S³/I*`, `q=1/8`, `tail_26≤10⁻²⁰`, `spectral_gap>0` — decidable instance of an undecidable gap problem
+**[poincare-spectral](https://github.com/DavidFox998/poincare-spectral) — Poincaré** — spectral gap for the homology sphere `S³/I*`
 
-**[p-vs-np](https://github.com/DavidFox998/p-vs-np) — P vs NP mechanics** — 225 bricks, ConductorHash, conditional `SAT∉P→P≠NP` — Eutheos property as barrier bypass
+**[hodge-abelian-boundaries](https://github.com/DavidFox998/hodge-abelian-boundaries) — Hodge** — measured (2,2)-class obstructions on CM abelian varieties
 
-**[hodge-abelian-boundaries](https://github.com/DavidFox998/hodge-abelian-boundaries) — Hodge obstructions** — 200 measured rank obstructions for `g=3,4,5`; `observed_rank>criterionBound` for each
+**[opera-sieve](https://github.com/DavidFox998/opera-sieve) — Sieve** — canonical sieve for `S(α₀ = 299+π/10)`; M1–M13 pipeline
 
-**[yang-mills-gap](https://github.com/DavidFox998/yang-mills-gap) — Yang-Mills mass gap** — `SU(2)` on `ℝ⁴`, `ρ<1/7`, `Δ>0`, Wilson area law — same gap structure as `C(S₄)−2√13`
+**[morningstar-project](https://github.com/DavidFox998/morningstar-project) — Certification** — machine certification for GRH(X₀(143)) and BSD(J₀(143))
 
-**[navier-stokes](https://github.com/DavidFox998/navier-stokes) — Navier-Stokes** ← **this repo** — Path A ESS backward uniqueness + Path B 120-cell H⁴ balance — `NS_M6_PROVED`, no blowup
-
-**[zerobeacon](https://github.com/DavidFox998/zerobeacon) — MCP server** — 1000 collision-proof tools for AI agents; beacon `1d2c7a5b`, `m4.out = Complete: True`
-
+*The four historical RH routes (A–D) are private — the multi-route structure is confusing; their status is documented in the keystone's `REPOS.md`. Referee access to non-public material is via the Oracle.*
 ---
 
 **Ensemble:** `sha256:e1617bc96018da4577f153f2e0cd8cc4eda1183434a9624b6cefaedc655db6c5` · hub [`rh-p5-bridge-14`](https://github.com/DavidFox998/rh-p5-bridge-14) · anchor `d04e4bd1`

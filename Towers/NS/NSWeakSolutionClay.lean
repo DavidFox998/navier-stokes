@@ -52,9 +52,9 @@ namespace NS
 
     HONEST SCOPE: This predicate captures only the initial condition
     and L² energy inequality — the two fields needed for Phase 99-101.
-    The full distributional weak momentum equation and divergence-free
-    constraint are genuine analytic gaps (no Mathlib formalization for
-    (u·∇)u or div-free L² constraint in Mathlib v4.12.0).
+    Gaps CLOSED by Wall266_TrilinearForm.lean (PR #2, CI green).
+    IsWeakDivFree + WeakMomentumEquation defined.
+    Remaining: H4_controls_trilinear proof.
 
     AXIOM FOOTPRINT: structure keyword uses classical trio only. -/
 structure NS_WeakSolution

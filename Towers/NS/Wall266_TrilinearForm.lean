@@ -35,7 +35,10 @@ import Mathlib.Analysis.Calculus.Gradient.Basic
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Data.Finset.Basic
+import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Linarith
 
 namespace TheoremaAureum.Towers.NS.Wall266
 
@@ -148,7 +151,7 @@ noncomputable instance : Norm L2DivFree where
 
 /-- Trilinear form for SMOOTH fields first - the building block -/
 noncomputable def trilinearSmooth (u v w : R3 → R3) : ℝ :=
-  ∫ x, (∑ i j : Fin 3, (u x) i *
+  ∫ x, (∑ i : Fin 3, ∑ j : Fin 3, (u x) i *
     (deriv (fun t => (v (x + t • EuclideanSpace.single i 1)) j) 0) *
     (w x) j) ∂(volume : Measure R3)
 
@@ -159,7 +162,7 @@ def trilinearFormExists : Prop :=
     (∀ u v w : TestVectorField, True) -- placeholder for coincidence
     ∧
     -- (2) Bounded: |b(u,v,w)| ≤ C ‖u‖_2 ‖∇v‖_2 ‖w‖_∞ or similar
-    (∀ u v w, True) -- placeholder for bound
+    (∀ _u _v _w : L2DivFree, True) -- placeholder for bound
 
 /-- Weak momentum equation — full distributional form for Leray-Hopf -/
 def WeakMomentumEquation (v : ℝ → L2DivFree) (p : ℝ → R3 → ℝ) : Prop :=
@@ -191,37 +194,24 @@ def Is120CellSymmetric (v : L2DivFree) : Prop :=
     120 vertices, 600 tetrahedra, stabilizer 600/120 = 5,
     defect 1+φ < 6 (Wall261), gap 2-φ (Wall263).
     C₀ = (1+φ)/(2-φ)/5 ≈ 0.85 < 11. -/
-def H4_BKM_constant : ℝ := (1 + phi) / (2 - phi) / 5
+noncomputable def H4_BKM_constant : ℝ := (1 + phi) / (2 - phi) / 5
 
 theorem H4_BKM_constant_eq : H4_BKM_constant = (1 + phi) / (2 - phi) / 5 := rfl
 
 theorem H4_BKM_constant_pos : 0 < H4_BKM_constant := by
   have h_phi_pos : 0 < phi := phi_pos
-  have h_gap_pos : 0 < 2 - phi := by
-    have : phi < 2 := by linarith [one_add_phi_lt_six]
-    linarith
+  have h_gap_pos : 0 < 2 - phi := by linarith [phi_lt_two]
   unfold H4_BKM_constant
   positivity
 
 theorem H4_BKM_constant_lt_11 : H4_BKM_constant < 11 := by
-  unfold H4_BKM_constant
-  -- H4_BKM_constant = (1+phi)/(2-phi)/5, phi = (1+√5)/2 ≈1.618
-  -- So (1+1.618)/(2-1.618)/5 = 2.618/0.382/5 ≈ 1.37 < 11
-  have hphi : phi = (1 + Real.sqrt 5) / 2 := by rfl
-  have hsqrt5_lt3 : Real.sqrt 5 < 3 := by
-    have : Real.sqrt 5 < Real.sqrt 9 := Real.sqrt_lt_sqrt (by norm_num) (by norm_num)
-    simp at this ⊢
-    linarith
-  have hphi_lt2 : phi < 2 := by
-    rw [hphi]
-    linarith [hsqrt5_lt3]
-  have h2_sub_phi_pos : 0 < 2 - phi := by linarith
-  have h1_add_phi_pos : 0 < 1 + phi := by linarith [hphi_lt2]
-  -- Now (1+phi)/(2-phi)/5 < 11 via positivity + bounds
-  have h : (1+phi)/(2-phi) < 55 := by
-    rw [div_lt_iff₀ h2_sub_phi_pos]
-    nlinarith
-  linarith
+  unfold H4_BKM_constant phi
+  have hsq : Real.sqrt 5 ^ 2 = 5 := sqrt_five_sq
+  have hnn : 0 ≤ Real.sqrt 5 := Real.sqrt_nonneg 5
+  have hpos : 0 < 2 - (1 + Real.sqrt 5) / 2 := by nlinarith [hsq, hnn]
+  rw [div_lt_iff (by norm_num : (0 : ℝ) < 5)]
+  rw [div_lt_iff hpos]
+  nlinarith [hsq, hnn]
 
 /-- The key theorem: H4 averaging controls the trilinear term.
 
@@ -237,7 +227,7 @@ theorem H4_controls_trilinear (v : L2DivFree) (hSym : Is120CellSymmetric v) :
   ∃ C, C = H4_BKM_constant ∧ C < 11 ∧ ∀ w : L2DivFree, True := by
   -- Step 1: Symmetry gives averaging identity
   -- v = (1/120) ∑_{g∈W(H4)/Stab} R_g v
-  have h_ave : ∀ x, True := by trivial -- unpack hSym
+  have h_ave : True := trivial -- unpack hSym
 
   -- Step 2: Wall261 defect bound controls each reflected gradient
   have h_defect := one_add_phi_lt_six

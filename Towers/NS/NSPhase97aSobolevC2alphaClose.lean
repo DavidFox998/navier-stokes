@@ -43,9 +43,17 @@ theorem weight_L2 : MemLp (fun ξ : R3 => (1 + ‖ξ‖^2)⁻¹ ^ 2) 2 volume :=
   sorry -- API: volume_eq, spherical coordinates — mechanical
 
 theorem weight_L1_pow4 : Integrable (fun ξ : R3 => (1 + ‖ξ‖^2)⁻¹ ^ 4) volume := by
-  -- (1+|ξ|²)⁻⁴ ∈ L¹(R³) — same polar integral with power 4
-  -- ∫ r²/(1+r²)⁴ dr converges because 2*4 - 2 = 6 > 3
-  sorry -- 2nd sorry: integrable_rpow, needs ENNReal.rpow API
+  -- From Sorry 1: we already have ∫ (1+r²)⁻⁴ r² dr ≤ ∫ (1+r²)⁻² dr = π/4
+  -- So ∫_{R³} (1+|ξ|²)⁻⁴ dξ = 4π ∫₀^∞ r²/(1+r²)⁴ dr ≤ 4π * π/4 = π² < ∞
+  have h_wL2 := weight_L2
+  -- L² of (1+|ξ|²)⁻² implies L¹ of (1+|ξ|²)⁻⁴ because ((1+|ξ|²)⁻²)² = (1+|ξ|²)⁻⁴
+  -- And MemLp 2 → Integrable of square
+  have h_sq : (fun ξ => (1 + ‖ξ‖ ^ 2)⁻¹ ^ 4) = (fun ξ => ((1 + ‖ξ‖ ^ 2)⁻¹ ^ 2) ^ 2) := by
+    funext ξ
+    ring
+  rw [h_sq]
+  -- Square of L² is L¹
+  exact MemLp.integrable_sq h_wL2
 
 -- H⁴ norm finite → f̂ ∈ L¹ via Cauchy-Schwarz with weight
 theorem fourier_hat_L1_of_H4 {f : R3 → ℝ} (hH4 : MemLp (fun ξ => (1+‖ξ‖^2)^2 * fourierIntegral f ξ) 2 volume) :

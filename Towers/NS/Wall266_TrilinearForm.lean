@@ -7,16 +7,17 @@ This is the missing infrastructure for the weak momentum equation.
 Pinned toolchain: Mathlib v4.12.0; compilation remains unverified.
 Everything defined in weak form via integrals.
 
-Closes the two gaps:
-1. ✅ div_free field now exists as IsWeakDivFree
-2. ✅ momentum field now exists as WeakMomentumEquation with trilinear form
+Provides the weak-divergence predicate used by the density construction.
+WeakMomentumEquation below remains a True-valued shape, not the completed
+distributional momentum equation.
 
 H4 BOUND: H4_BKM_constant = (1+φ)/(2-φ)/5 < 11, from Wall261 defect
 (1+φ < 6) and Wall263 spectral gap (φ ∉ spectrum, gap = 2-φ).
-The main estimate H4_controls_trilinear has one remaining sorry:
-the Phase 97a H4↪C^{2,α} Sobolev embedding.
+H4_controls_trilinear below concludes a True-valued placeholder, not an
+analytic trilinear estimate. The intended Sobolev/norm bounds remain OPEN.
 
-AXIOM FOOTPRINT: classical trio only (plus sorrys marked as open math).
+No new axiom is introduced by the representative/weak-divergence repair.
+Compilation and an actual kernel dependency audit remain unverified.
 ================================================================
 -/
 
@@ -27,8 +28,11 @@ import Mathlib.MeasureTheory.Function.LpSpace
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.Gradient.Basic
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Data.Finset.Basic
+import Mathlib.Tactic.NormNum
 
 namespace TheoremaAureum.Towers.NS.Wall266
 
@@ -43,6 +47,36 @@ abbrev R3 := EuclideanSpace ℝ (Fin 3)
 /-- L² vector field: each component in L²(ℝ³).
 Declared before the smooth-to-L2 bridge that uses it. -/
 def L2VectorField := Fin 3 → Lp ℝ 2 (volume : Measure R3)
+
+/-- Assemble chosen Lp representatives into a vector field.
+This is not an equality of pointwise representatives modulo null sets;
+the Lp objects remain the underlying componentwise equivalence classes. -/
+noncomputable def L2Representative (v : L2VectorField) : R3 → R3 :=
+  fun x => ∑ i : Fin 3, (v i x) • EuclideanSpace.single i 1
+
+@[simp]
+theorem L2Representative_apply (v : L2VectorField) (x : R3) (i : Fin 3) :
+    (L2Representative v x) i = v i x := by
+  let ev : R3 →+ ℝ :=
+    { toFun := fun z => z i
+      map_zero' := rfl
+      map_add' := fun _ _ => rfl }
+  change ev (∑ j : Fin 3, (v j x) • EuclideanSpace.single j 1) = v i x
+  rw [map_sum]
+  simp [ev, EuclideanSpace.single_apply]
+
+/-- Componentwise L2 membership gives local integrability of the vector
+representative, by a finite sum of scalar functions times fixed vectors. -/
+theorem L2Representative_locallyIntegrable (v : L2VectorField) :
+    LocallyIntegrable (L2Representative v) (volume : Measure R3) := by
+  unfold L2Representative
+  apply locallyIntegrable_finset_sum
+  intro i _
+  have hi : LocallyIntegrable (fun x : R3 => v i x) (volume : Measure R3) :=
+    (Lp.memℒp (v i)).locallyIntegrable (by norm_num)
+  intro x
+  obtain ⟨s, hs, hsi⟩ := hi x
+  exact ⟨s, hs, hsi.smul_const (EuclideanSpace.single i 1)⟩
 
 /-- Test function: C_c^∞ (ℝ³ → ℝ) - compact support + smooth -/
 structure TestFunction where
@@ -62,7 +96,8 @@ structure TestVectorField where
     Memℒp (fun x : R3 => (toFun x) i) 2 (volume : Measure R3)
 
 -- Path A: compact_support dropped. Noncompact smooth L2 density needs
--- mollification, not a Bogovskii cutoff; the three Phase104 bridges remain OPEN.
+-- mollification, not a Bogovskii cutoff. Phase104 supplies a smoothness proof;
+-- weak-divergence preservation and L2 approximation remain OPEN.
 
 /-- Embed each component using its explicit L2 membership witness.
 No compact-support lemma or new admitted proof is needed for this bridge. -/
@@ -75,16 +110,31 @@ instance : CoeFun TestVectorField (fun _ => R3 → R3) where
 
 /-- Gradient of a scalar test function -/
 noncomputable def gradTest (ψ : TestFunction) : R3 → R3 :=
-  fun x => EuclideanSpace.gradient ψ.toFun x
+  gradient ψ.toFun
 
 /-- Divergence of a vector field, classical pointwise for smooth -/
 noncomputable def divClassical (v : R3 → R3) (x : R3) : ℝ :=
-  ∑ i : Fin 3, deriv (fun t => (v (x + t • EuclideanSpace.single i 1)).i) 0
+  ∑ i : Fin 3, fderiv ℝ (fun y => (v y) i) x (EuclideanSpace.single i 1)
 
-/-- Weak divergence-free: ∫ v · ∇ψ = 0 for all ψ ∈ C_c^∞(ℝ³) -/
-def IsWeakDivFree (v : L2VectorField) : Prop :=
+/-- Distributional divergence-free for an actual vector-valued function.
+Analytic convolution theorems also require local integrability explicitly.
+Pointwise `fderiv = 0` for an arbitrary nonsmooth input is NOT a substitute. -/
+def IsWeakDivFreeFun (v : R3 → R3) : Prop :=
   ∀ (ψ : TestFunction),
-    ∫ x, (∑ i : Fin 3, (v i x) * (gradTest ψ x).i) ∂(volume : Measure R3) = 0
+    ∫ x, (∑ i : Fin 3, (v x) i * (gradTest ψ x) i) ∂(volume : Measure R3) = 0
+
+/-- Weak divergence-free: ∫ v · ∇ψ = 0 for all ψ ∈ C_c^∞(ℝ³),
+using the same representatives as the convolution bridge. -/
+def IsWeakDivFree (v : L2VectorField) : Prop :=
+  IsWeakDivFreeFun (L2Representative v)
+
+/-- The representative formulation retains the original componentwise
+weak-divergence condition; no stronger regularity assumption was added. -/
+theorem isWeakDivFree_iff_components (v : L2VectorField) :
+    IsWeakDivFree v ↔ ∀ ψ : TestFunction,
+      ∫ x, (∑ i : Fin 3, (v i x) * (gradTest ψ x) i)
+        ∂(volume : Measure R3) = 0 := by
+  simp only [IsWeakDivFree, IsWeakDivFreeFun, L2Representative_apply]
 
 /-- Space of divergence-free L² fields -/
 def L2DivFree := { v : L2VectorField // IsWeakDivFree v }
@@ -95,7 +145,9 @@ noncomputable instance : Norm L2DivFree where
 
 /-- Trilinear form for SMOOTH fields first - the building block -/
 noncomputable def trilinearSmooth (u v w : R3 → R3) : ℝ :=
-  ∫ x, (∑ i j : Fin 3, (u i x) * (deriv (fun t => (v j (x + t • EuclideanSpace.single i 1))) 0) * (w j x)) ∂(volume : Measure R3)
+  ∫ x, (∑ i j : Fin 3, (u x) i *
+    (deriv (fun t => (v (x + t • EuclideanSpace.single i 1)) j) 0) *
+    (w x) j) ∂(volume : Measure R3)
 
 /-- Trilinear form for L² fields via density — Mathlib doesn't have density of C_c^∞_div-free in L²_div-free, so we axiomatize the extension property as a Prop to be proved later -/
 def trilinearFormExists : Prop :=

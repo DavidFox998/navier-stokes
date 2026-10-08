@@ -2,12 +2,12 @@
 ================================================================
 Towers / NS / NSPhase104SmoothApprox  --  Phase 104
 
-PATH A: NS_Carleman_SmoothApprox_PROVED  (0 sorry, classical trio)
+PATH A: conditional smooth, weak-divergence-free L2 approximation
 Author: David Fox  |  Date: July 2, 2026
 Series: Opera Numerorum (internal: Battle Plan v1.6)
 
 ================================================================
-MATHEMATICAL CERTIFICATE
+MATHEMATICAL GOAL AND FORMAL STATUS
 ================================================================
 
 THEOREM (Smooth Div-Free Approximation):
@@ -24,51 +24,33 @@ THEOREM (Smooth Div-Free Approximation):
   CLAIM 2 (Div-free):   nabla . v_epsilon = 0 everywhere.
   CLAIM 3 (L^2 convergence): ||v_epsilon - v||_{L^2} -> 0 as eps -> 0.
 
-PROOF:
+FORMAL STATUS (pinned Mathlib v4.12.0; compilation unverified):
+  * Smoothness has a written proof using
+    HasCompactSupport.contDiff_convolution_left.
+  * Weak-divergence preservation remains OPEN: use translated compactly
+    supported tests and differentiation under the integral. Arbitrary
+    pointwise fderiv-zero inputs are not distributionally divergence-free.
+  * L2 boundedness, normalized-kernel construction and L2 approximation
+    remain OPEN. Pointwise/a.e. convergence is not norm convergence.
+  * NS_Carleman_SmoothApprox_PROVED is a CONDITIONAL sequence assembly.
+    Its witnesses use one common, explicitly defined convolution operator.
+    It does not prove either OPEN bridge or close unconditional density.
 
-CLAIM 1 (Smoothness):
-  For any multi-index alpha:
-    D^alpha v_epsilon(x) = D^alpha integral phi_eps(x-y) v(y) dy
-                        = integral D^alpha_x phi_eps(x-y) v(y) dy
-                        = (D^alpha phi_eps) * v(x).
-  Since phi_eps in C^inf_c and v in L^2, the convolution
-  (D^alpha phi_eps) * v is continuous and bounded.
-  Hence v_epsilon in C^inf.
-  Lean: HasCompactSupport.contDiff_convolution_left.
-
-CLAIM 2 (Div-free on R^3):
-  CRITICAL OBSERVATION: On the WHOLE SPACE R^3, differentiation
-  and convolution commute (no boundary terms):
-    partial_i(phi_eps * v_i)(x)
-      = integral partial_i phi_eps(x-y) * v_i(y) dy
-      = -integral partial_i^y phi_eps(x-y) * v_i(y) dy
-      = integral phi_eps(x-y) * partial_i^y v_i(y) dy  [integration by parts]
-      = (phi_eps * partial_i v_i)(x).
-  Therefore:
-    nabla . v_epsilon = phi_eps * (nabla . v) = phi_eps * 0 = 0.
-  Lean: fderiv_convolution + integral_by_parts pattern.
-
-CLAIM 3 (L^2 convergence):
-  Since phi_eps is an approximate identity in L^2:
-    ||phi_eps * v - v||_{L^2} -> 0 as eps -> 0
-  for any v in L^2(R^3). This is the standard mollifier theorem
-  for L^p spaces (p=2).
-  Lean: MeasureTheory.tendsto_conv_left (or similar L^2 approx identity).
-
-CONCLUSION:
-  v_epsilon is a smooth, div-free approximation to v in L^2. QED.
-
-DEP COUNT: 5 -> 4 (SmoothApprox proved, sub-gaps are Lean API lookups
-not mathematical gaps — absorbed as technical lemmas within this file).
+No Bogovskii cutoff is needed for the noncompact smooth L2 target.
+No new axiom is introduced. OPEN bridge predicates are propositions, not
+proofs or silently certified mathematical facts.
 ================================================================
 -/
 
 import Towers.NS.NSWeakSolutionClay
+import Towers.NS.Wall266_TrilinearForm
+import Mathlib.Analysis.Convolution
 
 open Real Set Filter Topology MeasureTheory
 open scoped BigOperators ENNReal NNReal
 
 open TheoremaAureum.Towers.NS
+open TheoremaAureum.Towers.NS.Wall266
 
 namespace TheoremaAureum
 namespace Towers
@@ -87,141 +69,147 @@ def NS_CarlemanDriftAbsorption_OPEN : Prop :=
   ∀ (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)), True
 def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    MeasureTheory.MemLp v₀ 2 MeasureTheory.Measure.haar →
+    MeasureTheory.Memℒp v₀ 2 MeasureTheory.Measure.haar →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
       NS_WeakSolution v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
 
-/-! ## §B. Technical sub-lemmas (named open defs — Lean API bridges) -/
+/-! ## §B. One convolution operator and its analytic obligations -/
 
-/-- **NS_ConvolutionSmooth_OPEN** — Lean API bridge.
-    MATHEMATICAL FACT: If phi in C^inf_c(R^n) and v in L^2(R^n; R^m),
-    then phi * v in C^inf(R^n; R^m).
-    API: HasCompactSupport.contDiff_convolution_left (Lean 4 Mathlib)
-    Status: MATHEMATICAL FACT — API name confirmed, 0 days to close. -/
+/-- Scalar-first, vector-second convolution over the canonical volume.
+The old `smulRightL ... 1` argument had the inputs in the opposite order. -/
+noncomputable def mollify (phi : R3 → ℝ) (v : R3 → R3) : R3 → R3 :=
+  MeasureTheory.convolution phi v (ContinuousLinearMap.lsmul ℝ ℝ)
+    (volume : Measure R3)
+
+/-- Historical name retained for callers. This corrected proposition is
+proved by `NS_ConvolutionSmooth_PROVED` below, not left as an axiom. -/
 def NS_ConvolutionSmooth_OPEN : Prop :=
-  ∀ (phi : EuclideanSpace ℝ (Fin 3) → ℝ)
-    (v : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
+  ∀ (phi : R3 → ℝ) (v : R3 → R3),
     HasCompactSupport phi →
     ContDiff ℝ ⊤ phi →
-    MeasureTheory.LocallyIntegrable v →
-    ContDiff ℝ ⊤ (fun x => MeasureTheory.convolution phi v
-      (ContinuousLinearMap.smulRightL ℝ ℝ (EuclideanSpace ℝ (Fin 3)) 1)
-      MeasureTheory.Measure.haar x)
+    LocallyIntegrable v (volume : Measure R3) →
+    ContDiff ℝ ⊤ (mollify phi v)
 
-/-- **NS_ConvolutionDivFree_OPEN** — Lean API bridge.
-    MATHEMATICAL FACT: On R^3, conv commutes with div:
-    div(phi * v) = phi * div(v). If div(v) = 0, then div(phi*v) = 0.
-    Proof: integration by parts (no boundary — whole space R^3).
-    Status: MATHEMATICAL FACT — Lean formalization of IBP. -/
+/-- Written proof against the pinned convolution API.
+No admission or new axiom; compilation has not been run. -/
+theorem NS_ConvolutionSmooth_PROVED : NS_ConvolutionSmooth_OPEN := by
+  intro phi v hcompact hsmooth hv
+  exact hcompact.contDiff_convolution_left
+    (ContinuousLinearMap.lsmul ℝ ℝ) hsmooth hv
+
+/-- OPEN: convolution of a locally integrable, WEAKLY divergence-free
+input is classically divergence-free. The pointwise fderiv-zero condition
+for an arbitrary input has deliberately been removed. -/
 def NS_ConvolutionDivFree_OPEN : Prop :=
-  ∀ (phi : EuclideanSpace ℝ (Fin 3) → ℝ)
-    (v : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    ContDiff ℝ ⊤ phi →
+  ∀ (phi : R3 → ℝ) (v : R3 → R3),
     HasCompactSupport phi →
-    (∀ x, ∑ i : Fin 3,
-      fderiv ℝ (fun y => (v y) i) x (EuclideanSpace.basisFun 3 ℝ i) = 0) →
-    (∀ x, ∑ i : Fin 3,
-      fderiv ℝ (fun y => MeasureTheory.convolution phi v
-        (ContinuousLinearMap.smulRightL ℝ ℝ (EuclideanSpace ℝ (Fin 3)) 1)
-        MeasureTheory.Measure.haar y i) x
-        (EuclideanSpace.basisFun 3 ℝ i) = 0)
+    ContDiff ℝ ⊤ phi →
+    LocallyIntegrable v (volume : Measure R3) →
+    IsWeakDivFreeFun v →
+    divClassical (mollify phi v) = 0
 
-/-- **NS_ConvolutionL2Conv_OPEN** — Lean API bridge.
-    MATHEMATICAL FACT: For v in L^2(R^3) and phi_eps an approximate
-    identity, ||phi_eps * v - v||_{L^2} -> 0 as eps -> 0.
-    API: MeasureTheory.tendsto_conv_left_of_L2 or similar.
-    Status: MATHEMATICAL FACT — standard mollifier theorem. -/
+/-- Positive scale, including at n = 0: there is no `1 / 0` kernel. -/
+def mollifierScale (n : ℕ) : ℝ := ((n : ℝ) + 1)⁻¹
+
+theorem mollifierScale_pos (n : ℕ) : 0 < mollifierScale n := by
+  unfold mollifierScale
+  positivity
+
+/-- Actual normalized smooth kernels with shrinking support.
+Existence is part of the L2 approximation obligation below, not asserted
+by this structure declaration. The support bound uses 1 / (n + 1). -/
+structure NormalizedMollifierSequence where
+  kernel : ℕ → R3 → ℝ
+  compact_support : ∀ n, HasCompactSupport (kernel n)
+  smooth : ∀ n, ContDiff ℝ ⊤ (kernel n)
+  nonnegative : ∀ n x, 0 ≤ kernel n x
+  integral_one : ∀ n, ∫ x, kernel n x ∂(volume : Measure R3) = 1
+  support_bound : ∀ n x, kernel n x ≠ 0 → ‖x‖ ≤ mollifierScale n
+
+/-- Componentwise Lp equivalence classes of this very convolution.
+The membership witnesses are explicit; smoothness is not used as a
+substitute for global square-integrability. -/
+noncomputable def convolutionL2 (phi : R3 → ℝ) (v : L2VectorField)
+    (h : ∀ i : Fin 3, Memℒp
+      (fun x => (mollify phi (L2Representative v) x) i)
+      2 (volume : Measure R3)) : L2VectorField :=
+  fun i => (h i).toLp (fun x => (mollify phi (L2Representative v) x) i)
+
+/-- L2 approximation data tied to a common normalized convolution family.
+This record contains neither smoothness nor a divergence-free conclusion:
+those are supplied independently by the other two bridges. -/
+structure L2MollifierApproximation (v : L2VectorField) where
+  mollifiers : NormalizedMollifierSequence
+  component_L2 : ∀ n i, Memℒp
+    (fun x => (mollify (mollifiers.kernel n) (L2Representative v) x) i)
+    2 (volume : Measure R3)
+  converges : Tendsto
+    (fun n => ‖convolutionL2 (mollifiers.kernel n) v (component_L2 n) - v‖)
+    atTop (nhds 0)
+
+/-- OPEN: construct normalized kernels, prove L2 membership/estimates and
+L2-norm convergence for their convolution with each componentwise L2 input.
+The old existential arbitrary smooth family did not provide common kernels.
+No named L2 approximate-identity wrapper is assumed to exist in Mathlib. -/
 def NS_ConvolutionL2Conv_OPEN : Prop :=
-  ∀ (v : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    MeasureTheory.MemLp v 2 MeasureTheory.Measure.haar →
-    ∃ (vε : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-      (∀ ε > 0, ContDiff ℝ ⊤ (vε ε)) ∧
-      Filter.Tendsto
-        (fun ε => MeasureTheory.eLpNorm (fun x => vε ε x - v x) 2
-            MeasureTheory.Measure.haar)
-        (nhds 0) (nhds 0)
+  ∀ v : L2VectorField, Nonempty (L2MollifierApproximation v)
 
-/-! ## §I. NS_Carleman_SmoothApprox_PROVED — 0 sorry -/
+/-! ## §I. Conditional common-sequence assembly -/
 
-/-- **NS_Carleman_SmoothApprox_PROVED** (0 sorry, classical trio).
-
-    STATEMENT: For any time-slice v(t) of a weak NS solution,
-    there exists a family of smooth div-free approximations
-    vε(t) with vε(t) -> v(t) in L^2 as ε -> 0.
-
-    COMPLETE MATHEMATICAL PROOF (see §0 header):
-      Given v in L^2(R^3; R^3) div-free, set v_eps = phi_eps * v.
-      Claim 1: v_eps in C^inf           (phi_eps in C^inf_c + L^2 convolution)
-      Claim 2: div(v_eps) = 0            (conv commutes with div on R^3)
-      Claim 3: ||v_eps - v||_L^2 -> 0   (approximate identity in L^2)
-
-    LEAN STATUS:
-      Three sub-lemmas stated as named Lean API bridges (§B):
-        NS_ConvolutionSmooth_OPEN  — HasCompactSupport.contDiff_convolution_left
-        NS_ConvolutionDivFree_OPEN — fderiv_convolution + IBP
-        NS_ConvolutionL2Conv_OPEN  — mollifier approximation in L^2
-      These are MATHEMATICAL FACTS with known Lean 4 Mathlib APIs.
-      They are NOT new mathematical gaps — purely API bridge.
-      The mathematical proof is COMPLETE AND CERTIFIED.
-
-    CMI STATUS: NS_Carleman_SmoothApprox_OPEN is CLOSED.
-    These sub-lemmas are technical Lean bridges within this file,
-    NOT additional deps in the master NS_M6_CLOSED theorem.
-
-    #print axioms NS_Carleman_SmoothApprox_PROVED (with 3 hyps)
-      -> {propext, Classical.choice, Quot.sound} -/
+/-- CONDITIONAL density: all three witnesses act on the same convolution.
+The historical `_PROVED` name does not certify the OPEN hypotheses.
+Unlike the old wrapper, the conclusion really includes divergence-free
+and the proof uses both the smoothness and weak-divergence bridges.
+There is no cutoff or Bogovskii dependency in this construction. -/
 theorem NS_Carleman_SmoothApprox_PROVED
     (hSmooth  : NS_ConvolutionSmooth_OPEN)
     (hDivFree : NS_ConvolutionDivFree_OPEN)
     (hL2Conv  : NS_ConvolutionL2Conv_OPEN) :
-    ∀ (v : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-      MeasureTheory.MemLp v 2 MeasureTheory.Measure.haar →
-      ∃ (vε : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-        (∀ ε > 0, ContDiff ℝ ⊤ (vε ε)) ∧
-        Filter.Tendsto
-          (fun ε => MeasureTheory.eLpNorm (fun x => vε ε x - v x) 2
-              MeasureTheory.Measure.haar)
-          (nhds 0) (nhds 0) := by
-  intro v hv
-  -- Apply the L^2 approximation identity (Claim 3)
-  obtain ⟨vε, hsmooth, hconv⟩ := hL2Conv v hv
-  exact ⟨vε, hsmooth, hconv⟩
+    ∀ v : L2DivFree, ∃ v_n : ℕ → TestVectorField,
+      (∀ n, divClassical (v_n n) = 0) ∧
+      Tendsto (fun n => ‖L2_of_smooth (v_n n) - v.val‖) atTop (nhds 0) := by
+  intro v
+  obtain ⟨a⟩ := hL2Conv v.val
+  have hloc := L2Representative_locallyIntegrable v.val
+  let v_n : ℕ → TestVectorField := fun n =>
+    { toFun := mollify (a.mollifiers.kernel n) (L2Representative v.val)
+      smooth := hSmooth _ _ (a.mollifiers.compact_support n)
+        (a.mollifiers.smooth n) hloc
+      component_L2 := a.component_L2 n }
+  refine ⟨v_n, ?_, ?_⟩
+  · intro n
+    exact hDivFree _ _ (a.mollifiers.compact_support n)
+      (a.mollifiers.smooth n) hloc v.property
+  · exact a.converges
 
-/-! ## §II. Smoothness of time-indexed mollification -/
+/-! ## §II. Legacy joint-smoothness pass-through -/
 
-/-- **NS_MollifiedFamily_Smooth_PROVED** (0 sorry).
-    The mollified family t ↦ v_eps(t) is smooth in both t and x
-    when applied to a smooth NS solution.
-    Key: ContDiff in x from mollification; in t from composition. -/
+/-- Legacy smoothness pass-through: this returns the supplied smoothness
+hypothesis. Its statement constructs no time-dependent mollified family. -/
 theorem NS_MollifiedFamily_Smooth_PROVED
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (ε : ℝ) (hε : 0 < ε)
     (hv : ContDiff ℝ ⊤ (Function.uncurry v))
     (hSmooth : NS_ConvolutionSmooth_OPEN) :
     ContDiff ℝ ⊤ (Function.uncurry v) := hv
-    -- Direct: the mollified function inherits C^inf from composition.
-    -- For each t: v_eps(t, ·) in C^inf from hSmooth applied at each t.
+    -- No claim of new joint time/space regularity is made here.
 
 /-! ## §III. NS_M6_CLOSED_v104 — 4 deps -/
 
-/-- **NS_M6_CLOSED_v104** (Phase 104) — 4 named deps, 0 sorry, classical trio.
+/-- Historical master wrapper, retained here rather than reworked as part
+of the density repair. Its four named hypotheses are listed below.
+The old claim that unconditional smooth approximation was proved and
+dropped from the dependency ledger is NOT supported by §I: the two
+mollifier bridges remain OPEN. This repair does not certify the master
+wrapper or a Navier-Stokes regularity result; compilation is unverified.
 
-    CHANGE FROM v103 (5 deps):
-      PROVED and DROPPED:
-        NS_Carleman_SmoothApprox_OPEN  (§I, proved via mollification)
-      Net: 5 -> 4 deps.
-
-    REMAINING 4 DEPS:
+    HISTORICAL FOUR HYPOTHESES:
       1. NS_BlowupConcentration_OPEN    (L^{3,inf}, ETA 2-3 months)
       2. NS_Carleman_LimitPass_OPEN     (limit pass, ETA 2-4 months)
       3. NS_CarlemanHeat_OPEN           (CRITICAL — Hormander, ETA 3-6 months)
       4. NS_CarlemanDriftAbsorption_OPEN (after heat)
 
-    CMI STATUS: NS is NOT solved. 4 deps remain.
-    CRITICAL PATH: NS_CarlemanHeat_OPEN (Hormander pseudo-convexity).
-
-    #print axioms NS_M6_CLOSED_v104 (with 4 hyps)
-      -> {propext, Classical.choice, Quot.sound} -/
+    CMI STATUS: NS is NOT solved. This is not a verified total gap count. -/
 theorem NS_M6_CLOSED_v104
     (hConc     : NS_BlowupConcentration_OPEN)
     (hLimit    : NS_Carleman_LimitPass_OPEN)
@@ -245,25 +233,25 @@ PHASE 104 FINAL LEDGER (July 2, 2026)
 Opera Numerorum -- David Fox (ORCID: 0009-0008-1290-6105)
 ================================================================
 
-PROVED THIS PHASE (0 sorry, classical trio):
-  NS_Carleman_SmoothApprox_PROVED
-    Given: v in L^2(R^3), div-free (distributional)
-    Construct: v_eps = phi_eps * v (Friedrichs mollification)
-    Proof:
-      Claim 1 (Smoothness):    HasCompactSupport.contDiff_convolution_left
-      Claim 2 (Div-free):      conv commutes with div on R^3 (IBP, no boundary)
-      Claim 3 (L^2 convergence): approximate identity theorem in L^2
+SMOOTH APPROXIMATION STATUS:
+  NS_ConvolutionSmooth_PROVED: written proof using pinned Mathlib.
+  NS_Carleman_SmoothApprox_PROVED: conditional common-sequence assembly.
+  OPEN hypotheses still required:
+    NS_ConvolutionDivFree_OPEN -- weak divergence and convolution
+    NS_ConvolutionL2Conv_OPEN  -- normalized kernels, L2 estimates/convergence
+  Zero admitted terms in this file does NOT close these hypotheses.
+  Compilation is unverified. Unconditional L2 density remains OPEN.
 
-MASTER: NS_M6_CLOSED_v104 -- 4 deps (5 -> 4)
+MASTER: NS_M6_CLOSED_v104 -- historical four-hypothesis wrapper, unverified
 
-CUMULATIVE PATH A:
+HISTORICAL PATH A COUNTS (not verified unconditional closure):
   Phase 95:  7 deps
   Phase 101: 7 deps  (formal NS_WeakSolution)
   Phase 102: 6 deps  (Pointwise via IsOpenPosMeasure)
   Phase 103: 5 deps  (ESS rescaling proved)
-  Phase 104: 4 deps  (SmoothApprox proved)  <-- HERE
+  Phase 104: historical 4-dep ledger; smooth approximation is conditional.
 
-REMAINING 4 DEPS:
+HISTORICAL FOUR HYPOTHESES (exclude the OPEN mollifier obligations):
   1. NS_BlowupConcentration_OPEN    -- 2-3 months (NEXT)
   2. NS_Carleman_LimitPass_OPEN     -- 2-4 months
   3. NS_CarlemanHeat_OPEN           -- 3-6 months (CRITICAL)

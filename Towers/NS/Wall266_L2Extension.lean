@@ -1,36 +1,41 @@
 import Towers.NS.Wall266_TrilinearForm
 import Towers.NS.NSPhase97aSobolevC2alphaClose
-import Towers.NS.NSPhase104SmoothApprox -- Conditional on the three convolution OPENs.
+import Towers.NS.NSPhase104SmoothApprox -- Conditional on two remaining analytic bridges.
 
 namespace TheoremaAureum.Towers.NS.Wall266L2
 
 open TheoremaAureum.Towers.NS.Wall266
 open TheoremaAureum.Towers.NS.Phase97a
 open TheoremaAureum.Towers.NS.Phase104SmoothApprox
+open Filter Topology
 
--- Step 2a: Path A, OPEN density of smooth L2 div-free fields, without compact support.
--- The four admitted proof sites below are the three Phase104 witnesses and
--- the final mollifier-family/sequence construction. Phase104's conditional
--- NS_Carleman_SmoothApprox_PROVED does not supply these witnesses.
--- TestVectorField now requires componentwise L2 membership instead of compact
--- support. No cutoff or Bogovskii correction is needed for this revised target.
+/-- Path A common-sequence construction, CONDITIONAL on the two remaining
+analytic bridges. Smoothness uses the written Mathlib proof. Phase104 now
+assembles actual convolution fields from a single normalized kernel sequence,
+whose support radii are 1 / (n + 1), and embeds their components into Lp.
+This proves neither remaining hypothesis and introduces no new axiom. -/
+theorem L2DivFree_dense_smooth_of_mollifier_bridges
+    (hDivFree : NS_ConvolutionDivFree_OPEN)
+    (hL2Conv : NS_ConvolutionL2Conv_OPEN) :
+    ∀ v : L2DivFree, ∃ v_n : ℕ → TestVectorField,
+      (∀ n, divClassical (v_n n) = 0) ∧
+      Tendsto (fun n => ‖L2_of_smooth (v_n n) - v.val‖) atTop (nhds 0) :=
+  NS_Carleman_SmoothApprox_PROVED NS_ConvolutionSmooth_PROVED hDivFree hL2Conv
+
+-- Step 2a: unconditional Path A density is still OPEN.
+-- Two of the former four admissions have written replacements: convolution
+-- smoothness and common-sequence assembly. The two analytic obligations below
+-- remain genuine proof gaps, not merely API names or a Bogovskii dependency.
+-- Compilation has not been run; a smaller admission count is not certification.
 theorem L2DivFree_dense_smooth : ∀ v : L2DivFree,
   ∃ (v_n : ℕ → TestVectorField),
   (∀ n, divClassical (v_n n) = 0) ∧
-  Tendsto (fun n => ‖L2_of_smooth (v_n n) - v‖) atTop (nhds 0) := by
-  intro v
-  have h1 : NS_ConvolutionSmooth_OPEN := sorry -- OPEN 1/4: convolution smoothness.
-  have h2 : NS_ConvolutionDivFree_OPEN := sorry -- OPEN 2/4: convolution preserves divergence.
-  have h3 : NS_ConvolutionL2Conv_OPEN := sorry -- OPEN 3/4: L2 approximation.
-  -- OPEN 4/4: construct one common mollifier family, establish componentwise
-  -- L2 membership and divergence-free, and select an L2-convergent sequence.
-  -- The current Phase104 bridge statements do not yet connect all these
-  -- properties to the same family; the L2-convergence witness alone does not
-  -- assert divergence-free. This is not a completed ten-line construction.
-  -- Path A needs no Bogovskii cutoff for this noncompact approximation target.
-  -- Wall266_Bogovskii.lean remains a separate OPEN Path B scaffold, not a
-  -- dependency of this revised density statement.
-  sorry
+  Tendsto (fun n => ‖L2_of_smooth (v_n n) - v.val‖) atTop (nhds 0) := by
+  have hDivFree : NS_ConvolutionDivFree_OPEN := by
+    sorry -- OPEN 1/2: translated compact tests and differentiation under the integral.
+  have hL2Conv : NS_ConvolutionL2Conv_OPEN := by
+    sorry -- OPEN 2/2: normalized kernel construction, L2 estimates and norm convergence.
+  exact L2DivFree_dense_smooth_of_mollifier_bridges hDivFree hL2Conv
 
 -- Step 2b: OPEN analytic extension of trilinearSmooth from a dense set.
 noncomputable def trilinearForm : L2DivFree → L2DivFree → L2DivFree → ℝ :=

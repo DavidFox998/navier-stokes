@@ -8,6 +8,7 @@ require mathlib from git
 
 lean_lib Towers where
   roots := #[
+    `Towers.NS.Wall266_Bogovskii,
     `Towers.NS.EnergyIneq,
     `Towers.NS.EnergyV2,
     `Towers.NS.Divergence,

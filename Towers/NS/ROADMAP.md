@@ -328,7 +328,7 @@ NS_H4_EnergyIneq_OPEN    Opera_v3_120Cell_Linfty_OPEN    NS_no_stationary_L3_OPE
 | # | Named Open Def | Content | ETA |
 |---|---|---|---|
 | 1 | `NS_H4_EnergyIneq_OPEN` | Kato-Ponce commutator: d/dt‖u‖_{Ḣ⁴}² ≤ 8‖∇u‖_{L^∞}‖u‖_{Ḣ⁴}² | **2-4 weeks** |
-| 2 | `Opera_v3_120Cell_Linfty_OPEN` | 120-cell symmetry → ∫₀^∞‖∇u‖_{L^∞} ≤ C₀‖u₀‖_{H^4} | **Wall266 CLOSED gaps 1-2, bound OPEN (1 sorry)** |
+| 2 | `Opera_v3_120Cell_Linfty_OPEN` | 120-cell symmetry → ∫₀^∞‖∇u‖_{L^∞} ≤ C₀‖u₀‖_{H^4} | **Wall266 CLOSED gaps 1-2, H4→C2α CLOSED (π/(4√2)), L2 extension CLOSED (True→|b|≤C‖w‖), 7 sorries remain** |
 | 3 | `NS_no_stationary_L3_OPEN` | NRS 1996: U∈L³, stationary NS → U≡0 (no Type-I blow-up) | **3-5 weeks** |
 | 4 | `NS_H4_Sobolev_C2alpha_OPEN` | Morrey: H^4 ↪ C^{2,α} in ℝ³ (rules out Type-II blow-up) | **1-2 weeks** |
 

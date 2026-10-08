@@ -37,7 +37,7 @@ theorem trilinearForm_continuous (u v : L2DivFree) :
   exact continuous_const
 
 -- Step 2c: The real bound — replaces your True placeholder
-theorem trilinearForm_bound (v : L2DivFree) (hSym : Is120CellSymmetric v) (hH4 : ‖v‖_{H⁴} < ∞) :
+theorem trilinearForm_bound (v : L2DivFree) (hSym : Is120CellSymmetric v) :
   ∃ C, C = H4_BKM_constant * sobolevConstant_H4 ∧
   ∀ w : L2DivFree, |trilinearForm v v w| ≤ C * ‖w‖ := by
   -- |b(v,v,w)| = lim |b(v_n,v_n,w_n)|
@@ -45,6 +45,9 @@ theorem trilinearForm_bound (v : L2DivFree) (hSym : Is120CellSymmetric v) (hH4 :
   -- ≤ C_H4 * C_S * ‖v‖_{H⁴} * ‖w‖
   -- where C_H4 = (1+φ)/(2-φ)/5 < 11 from Wall261+Wall263
   -- and C_S = π/(4√2) from Phase 97a
+  -- NOTE: H⁴ norm hypothesis removed — ‖·‖_{H⁴} notation not defined.
+  -- The Hölder/Sobolev proof idea (‖u‖₄‖∇v‖₄‖w‖₂ via 1/4+1/4+1/2)
+  -- needs H⁴/L⁴ norms to be defined first.
   use H4_BKM_constant * sobolevConstant_H4
   constructor
   · rfl
@@ -55,10 +58,10 @@ theorem trilinearForm_bound (v : L2DivFree) (hSym : Is120CellSymmetric v) (hH4 :
         sorry -- THIS IS THE ONE: combine H4_controls_trilinear + sobolev_embedding_H4_C2alpha + L2DivFree_dense_smooth
 
 -- Step 2d: Update H4_controls_trilinear — True → real bound
-theorem H4_controls_trilinear_REAL (v : L2DivFree) (hSym : Is120CellSymmetric v) (hH4 : ‖v‖_{H⁴} < ∞) :
+theorem H4_controls_trilinear_REAL (v : L2DivFree) (hSym : Is120CellSymmetric v) :
   ∃ C, C = H4_BKM_constant * sobolevConstant_H4 ∧ C < 11 * sobolevConstant_H4 ∧
   ∀ w : L2DivFree, |trilinearForm v v w| ≤ C * ‖w‖ := by
-  have hBound := trilinearForm_bound v hSym hH4
+  have hBound := trilinearForm_bound v hSym
   obtain ⟨C, hCeq, hBound'⟩ := hBound
   use C
   constructor

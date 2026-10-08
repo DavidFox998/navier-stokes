@@ -3,8 +3,9 @@ Wall266 H4/L4 norm scaffolding.
 
 This file introduces a genuine L4 quantity through Mathlib's eLpNorm and an
 H1 quantity built from the vector L2 norm and the componentwise L2 norm of
-the classical first derivatives. H4 derivatives are not defined here: the
-placeholder is exactly the existing L2 norm and is explicitly not an H4 norm.
+the classical first derivatives. `H4Norm` is the square root of that same H1
+energy plus the L2 energies of the ordered coordinate derivatives of length
+2, 3, and 4. `H4Norm_placeholder` is unchanged and is not an H4 norm.
 
 The noncompact smooth vector-valued H1 embedding below has a written proof:
 coordinate derivative comparisons, explicit expanding compact cutoffs,
@@ -15,7 +16,11 @@ converting to a real norm. It does not assert a theorem about a separately
 formalized weak H1 space. Compilation and a kernel dependency audit have
 not been run.
 The 4-4-2 Holder inequality uses Mathlib's extended-real Holder API.
-This does not close the analytic trilinear-form bound.
+`trilinear_H4_bound` is the analytic estimate
+|b(u,v,w)| ≤ C_trilinear * H4Norm u * H4Norm v * L2Norm w,
+obtained from holder_4442 with exponents 4, 4, 2, the H1→L4 bound, and
+H1Norm ≤ H4Norm. The factors are ‖u‖₄, ‖∇v‖₄, and ‖w‖₂.
+Compilation and a kernel dependency audit have not been run.
 -/
 
 import Towers.NS.Wall266_TrilinearForm
@@ -704,5 +709,578 @@ theorem holder_4442 (f g h : R3 → ℝ)
           · norm_num
     _ ≤ eLpNorm f 4 volume * eLpNorm g 4 volume * eLpNorm h 2 volume :=
       mul_le_mul_right' h_fg_L2 _
+
+
+/-- Coordinate derivative of a scalar, the same classical `deriv` as
+`partialDerivative` on a component. -/
+noncomputable def partialScalar (f : R3 → ℝ) (i : Fin 3) : R3 → ℝ :=
+  fun x => deriv (fun t : ℝ => f (x + t • EuclideanSpace.single i 1)) 0
+
+/-- Second coordinate derivative: differentiate component `j` in direction `i`,
+then in direction `k`. -/
+noncomputable def partialOrder2 (v : R3 → R3) (k i j : Fin 3) : R3 → ℝ :=
+  partialScalar (partialDerivative v i j) k
+
+/-- Third coordinate derivative. -/
+noncomputable def partialOrder3 (v : R3 → R3) (a k i j : Fin 3) : R3 → ℝ :=
+  partialScalar (partialOrder2 v k i j) a
+
+/-- Fourth coordinate derivative. -/
+noncomputable def partialOrder4 (v : R3 → R3) (b a k i j : Fin 3) : R3 → ℝ :=
+  partialScalar (partialOrder3 v a k i j) b
+
+/-- The squared L² energy inside the preserved square-root `H1Norm`. -/
+noncomputable def gradL2Energy (v : R3 → R3) : ℝ :=
+  ∑ i : Fin 3, ∑ j : Fin 3,
+    (eLpNorm (partialDerivative v i j) 2 (volume : Measure R3)).toReal ^ 2
+
+noncomputable def H1Energy (v : R3 → R3) : ℝ :=
+  (eLpNorm v 2 (volume : Measure R3)).toReal ^ 2 + gradL2Energy v
+
+/-- Squared L² energies of ordered derivatives of length 2, 3, and 4.
+Mixed partials are counted once per differentiation order. Every term is a
+square of an extended-real L² norm converted by `.toReal`. -/
+noncomputable def H4RestEnergy (v : R3 → R3) : ℝ :=
+  (∑ j : Fin 3, ∑ i : Fin 3, ∑ k : Fin 3,
+      (eLpNorm (partialOrder2 v k i j) 2 (volume : Measure R3)).toReal ^ 2) +
+    (∑ j : Fin 3, ∑ i : Fin 3, ∑ k : Fin 3, ∑ a : Fin 3,
+      (eLpNorm (partialOrder3 v a k i j) 2 (volume : Measure R3)).toReal ^ 2) +
+    ∑ j : Fin 3, ∑ i : Fin 3, ∑ k : Fin 3, ∑ a : Fin 3, ∑ b : Fin 3,
+      (eLpNorm (partialOrder4 v b a k i j) 2 (volume : Measure R3)).toReal ^ 2
+
+/-- `‖u‖₂² + ∑_{1 ≤ |α| ≤ 4} ‖D^α u‖₂²`, with `|α| ≤ 1` exactly `H1Energy`
+and `|α| ≥ 2` the ordered coordinate derivatives. `.toReal` sends an infinite
+extended norm to zero, as it does for `H1Norm`. -/
+noncomputable def H4Energy (v : R3 → R3) : ℝ :=
+  H1Energy v + H4RestEnergy v
+
+/-- Square-root H⁴ quantity. `H1Norm ≤ H4Norm` because `H1Energy` is the
+`|α| ≤ 1` part of `H4Energy` and the remaining terms are nonnegative. -/
+noncomputable def H4Norm (v : R3 → R3) : ℝ :=
+  Real.sqrt (H4Energy v)
+
+/-- Real L² norm. `.toReal` sends infinity to zero, so bounds that use it
+require `Memℒp`. -/
+noncomputable def L2Norm (v : R3 → R3) : ℝ :=
+  (eLpNorm v 2 (volume : Measure R3)).toReal
+
+/-- `‖∇v‖_L2 = sqrt(∑_{i,j} ‖∂_i v_j‖_L2²)`, the gradient part of `H1Norm`. -/
+noncomputable def gradL2Norm (v : R3 → R3) : ℝ :=
+  Real.sqrt (gradL2Energy v)
+
+/-- Scalar L⁴ constant used inside the proof that first derivatives lie in L⁴.
+It is not part of the public estimate: that estimate uses `H1L4Constant`. -/
+private noncomputable def partialL4Constant : ℝ≥0 :=
+  1 + C_Sobolev * (3 * coordinateNormConstant + spatialCutoffLipschitzConstant)
+
+/-- Analytic constant for `|b(u,v,w)|`. Nine coordinate pairs, and both `u` and
+`∇v` are estimated in L⁴ by the constant from `H1_embedding_L4_bound`. -/
+noncomputable def C_trilinear : ℝ :=
+  (9 : ℝ) * H1L4Constant * H1L4Constant
+
+private theorem H1Energy_nonneg (v : R3 → R3) : 0 ≤ H1Energy v := by
+  unfold H1Energy gradL2Energy
+  exact add_nonneg (sq_nonneg _)
+    (Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ => sq_nonneg _)
+
+private theorem H4RestEnergy_nonneg (v : R3 → R3) : 0 ≤ H4RestEnergy v := by
+  unfold H4RestEnergy
+  refine add_nonneg (add_nonneg ?_ ?_) ?_
+  · exact Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ =>
+      Finset.sum_nonneg fun _ _ => sq_nonneg _
+  · exact Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ =>
+      Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ => sq_nonneg _
+  · exact Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ =>
+      Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ =>
+        Finset.sum_nonneg fun _ _ => sq_nonneg _
+
+theorem H1Norm_eq_sqrt_H1Energy (v : R3 → R3) :
+    H1Norm v = Real.sqrt (H1Energy v) := by
+  unfold H1Norm H1Energy gradL2Energy
+  rfl
+
+/-- `‖u‖_L2 ≤ H4Norm u`. The order-zero term of `H4Energy` is `‖u‖_L2²`. -/
+theorem H4_controls_L2 (v : R3 → R3) :
+    (eLpNorm v 2 (volume : Measure R3)).toReal ≤ H4Norm v :=
+  (H1Norm_L2_le v).trans <| by
+    rw [H1Norm_eq_sqrt_H1Energy, H4Norm]
+    exact Real.sqrt_le_sqrt (le_add_of_nonneg_right (H4RestEnergy_nonneg v))
+
+/-- `H1Norm ≤ H4Norm`. The H¹ sum is the `|α| ≤ 1` part of the H⁴ sum. -/
+theorem H4_controls_H1 (v : R3 → R3) : H1Norm v ≤ H4Norm v := by
+  rw [H1Norm_eq_sqrt_H1Energy, H4Norm]
+  exact Real.sqrt_le_sqrt (le_add_of_nonneg_right (H4RestEnergy_nonneg v))
+
+theorem gradL2Norm_le_H1Norm (v : R3 → R3) : gradL2Norm v ≤ H1Norm v := by
+  rw [H1Norm_eq_sqrt_H1Energy]
+  unfold gradL2Norm H1Energy
+  exact Real.sqrt_le_sqrt (le_add_of_nonneg_left (sq_nonneg _))
+
+/-- `‖∇u‖_L2 ≤ H4Norm u`, through `‖∇u‖_L2 ≤ H1Norm u ≤ H4Norm u`. -/
+theorem H4_controls_grad_L2 (v : R3 → R3) : gradL2Norm v ≤ H4Norm v :=
+  (gradL2Norm_le_H1Norm v).trans (H4_controls_H1 v)
+
+/-- `‖u‖_L4 ≤ H1L4Constant * H4Norm u` for a smooth vector field whose first
+coordinate derivatives lie in L². The constant is the one proved for
+`H1Norm` in `H1_embedding_L4_bound`, not the compact-support factor `C_GN`:
+that factor is not an upper bound for the noncompact estimate. -/
+theorem H4_controls_L4 (v : TestVectorField)
+    (hderiv : ∀ i j : Fin 3,
+      Memℒp (partialDerivative v.toFun i j) 2 (volume : Measure R3)) :
+    eLpNorm_L4 (fun x : R3 => ‖v.toFun x‖) ≤ H1L4Constant * H4Norm v.toFun := by
+  have hC : 0 ≤ H1L4Constant := by
+    unfold H1L4Constant
+    exact NNReal.coe_nonneg _
+  exact (H1_embedding_L4_bound v hderiv).trans
+    (mul_le_mul_of_nonneg_left (H4_controls_H1 v.toFun) hC)
+
+private theorem component_norm_le (z : R3) (j : Fin 3) : ‖z j‖ ≤ ‖z‖ := by
+  have hsq : ‖z j‖ ^ 2 ≤ ‖z‖ ^ 2 := by
+    rw [PiLp.norm_sq_eq_of_L2 (fun _ : Fin 3 => ℝ) z]
+    exact Finset.single_le_sum (fun _ _ => sq_nonneg _) (Finset.mem_univ j)
+  have hsqrt := Real.sqrt_le_sqrt hsq
+  rwa [Real.sqrt_sq (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)] at hsqrt
+
+private theorem partialScalar_eq_fderiv {f : R3 → ℝ} (i : Fin 3) (x : R3)
+    (hf : DifferentiableAt ℝ f x) :
+    partialScalar f i x = fderiv ℝ f x (EuclideanSpace.single i 1) := by
+  have hline : HasDerivAt
+      (fun t : ℝ => x + t • EuclideanSpace.single i 1)
+      (EuclideanSpace.single i 1) 0 := by
+    simpa only [zero_add, one_smul] using
+      (hasDerivAt_const (0 : ℝ) x).add
+        ((hasDerivAt_id' (0 : ℝ)).smul_const (EuclideanSpace.single i 1))
+  have h := hf.hasFDerivAt.comp_hasDerivAt_of_eq (0 : ℝ) hline
+    (by simp only [zero_smul, add_zero])
+  simpa only [partialScalar, Function.comp_def] using h.deriv
+
+private theorem partialScalar_contDiff {f : R3 → ℝ} (hf : ContDiff ℝ ⊤ f) (i : Fin 3) :
+    ContDiff ℝ ⊤ (partialScalar f i) := by
+  have hmn : (⊤ : ℕ∞) + 1 ≤ ⊤ := le_top
+  have hpair : ContDiff ℝ ⊤
+      (fun p : R3 × R3 => (fderiv ℝ f p.1 : R3 →L[ℝ] ℝ) p.2) :=
+    hf.contDiff_fderiv_apply hmn
+  have hproj : ContDiff ℝ ⊤ (fun x : R3 => (x, EuclideanSpace.single i (1 : ℝ))) :=
+    contDiff_id.prod contDiff_const
+  have heq : partialScalar f i =
+      fun x => fderiv ℝ f x (EuclideanSpace.single i 1) := by
+    funext x
+    exact partialScalar_eq_fderiv i x
+      (hf.differentiable (le_top : (1 : ℕ∞) ≤ ⊤)).differentiableAt
+  rw [heq]
+  exact hpair.comp hproj
+
+private theorem component_contDiff (v : TestVectorField) (j : Fin 3) :
+    ContDiff ℝ ⊤ (fun x => v.toFun x j) :=
+  (EuclideanSpace.proj j).contDiff.comp v.smooth
+
+private theorem partialDerivative_contDiff (v : TestVectorField) (i j : Fin 3) :
+    ContDiff ℝ ⊤ (partialDerivative v.toFun i j) := by
+  have h : partialDerivative v.toFun i j =
+      partialScalar (fun x => v.toFun x j) i := rfl
+  rw [h]
+  exact partialScalar_contDiff (component_contDiff v j) i
+
+private theorem secondPartial_sq_le_rest (v : R3 → R3) (k i j : Fin 3) :
+    (eLpNorm (partialOrder2 v k i j) 2 (volume : Measure R3)).toReal ^ 2 ≤
+      H4RestEnergy v := by
+  -- `H4RestEnergy` stores `∑ j, ∑ i, ∑ k`. Peel those indices in that order.
+  have hk :
+      (eLpNorm (partialOrder2 v k i j) 2 (volume : Measure R3)).toReal ^ 2 ≤
+        ∑ k' : Fin 3,
+          (eLpNorm (partialOrder2 v k' i j) 2 (volume : Measure R3)).toReal ^ 2 :=
+    Finset.single_le_sum (fun _ _ => sq_nonneg _) (Finset.mem_univ k)
+  have hi :
+      (∑ k' : Fin 3,
+          (eLpNorm (partialOrder2 v k' i j) 2 (volume : Measure R3)).toReal ^ 2) ≤
+        ∑ i' : Fin 3, ∑ k' : Fin 3,
+          (eLpNorm (partialOrder2 v k' i' j) 2 (volume : Measure R3)).toReal ^ 2 :=
+    Finset.single_le_sum
+      (fun _ _ => Finset.sum_nonneg fun _ _ => sq_nonneg _) (Finset.mem_univ i)
+  have hj :
+      (∑ i' : Fin 3, ∑ k' : Fin 3,
+          (eLpNorm (partialOrder2 v k' i' j) 2 (volume : Measure R3)).toReal ^ 2) ≤
+        ∑ j' : Fin 3, ∑ i' : Fin 3, ∑ k' : Fin 3,
+          (eLpNorm (partialOrder2 v k' i' j') 2 (volume : Measure R3)).toReal ^ 2 :=
+    Finset.single_le_sum
+      (fun _ _ => Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ => sq_nonneg _)
+      (Finset.mem_univ j)
+  refine (hk.trans (hi.trans hj)).trans ?_
+  unfold H4RestEnergy
+  exact (le_add_of_nonneg_right
+      (Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ =>
+        Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ => sq_nonneg _)).trans
+    (le_add_of_nonneg_right
+      (Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ =>
+        Finset.sum_nonneg fun _ _ => Finset.sum_nonneg fun _ _ =>
+          Finset.sum_nonneg fun _ _ => sq_nonneg _))
+
+private theorem secondPartial_L2_real_le_H4 (v : R3 → R3) (k i j : Fin 3) :
+    (eLpNorm (partialOrder2 v k i j) 2 (volume : Measure R3)).toReal ≤ H4Norm v := by
+  rw [H4Norm]
+  apply Real.le_sqrt_of_sq_le
+  exact (secondPartial_sq_le_rest v k i j).trans
+    (le_add_of_nonneg_left (H1Energy_nonneg v))
+
+private theorem coordinateNormConstant_ge_one : (1 : ℝ≥0) ≤ coordinateNormConstant := by
+  unfold coordinateNormConstant
+  exact le_add_of_nonneg_right (Finset.sum_nonneg fun _ _ => zero_le _)
+
+private theorem partialL4Constant_le_H1L4Constant :
+    (partialL4Constant : ℝ) ≤ H1L4Constant := by
+  have hcoord := coordinateNormConstant_ge_one
+  have hLip : spatialCutoffLipschitzConstant ≤
+      coordinateNormConstant * spatialCutoffLipschitzConstant := by
+    have h := mul_le_mul_of_nonneg_right hcoord (zero_le spatialCutoffLipschitzConstant)
+    simpa using h
+  have hsum : 3 * coordinateNormConstant + spatialCutoffLipschitzConstant ≤
+      coordinateNormConstant * (3 + spatialCutoffLipschitzConstant) := by
+    have hmul : coordinateNormConstant * (3 + spatialCutoffLipschitzConstant) =
+        3 * coordinateNormConstant + coordinateNormConstant * spatialCutoffLipschitzConstant := by
+      rw [mul_add, mul_comm coordinateNormConstant (3 : ℝ≥0)]
+    rw [hmul]
+    exact add_le_add_left hLip _
+  have hfac : C_Sobolev * (3 * coordinateNormConstant + spatialCutoffLipschitzConstant) ≤
+      C_Sobolev * coordinateNormConstant * (3 + spatialCutoffLipschitzConstant) := by
+    have h := mul_le_mul_of_nonneg_left hsum (zero_le C_Sobolev)
+    -- `C * (coord * (3 + Lip)) = (C * coord) * (3 + Lip)`.
+    simpa [mul_assoc] using h
+  have hcomp : partialL4Constant ≤ componentH1L4Constant := by
+    unfold partialL4Constant componentH1L4Constant
+    calc
+      1 + C_Sobolev * (3 * coordinateNormConstant + spatialCutoffLipschitzConstant)
+          ≤ 1 + C_Sobolev * coordinateNormConstant * (3 + spatialCutoffLipschitzConstant) :=
+        add_le_add_left hfac _
+      _ ≤ 1 + coordinateNormConstant +
+            C_Sobolev * coordinateNormConstant * (3 + spatialCutoffLipschitzConstant) := by
+        rw [add_assoc]
+        exact add_le_add_right (le_add_of_nonneg_right (zero_le coordinateNormConstant)) _
+  have hone : (1 : ℝ≥0) ≤ 3 := by norm_num
+  have h3 : componentH1L4Constant ≤ (3 : ℝ≥0) * componentH1L4Constant := by
+    simpa using mul_le_mul_of_nonneg_right hone (zero_le componentH1L4Constant)
+  have hle : partialL4Constant ≤ (3 : ℝ≥0) * componentH1L4Constant := hcomp.trans h3
+  have hcoe : (partialL4Constant : ℝ) ≤ (((3 : ℝ≥0) * componentH1L4Constant : ℝ≥0) : ℝ) :=
+    NNReal.coe_le_coe.mpr hle
+  simpa only [H1L4Constant] using hcoe
+
+private theorem scalar_fderiv_L2_bound {f : R3 → ℝ} (hf : ContDiff ℝ ⊤ f)
+    (hderiv : ∀ i : Fin 3, Memℒp (partialScalar f i) 2 (volume : Measure R3))
+    (H : ℝ≥0∞)
+    (hpartial : ∀ i : Fin 3, eLpNorm (partialScalar f i) 2 (volume : Measure R3) ≤ H) :
+    eLpNorm (fderiv ℝ f) 2 (volume : Measure R3) ≤
+      (3 : ℝ≥0∞) * (coordinateNormConstant : ℝ≥0∞) * H := by
+  have hbound : ∀ x, ‖fderiv ℝ f x‖ ≤
+      (coordinateNormConstant : ℝ) * ‖∑ i : Fin 3, ‖partialScalar f i x‖‖ := by
+    intro x
+    rw [Real.norm_eq_abs, abs_of_nonneg (Finset.sum_nonneg fun _ _ => norm_nonneg _)]
+    have h := scalar_operator_norm_le_coordinates (fderiv ℝ f x)
+    have heq : ∀ i : Fin 3,
+        fderiv ℝ f x (EuclideanSpace.single i 1) = partialScalar f i x :=
+      fun i => (partialScalar_eq_fderiv i x
+        (hf.differentiable (le_top : (1 : ℕ∞) ≤ ⊤)).differentiableAt).symm
+    simpa only [heq] using h
+  have hsum : eLpNorm (fun x => ∑ i : Fin 3, ‖partialScalar f i x‖) 2 volume ≤
+      ∑ i : Fin 3, eLpNorm (partialScalar f i) 2 volume := by
+    simpa only [Finset.sum_fn, Finset.sum_apply, eLpNorm_norm] using
+      (eLpNorm_sum_le (s := Finset.univ)
+        (f := fun i : Fin 3 => fun x : R3 => ‖partialScalar f i x‖)
+        (fun i _ => (hderiv i).aestronglyMeasurable.norm)
+        (by norm_num : 1 ≤ (2 : ℝ≥0∞)))
+  calc
+    eLpNorm (fderiv ℝ f) 2 volume ≤
+        ENNReal.ofReal (coordinateNormConstant : ℝ) *
+          eLpNorm (fun x => ∑ i : Fin 3, ‖partialScalar f i x‖) 2 volume :=
+      eLpNorm_le_mul_eLpNorm_of_ae_le_mul (Filter.Eventually.of_forall hbound) _
+    _ ≤ ENNReal.ofReal (coordinateNormConstant : ℝ) *
+          ∑ i : Fin 3, eLpNorm (partialScalar f i) 2 volume :=
+      mul_le_mul_left' hsum _
+    _ ≤ ENNReal.ofReal (coordinateNormConstant : ℝ) * ∑ _ : Fin 3, H :=
+      mul_le_mul_left' (Finset.sum_le_sum fun i _ => hpartial i) _
+    _ = (3 : ℝ≥0∞) * (coordinateNormConstant : ℝ≥0∞) * H := by
+      simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul,
+        ENNReal.ofReal_coe_nnreal]
+      ac_rfl
+
+private theorem partialDerivative_L4_extended (v : TestVectorField) (i j : Fin 3)
+    (hv1 : Memℒp (partialDerivative v.toFun i j) 2 (volume : Measure R3))
+    (hv2 : ∀ k : Fin 3,
+      Memℒp (partialOrder2 v.toFun k i j) 2 (volume : Measure R3)) :
+    eLpNorm (partialDerivative v.toFun i j) 4 (volume : Measure R3) ≤
+      ((partialL4Constant * ⟨H4Norm v.toFun, Real.sqrt_nonneg _⟩ : ℝ≥0) : ℝ≥0∞) := by
+  let f : R3 → ℝ := partialDerivative v.toFun i j
+  let Hnn : ℝ≥0 := ⟨H4Norm v.toFun, Real.sqrt_nonneg _⟩
+  have hfC : ContDiff ℝ ⊤ f := partialDerivative_contDiff v i j
+  have h2real : (eLpNorm f 2 (volume : Measure R3)).toReal ≤ H4Norm v.toFun :=
+    (H1Norm_partial_L2_le v.toFun i j).trans (H4_controls_H1 v.toFun)
+  have h2 : eLpNorm f 2 volume ≤ (Hnn : ℝ≥0∞) := by
+    calc
+      eLpNorm f 2 volume = ENNReal.ofReal (eLpNorm f 2 volume).toReal :=
+        (ENNReal.ofReal_toReal hv1.eLpNorm_ne_top).symm
+      _ ≤ ENNReal.ofReal (H4Norm v.toFun) := ENNReal.ofReal_le_ofReal h2real
+      _ = (Hnn : ℝ≥0∞) := by change ENNReal.ofReal (Hnn : ℝ) = _; simp
+  have hsec : ∀ k : Fin 3, eLpNorm (partialScalar f k) 2 volume ≤ (Hnn : ℝ≥0∞) := by
+    intro k
+    have hreal := secondPartial_L2_real_le_H4 v.toFun k i j
+    calc
+      eLpNorm (partialScalar f k) 2 volume =
+          ENNReal.ofReal (eLpNorm (partialOrder2 v.toFun k i j) 2 volume).toReal := by
+        rw [show partialScalar f k = partialOrder2 v.toFun k i j from rfl,
+          ENNReal.ofReal_toReal (hv2 k).eLpNorm_ne_top]
+      _ ≤ ENNReal.ofReal (H4Norm v.toFun) := ENNReal.ofReal_le_ofReal hreal
+      _ = (Hnn : ℝ≥0∞) := by change ENNReal.ofReal (Hnn : ℝ) = _; simp
+  have hfderiv : eLpNorm (fderiv ℝ f) 2 volume ≤
+      (3 : ℝ≥0∞) * (coordinateNormConstant : ℝ≥0∞) * (Hnn : ℝ≥0∞) :=
+    scalar_fderiv_L2_bound hfC hv2 (Hnn : ℝ≥0∞) hsec
+  have h6 : eLpNorm f 6 volume ≤
+      ((C_Sobolev * (3 * coordinateNormConstant + spatialCutoffLipschitzConstant) *
+          Hnn : ℝ≥0) : ℝ≥0∞) := by
+    have hs1 : ContDiff ℝ 1 f := hfC.of_le (le_top : (1 : ℕ∞) ≤ ⊤)
+    calc
+      eLpNorm f 6 volume ≤ (C_Sobolev : ℝ≥0∞) *
+          (eLpNorm (fderiv ℝ f) 2 volume +
+            (spatialCutoffLipschitzConstant : ℝ≥0∞) * eLpNorm f 2 volume) :=
+        H1_embedding_L6_noncompact hs1
+      _ ≤ (C_Sobolev : ℝ≥0∞) *
+          ((3 : ℝ≥0∞) * (coordinateNormConstant : ℝ≥0∞) * (Hnn : ℝ≥0∞) +
+            (spatialCutoffLipschitzConstant : ℝ≥0∞) * (Hnn : ℝ≥0∞)) :=
+        mul_le_mul_left' (add_le_add hfderiv (mul_le_mul_left' h2 _)) _
+      _ = _ := by
+        have hdist :
+            (3 : ℝ≥0∞) * (coordinateNormConstant : ℝ≥0∞) * (Hnn : ℝ≥0∞) +
+              (spatialCutoffLipschitzConstant : ℝ≥0∞) * (Hnn : ℝ≥0∞) =
+            ((3 * coordinateNormConstant + spatialCutoffLipschitzConstant : ℝ≥0) : ℝ≥0∞) *
+              (Hnn : ℝ≥0∞) := by
+          simp only [ENNReal.coe_add, ENNReal.coe_mul, ENNReal.coe_ofNat, add_mul]
+          ac_rfl
+        rw [hdist, mul_assoc]
+        simp only [ENNReal.coe_mul]
+  have h2M : eLpNorm f 2 volume ≤ ((partialL4Constant * Hnn : ℝ≥0) : ℝ≥0∞) := by
+    have hone : (1 : ℝ≥0) ≤ partialL4Constant := by
+      unfold partialL4Constant
+      exact le_add_of_nonneg_right (zero_le _)
+    calc
+      eLpNorm f 2 volume ≤ (Hnn : ℝ≥0∞) := h2
+      _ = ((1 : ℝ≥0) : ℝ≥0∞) * (Hnn : ℝ≥0∞) := by simp
+      _ ≤ (partialL4Constant : ℝ≥0∞) * (Hnn : ℝ≥0∞) :=
+        mul_le_mul_right' (ENNReal.coe_le_coe.2 hone) _
+      _ = ((partialL4Constant * Hnn : ℝ≥0) : ℝ≥0∞) := by simp [ENNReal.coe_mul]
+  have h6M : eLpNorm f 6 volume ≤ ((partialL4Constant * Hnn : ℝ≥0) : ℝ≥0∞) := by
+    have hfac : C_Sobolev * (3 * coordinateNormConstant + spatialCutoffLipschitzConstant) ≤
+        partialL4Constant := by
+      unfold partialL4Constant
+      exact le_add_of_nonneg_left (zero_le _)
+    exact h6.trans <| by
+      simpa only [ENNReal.coe_mul] using
+        mul_le_mul_right' (ENNReal.coe_le_coe.2 hfac) (Hnn : ℝ≥0∞)
+  exact L4_bound_of_L2_L6 hfC.continuous.aestronglyMeasurable _ h2M h6M
+
+private theorem partialDerivative_L4_ne_top (v : TestVectorField) (i j : Fin 3)
+    (hv1 : Memℒp (partialDerivative v.toFun i j) 2 (volume : Measure R3))
+    (hv2 : ∀ k : Fin 3,
+      Memℒp (partialOrder2 v.toFun k i j) 2 (volume : Measure R3)) :
+    eLpNorm (partialDerivative v.toFun i j) 4 (volume : Measure R3) ≠ ⊤ :=
+  ne_of_lt <| (partialDerivative_L4_extended v i j hv1 hv2).trans_lt <|
+    lt_top_iff_ne_top.mpr ENNReal.coe_ne_top
+
+private theorem partialDerivative_L4_real_le (v : TestVectorField) (i j : Fin 3)
+    (hv1 : Memℒp (partialDerivative v.toFun i j) 2 (volume : Measure R3))
+    (hv2 : ∀ k : Fin 3,
+      Memℒp (partialOrder2 v.toFun k i j) 2 (volume : Measure R3)) :
+    (eLpNorm (partialDerivative v.toFun i j) 4 (volume : Measure R3)).toReal ≤
+      H1L4Constant * H4Norm v.toFun := by
+  have h4 := partialDerivative_L4_extended v i j hv1 hv2
+  have hnonneg : 0 ≤ (partialL4Constant : ℝ) * H4Norm v.toFun :=
+    mul_nonneg (NNReal.coe_nonneg _) (Real.sqrt_nonneg _)
+  have hreal : (eLpNorm (partialDerivative v.toFun i j) 4 volume).toReal ≤
+      (partialL4Constant : ℝ) * H4Norm v.toFun := by
+    have hle : eLpNorm (partialDerivative v.toFun i j) 4 volume ≤
+        ENNReal.ofReal ((partialL4Constant : ℝ) * H4Norm v.toFun) := by
+      refine h4.trans ?_
+      rw [← NNReal.coe_mul, ENNReal.ofReal_coe_nnreal]
+    have h := ENNReal.toReal_mono ENNReal.ofReal_ne_top hle
+    rwa [ENNReal.toReal_ofReal hnonneg] at h
+  exact hreal.trans <|
+    mul_le_mul_of_nonneg_right partialL4Constant_le_H1L4Constant (Real.sqrt_nonneg _)
+
+private theorem component_L4_real_le (u : TestVectorField)
+    (hu : ∀ i j : Fin 3,
+      Memℒp (partialDerivative u.toFun i j) 2 (volume : Measure R3))
+    (j : Fin 3) :
+    (eLpNorm (fun x => u.toFun x j) 4 (volume : Measure R3)).toReal ≤
+      H1L4Constant * H4Norm u.toFun := by
+  have hC : 0 ≤ H1L4Constant := by
+    unfold H1L4Constant
+    exact NNReal.coe_nonneg _
+  have hvec : eLpNorm u.toFun 4 volume ≤
+      ENNReal.ofReal (H1L4Constant * H4Norm u.toFun) :=
+    (H1_embedding_L4_extended u hu).trans
+      (ENNReal.ofReal_le_ofReal (mul_le_mul_of_nonneg_left (H4_controls_H1 u.toFun) hC))
+  have hmono : eLpNorm (fun x => u.toFun x j) 4 volume ≤ eLpNorm u.toFun 4 volume :=
+    eLpNorm_mono fun x => component_norm_le (u.toFun x) j
+  have hfin : eLpNorm u.toFun 4 volume ≠ ⊤ :=
+    ne_of_lt ((H1_embedding_L4_extended u hu).trans_lt ENNReal.ofReal_lt_top)
+  have hto := ENNReal.toReal_mono hfin (hmono.trans hvec)
+  rwa [ENNReal.toReal_ofReal (mul_nonneg
+    (by unfold H1L4Constant; exact NNReal.coe_nonneg _) (Real.sqrt_nonneg _))] at hto
+
+private theorem component_L2_real_le {w : R3 → R3}
+    (hw : Memℒp w 2 (volume : Measure R3)) (j : Fin 3) :
+    (eLpNorm (fun x => w x j) 2 (volume : Measure R3)).toReal ≤ L2Norm w := by
+  have hmono : eLpNorm (fun x => w x j) 2 volume ≤ eLpNorm w 2 volume :=
+    eLpNorm_mono fun x => component_norm_le (w x) j
+  simpa [L2Norm] using ENNReal.toReal_mono hw.eLpNorm_ne_top hmono
+
+private theorem product_integrable (u v : TestVectorField) (w : R3 → R3)
+    (hu : ∀ i j : Fin 3,
+      Memℒp (partialDerivative u.toFun i j) 2 (volume : Measure R3))
+    (hv1 : ∀ i j : Fin 3,
+      Memℒp (partialDerivative v.toFun i j) 2 (volume : Measure R3))
+    (hv2 : ∀ k i j : Fin 3,
+      Memℒp (partialOrder2 v.toFun k i j) 2 (volume : Measure R3))
+    (hw : Memℒp w 2 (volume : Measure R3)) (i j : Fin 3) :
+    Integrable (fun x => (u.toFun x) i * partialDerivative v.toFun i j x * (w x) j)
+      (volume : Measure R3) := by
+  let f : R3 → ℝ := fun x => u.toFun x i
+  let g : R3 → ℝ := partialDerivative v.toFun i j
+  let h : R3 → ℝ := fun x => w x j
+  have hfmeas : AEStronglyMeasurable f volume :=
+    ((EuclideanSpace.proj i).continuous.comp u.smooth.continuous).aestronglyMeasurable
+  have hgmeas : AEStronglyMeasurable g volume :=
+    (partialDerivative_contDiff v i j).continuous.aestronglyMeasurable
+  have hhmeas : AEStronglyMeasurable h volume :=
+    (EuclideanSpace.proj j).continuous.comp_aestronglyMeasurable hw.aestronglyMeasurable
+  have hf4 : eLpNorm f 4 volume ≠ ⊤ :=
+    ((H1_embedding_L4_mem u hu).of_le hfmeas
+      (Filter.Eventually.of_forall fun x => component_norm_le (u.toFun x) i)).eLpNorm_ne_top
+  have hg4 : eLpNorm g 4 volume ≠ ⊤ :=
+    partialDerivative_L4_ne_top v i j (hv1 i j) (fun k => hv2 k i j)
+  have hh2 : eLpNorm h 2 volume ≠ ⊤ :=
+    (hw.of_le hhmeas
+      (Filter.Eventually.of_forall fun x => component_norm_le (w x) j)).eLpNorm_ne_top
+  have hholder := holder_4442 f g h hfmeas hgmeas hhmeas hf4 hg4 hh2
+  have hmeas : AEStronglyMeasurable (fun x => f x * g x * h x) volume :=
+    (hfmeas.mul hgmeas).mul hhmeas
+  have hprod_ne : eLpNorm f 4 volume * eLpNorm g 4 volume * eLpNorm h 2 volume ≠ ⊤ :=
+    ENNReal.mul_ne_top (ENNReal.mul_ne_top hf4 hg4) hh2
+  exact memℒp_one_iff_integrable.mp
+    ⟨hmeas, hholder.trans_lt (lt_top_iff_ne_top.mpr hprod_ne)⟩
+
+/-- Analytic bound for `b(u,v,w) = trilinearSmooth u v w = ∫ ((u·∇)v)·w`.
+`holder_4442` is the exponent relation `1/4 + 1/4 + 1/2 = 1`, so the
+integrand is estimated by `‖u‖_L4 * ‖∇v‖_L4 * ‖w‖_L2`. `H4_controls_L4`
+bounds `u`. The same L⁴ estimate on each first derivative of `v` uses
+`H1_embedding_L6_noncompact` and the second derivatives, which are terms of
+`H4Norm`. `H4Norm` is real-valued, so finiteness is the `Memℒp` data rather
+than a hypothesis `H4Norm < ∞`. No `L∞` embedding is assumed.
+`H4_controls_trilinear` in `Wall266_TrilinearForm.lean` is not used and is
+left unchanged. Compilation has not been run. -/
+theorem trilinear_H4_bound (u v : TestVectorField) (w : R3 → R3)
+    (hu : ∀ i j : Fin 3,
+      Memℒp (partialDerivative u.toFun i j) 2 (volume : Measure R3))
+    (hv1 : ∀ i j : Fin 3,
+      Memℒp (partialDerivative v.toFun i j) 2 (volume : Measure R3))
+    (hv2 : ∀ k i j : Fin 3,
+      Memℒp (partialOrder2 v.toFun k i j) 2 (volume : Measure R3))
+    (hw : Memℒp w 2 (volume : Measure R3)) :
+    |trilinearSmooth u.toFun v.toFun w| ≤
+      C_trilinear * H4Norm u.toFun * H4Norm v.toFun * L2Norm w := by
+  let term : Fin 3 → Fin 3 → R3 → ℝ :=
+    fun i j x => (u.toFun x) i * partialDerivative v.toFun i j x * (w x) j
+  have hint : ∀ i j, Integrable (term i j) (volume : Measure R3) :=
+    fun i j => product_integrable u v w hu hv1 hv2 hw i j
+  have hpull : ∫ x, ∑ i : Fin 3, ∑ j : Fin 3, term i j x ∂(volume : Measure R3) =
+      ∑ i : Fin 3, ∑ j : Fin 3, ∫ x, term i j x ∂(volume : Measure R3) := by
+    rw [integral_finset_sum (s := Finset.univ)
+      (f := fun i x => ∑ j : Fin 3, term i j x)
+      (fun i _ => integrable_finset_sum Finset.univ fun j _ => hint i j)]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    exact integral_finset_sum Finset.univ fun j _ => hint i j
+  have hK : ∀ i j : Fin 3,
+      |∫ x, term i j x ∂(volume : Measure R3)| ≤
+        H1L4Constant * H4Norm u.toFun * (H1L4Constant * H4Norm v.toFun) * L2Norm w := by
+    intro i j
+    let f : R3 → ℝ := fun x => u.toFun x i
+    let g : R3 → ℝ := partialDerivative v.toFun i j
+    let h : R3 → ℝ := fun x => w x j
+    have hfmeas : AEStronglyMeasurable f volume :=
+      ((EuclideanSpace.proj i).continuous.comp u.smooth.continuous).aestronglyMeasurable
+    have hgmeas : AEStronglyMeasurable g volume :=
+      (partialDerivative_contDiff v i j).continuous.aestronglyMeasurable
+    have hhmeas : AEStronglyMeasurable h volume :=
+      (EuclideanSpace.proj j).continuous.comp_aestronglyMeasurable hw.aestronglyMeasurable
+    have hf4 : eLpNorm f 4 volume ≠ ⊤ :=
+      ((H1_embedding_L4_mem u hu).of_le hfmeas
+        (Filter.Eventually.of_forall fun x => component_norm_le (u.toFun x) i)).eLpNorm_ne_top
+    have hg4 : eLpNorm g 4 volume ≠ ⊤ :=
+      partialDerivative_L4_ne_top v i j (hv1 i j) (fun k => hv2 k i j)
+    have hh2 : eLpNorm h 2 volume ≠ ⊤ :=
+      (hw.of_le hhmeas
+        (Filter.Eventually.of_forall fun x => component_norm_le (w x) j)).eLpNorm_ne_top
+    have hholder := holder_4442 f g h hfmeas hgmeas hhmeas hf4 hg4 hh2
+    have hintabs : |∫ x, term i j x ∂(volume : Measure R3)| ≤
+        ∫ x, |term i j x| ∂(volume : Measure R3) := by
+      have h := norm_integral_le_integral_norm (term i j)
+      simpa only [Real.norm_eq_abs] using h
+    have hmeas : AEStronglyMeasurable (fun x => f x * g x * h x) volume :=
+      (hfmeas.mul hgmeas).mul hhmeas
+    have hId : (fun x => |term i j x|) = (fun x => ‖f x * g x * h x‖) := by
+      funext x
+      rfl
+    have hint_norm : ∫ x, |term i j x| ∂(volume : Measure R3) =
+        (eLpNorm (fun x => f x * g x * h x) 1 volume).toReal := by
+      rw [hId, integral_norm_eq_lintegral_nnnorm hmeas, eLpNorm_one_eq_lintegral_nnnorm]
+    have hprod_ne : eLpNorm f 4 volume * eLpNorm g 4 volume * eLpNorm h 2 volume ≠ ⊤ :=
+      ENNReal.mul_ne_top (ENNReal.mul_ne_top hf4 hg4) hh2
+    have hto : (eLpNorm (fun x => f x * g x * h x) 1 volume).toReal ≤
+        (eLpNorm f 4 volume).toReal * (eLpNorm g 4 volume).toReal *
+          (eLpNorm h 2 volume).toReal := by
+      have hle := ENNReal.toReal_mono hprod_ne hholder
+      rwa [ENNReal.toReal_mul, ENNReal.toReal_mul] at hle
+    have hu4 := component_L4_real_le u hu i
+    have hv4 := partialDerivative_L4_real_le v i j (hv1 i j) (fun k => hv2 k i j)
+    have hw2 := component_L2_real_le hw j
+    have hC : 0 ≤ H1L4Constant := by
+      unfold H1L4Constant
+      exact NNReal.coe_nonneg _
+    have hmul : (eLpNorm f 4 volume).toReal * (eLpNorm g 4 volume).toReal *
+        (eLpNorm h 2 volume).toReal ≤
+        (H1L4Constant * H4Norm u.toFun) * (H1L4Constant * H4Norm v.toFun) * L2Norm w := by
+      have hfg := mul_le_mul hu4 hv4 ENNReal.toReal_nonneg (mul_nonneg hC (Real.sqrt_nonneg _))
+      exact mul_le_mul hfg hw2 ENNReal.toReal_nonneg
+        (mul_nonneg (mul_nonneg hC (Real.sqrt_nonneg _)) (mul_nonneg hC (Real.sqrt_nonneg _)))
+    calc
+      |∫ x, term i j x ∂(volume : Measure R3)| ≤ ∫ x, |term i j x| ∂(volume : Measure R3) :=
+        hintabs
+      _ = (eLpNorm (fun x => f x * g x * h x) 1 volume).toReal := hint_norm
+      _ ≤ (eLpNorm f 4 volume).toReal * (eLpNorm g 4 volume).toReal *
+            (eLpNorm h 2 volume).toReal := hto
+      _ ≤ (H1L4Constant * H4Norm u.toFun) * (H1L4Constant * H4Norm v.toFun) * L2Norm w := hmul
+      _ = H1L4Constant * H4Norm u.toFun * (H1L4Constant * H4Norm v.toFun) * L2Norm w := by ring
+  have hsum : |∑ i : Fin 3, ∑ j : Fin 3, ∫ x, term i j x ∂(volume : Measure R3)| ≤
+      ∑ i : Fin 3, ∑ j : Fin 3,
+        H1L4Constant * H4Norm u.toFun * (H1L4Constant * H4Norm v.toFun) * L2Norm w := by
+    rw [← Real.norm_eq_abs]
+    refine (norm_sum_le _ _).trans ?_
+    refine Finset.sum_le_sum fun i _ => ?_
+    refine (norm_sum_le _ _).trans ?_
+    refine Finset.sum_le_sum fun j _ => ?_
+    rw [Real.norm_eq_abs]
+    exact hK i j
+  have hnine : ∑ i : Fin 3, ∑ j : Fin 3,
+      H1L4Constant * H4Norm u.toFun * (H1L4Constant * H4Norm v.toFun) * L2Norm w =
+      C_trilinear * H4Norm u.toFun * H4Norm v.toFun * L2Norm w := by
+    simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul, C_trilinear]
+    ring
+  have hid : trilinearSmooth u.toFun v.toFun w =
+      ∫ x, ∑ i : Fin 3, ∑ j : Fin 3, term i j x ∂(volume : Measure R3) := by
+    simp only [trilinearSmooth, term, partialDerivative]
+    rfl
+  calc
+    |trilinearSmooth u.toFun v.toFun w|
+        = |∫ x, ∑ i : Fin 3, ∑ j : Fin 3, term i j x ∂(volume : Measure R3)| := by rw [hid]
+    _ = |∑ i : Fin 3, ∑ j : Fin 3, ∫ x, term i j x ∂(volume : Measure R3)| := by rw [hpull]
+    _ ≤ ∑ i : Fin 3, ∑ j : Fin 3,
+          H1L4Constant * H4Norm u.toFun * (H1L4Constant * H4Norm v.toFun) * L2Norm w := hsum
+    _ = C_trilinear * H4Norm u.toFun * H4Norm v.toFun * L2Norm w := hnine
 
 end TheoremaAureum.Towers.NS.Wall266

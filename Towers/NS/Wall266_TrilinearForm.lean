@@ -13,8 +13,11 @@ distributional momentum equation.
 
 H4 BOUND: H4_BKM_constant = (1+φ)/(2-φ)/5 < 11, from Wall261 defect
 (1+φ < 6) and Wall263 spectral gap (φ ∉ spectrum, gap = 2-φ).
-H4_controls_trilinear below concludes a True-valued placeholder, not an
-analytic trilinear estimate. The intended Sobolev/norm bounds remain OPEN.
+H4_controls_trilinear below is unchanged: it is still a True-valued
+placeholder for the 120-cell averaging argument. The analytic estimate
+|trilinearSmooth u v w| ≤ C_trilinear * H4Norm u * H4Norm v * L2Norm w
+is `trilinear_H4_bound` in Wall266_H4L4.lean. This file is imported there,
+so that proof cannot be stated here without an import cycle.
 
 No new axiom is introduced by the representative/weak-divergence repair.
 Compilation and an actual kernel dependency audit remain unverified.
@@ -261,5 +264,21 @@ theorem H4_controls_trilinear (v : L2DivFree) (hSym : Is120CellSymmetric v) :
     -- = H4_BKM_constant * ‖w‖
     trivial -- THIS IS THE ONE REAL MATH STEP: needs Phase 97a H4↪C^{2,α} + Wall261 + Wall263
   -- Intended: |trilinearSmooth v_smooth v_smooth w_smooth| ≤ C * ‖w‖
+
+/-
+Analytic bound, proved in `Wall266_H4L4.lean` as `trilinear_H4_bound`.
+
+This file is imported by that one, so the proof cannot be stated here.
+`H4_controls_trilinear` above is unchanged.
+
+`trilinearSmooth u v w = ∫ ∑_{i,j} u_i ∂_i v_j w_j`.
+`holder_4442` gives `1/4 + 1/4 + 1/2 = 1`, hence
+`|b(u,v,w)| ≤ ‖u‖_L4 ‖∇v‖_L4 ‖w‖_L2`.
+`H4_controls_L4` and the same L⁴ estimate on first derivatives, whose H¹
+energy is controlled by second derivatives inside `H4Norm`, close
+`|trilinearSmooth u v w| ≤ C_trilinear * H4Norm u * H4Norm v * L2Norm w`
+with `C_trilinear = 9 * H1L4Constant * H1L4Constant`.
+No new axiom and no `sorry` are added here.
+-/
 
 end TheoremaAureum.Towers.NS.Wall266

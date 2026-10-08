@@ -6,14 +6,15 @@ H1 quantity built from the vector L2 norm and the componentwise L2 norm of
 the classical first derivatives. H4 derivatives are not defined here: the
 placeholder is exactly the existing L2 norm and is explicitly not an H4 norm.
 
-The Sobolev embedding and 4-4-2 Holder inequality below are OPEN AXIOMS,
-not proved theorems. They make the unresolved assumptions visible and do not
+The Sobolev embedding below remains an OPEN AXIOM. The 4-4-2 Holder
+inequality is proved using Mathlib's extended-real Holder API. This does not
 close the analytic trilinear-form bound.
 -/
 
 import Towers.NS.Wall266_TrilinearForm
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
+import Mathlib.Tactic.NormNum
 
 namespace TheoremaAureum.Towers.NS.Wall266
 
@@ -57,19 +58,40 @@ axiom H1_embedding_L4 :
   ∃ C : ℝ, ∀ v : TestVectorField,
     eLpNorm_L4 (fun x : R3 => ‖v.toFun x‖) ≤ C * H1Norm v.toFun
 
-/-- OPEN AXIOM (not proved): the 4-4-2 Holder inequality for scalar functions
+/-- The 4-4-2 Holder inequality for scalar functions
 on R3. Its exponents satisfy 1/4 + 1/4 + 1/2 = 1.
 Mathlib v4.12.0 supplies eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm with
-AEStronglyMeasurable hypotheses. The future proof applies it first with
-(p,q,r) = (2,4,4), then with (p,q,r) = (1,2,2). -/
-axiom holder_4442 :
-  ∀ (f g h : R3 → ℝ),
-    AEStronglyMeasurable f (volume : Measure R3) →
-    AEStronglyMeasurable g (volume : Measure R3) →
-    AEStronglyMeasurable h (volume : Measure R3) →
-    eLpNorm (f * g * h) 1 (volume : Measure R3) ≤
-      eLpNorm f 4 (volume : Measure R3) *
-        eLpNorm g 4 (volume : Measure R3) *
-          eLpNorm h 2 (volume : Measure R3)
+AEStronglyMeasurable hypotheses. The proof applies it first with
+(p,q,r) = (2,4,4), then with (p,q,r) = (1,2,2).
+The finiteness hypotheses are retained for the requested analytic interface;
+the extended-real inequality itself does not need them. -/
+theorem holder_4442 (f g h : R3 → ℝ)
+    (hf : AEStronglyMeasurable f volume)
+    (hg : AEStronglyMeasurable g volume)
+    (hh : AEStronglyMeasurable h volume)
+    (hf4 : eLpNorm f 4 volume ≠ ⊤)
+    (hg4 : eLpNorm g 4 volume ≠ ⊤)
+    (hh2 : eLpNorm h 2 volume ≠ ⊤) :
+    eLpNorm (fun x => f x * g x * h x) 1 volume ≤
+      eLpNorm f 4 volume * eLpNorm g 4 volume * eLpNorm h 2 volume := by
+  -- Hölder: L4 × L4 → L2, then L2 × L2 → L1.
+  have h_fg_L2 :
+      eLpNorm (fun x => f x * g x) 2 volume ≤
+        eLpNorm f 4 volume * eLpNorm g 4 volume := by
+    refine eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm
+      hf hg (fun a b : ℝ => a * b) ?_ ?_
+    · exact Filter.Eventually.of_forall
+        (fun x => le_of_eq (nnnorm_mul (f x) (g x)))
+    · norm_num
+  calc
+    eLpNorm (fun x => f x * g x * h x) 1 volume
+        ≤ eLpNorm (fun x => f x * g x) 2 volume * eLpNorm h 2 volume := by
+          refine eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm
+            (hf.mul hg) hh (fun a b : ℝ => a * b) ?_ ?_
+          · exact Filter.Eventually.of_forall
+              (fun x => le_of_eq (nnnorm_mul (f x * g x) (h x)))
+          · norm_num
+    _ ≤ eLpNorm f 4 volume * eLpNorm g 4 volume * eLpNorm h 2 volume :=
+      mul_le_mul_right' h_fg_L2 _
 
 end TheoremaAureum.Towers.NS.Wall266

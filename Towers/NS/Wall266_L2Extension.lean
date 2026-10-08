@@ -8,10 +8,12 @@ open TheoremaAureum.Towers.NS.Wall266
 open TheoremaAureum.Towers.NS.Phase97a
 open TheoremaAureum.Towers.NS.Phase104SmoothApprox
 
--- Step 2a: OPEN density of smooth, compactly supported div-free fields in L².
+-- Step 2a: Path A, OPEN density of smooth L2 div-free fields, without compact support.
 -- The four admitted proof sites below are the three Phase104 witnesses and
--- the final cutoff/correction/density construction. Phase104's conditional
+-- the final mollifier-family/sequence construction. Phase104's conditional
 -- NS_Carleman_SmoothApprox_PROVED does not supply these witnesses.
+-- TestVectorField now requires componentwise L2 membership instead of compact
+-- support. No cutoff or Bogovskii correction is needed for this revised target.
 theorem L2DivFree_dense_smooth : ∀ v : L2DivFree,
   ∃ (v_n : ℕ → TestVectorField),
   (∀ n, divClassical (v_n n) = 0) ∧
@@ -20,11 +22,14 @@ theorem L2DivFree_dense_smooth : ∀ v : L2DivFree,
   have h1 : NS_ConvolutionSmooth_OPEN := sorry -- OPEN 1/4: convolution smoothness.
   have h2 : NS_ConvolutionDivFree_OPEN := sorry -- OPEN 2/4: convolution preserves divergence.
   have h3 : NS_ConvolutionL2Conv_OPEN := sorry -- OPEN 3/4: L2 approximation.
-  -- OPEN 4/4: cutoff, divergence correction and the density construction.
-  -- See Towers/NS/Wall266_Bogovskii.lean, namespace Wall266Bogovskii:
-  -- div_Bogovskii and H1_bound_Bogovskii are OPEN scaffold statements.
-  -- They are not proved lemmas and do not discharge this obligation.
-  -- Normalized cutoff construction and the application to density remain OPEN.
+  -- OPEN 4/4: construct one common mollifier family, establish componentwise
+  -- L2 membership and divergence-free, and select an L2-convergent sequence.
+  -- The current Phase104 bridge statements do not yet connect all these
+  -- properties to the same family; the L2-convergence witness alone does not
+  -- assert divergence-free. This is not a completed ten-line construction.
+  -- Path A needs no Bogovskii cutoff for this noncompact approximation target.
+  -- Wall266_Bogovskii.lean remains a separate OPEN Path B scaffold, not a
+  -- dependency of this revised density statement.
   sorry
 
 -- Step 2b: OPEN analytic extension of trilinearSmooth from a dense set.

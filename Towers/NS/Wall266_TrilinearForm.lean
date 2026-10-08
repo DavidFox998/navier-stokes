@@ -4,7 +4,7 @@ Towers / NS / Wall266_TrilinearForm — Trilinear form infrastructure
 with H4 bound.
 
 This is the missing infrastructure for the weak momentum equation.
-Compiles on Mathlib v4.26.0 — no distributions package needed.
+Pinned toolchain: Mathlib v4.12.0; compilation remains unverified.
 Everything defined in weak form via integrals.
 
 Closes the two gaps:
@@ -23,10 +23,11 @@ AXIOM FOOTPRINT: classical trio only (plus sorrys marked as open math).
 import Towers.YM.Wall261_H4Defect
 import Towers.YM.Wall263_CoxeterSpectral
 import Towers.YM.Wall264_H4Vertices
-import Mathlib.Analysis.NormedSpace.Lp.Lp
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Function.LpSpace
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Data.Finset.Basic
 
 namespace TheoremaAureum.Towers.NS.Wall266
@@ -39,49 +40,34 @@ open TheoremaAureum.Towers.YM.Wall264
 /-- ℝ³ as a normed space -/
 abbrev R3 := EuclideanSpace ℝ (Fin 3)
 
+/-- L² vector field: each component in L²(ℝ³).
+Declared before the smooth-to-L2 bridge that uses it. -/
+def L2VectorField := Fin 3 → Lp ℝ 2 (volume : Measure R3)
+
 /-- Test function: C_c^∞ (ℝ³ → ℝ) - compact support + smooth -/
 structure TestFunction where
   toFun : R3 → ℝ
   smooth : ContDiff ℝ ⊤ toFun
   compact_support : HasCompactSupport toFun
 
-/-- Test vector field: C_c^∞ (ℝ³ → ℝ³) -/
+/-- Path A: smooth, componentwise L2 vector fields, with no compact-support
+requirement. The historical TestVectorField name is retained, but this is
+no longer the C_c^∞ test space. Divergence-free is a separate condition.
+Explicit L2 membership replaces the old compact-support argument:
+smoothness alone does not imply square-integrability. -/
 structure TestVectorField where
   toFun : R3 → R3
   smooth : ContDiff ℝ ⊤ toFun
-  compact_support : HasCompactSupport toFun
+  component_L2 : ∀ i : Fin 3,
+    Memℒp (fun x : R3 => (toFun x) i) 2 (volume : Measure R3)
 
-/-- Bridge: embed smooth compactly-supported vector field into L² vector field.
-    Each component (v.toFun x) i is ContDiff + compact support → MemLp 2. -/
+-- Path A: compact_support dropped. Noncompact smooth L2 density needs
+-- mollification, not a Bogovskii cutoff; the three Phase104 bridges remain OPEN.
+
+/-- Embed each component using its explicit L2 membership witness.
+No compact-support lemma or new admitted proof is needed for this bridge. -/
 noncomputable def L2_of_smooth (v : TestVectorField) : L2VectorField :=
-  fun i =>
-    let f_i : R3 → ℝ := fun x => (v.toFun x) i
-    have h_mem : MemLp f_i 2 volume := by
-      have h_cont : Continuous f_i := by
-        -- v.toFun : R3 → R3 is ContDiff → Continuous
-        have h1 : Continuous v.toFun := v.smooth.continuous
-        -- projection (fun y => y i) is continuous
-        exact (continuous_apply i).comp h1
-      have h_compact : HasCompactSupport f_i := by
-        -- f_i x = (v.toFun x) i
-        -- If v.toFun x = 0 then f_i x = 0, so support f_i ⊆ support v.toFun
-        have hvs : HasCompactSupport v.toFun := v.compact_support
-        -- Show tsupport f_i ⊆ tsupport v.toFun
-        have h_support_subset : Function.support f_i ⊆ Function.support v.toFun := by
-          intro x hx
-          -- hx: f_i x ≠ 0 → (v.toFun x) i ≠ 0 → v.toFun x ≠ 0
-          simp only [f_i, Function.mem_support] at hx ⊢
-          intro h_eq_zero
-          have : (v.toFun x) i = 0 := by rw [h_eq_zero]; rfl
-          exact hx this
-        -- tsupport is closure of support, so closure subset
-        have h_tsupport_subset : tsupport f_i ⊆ tsupport v.toFun := by
-          apply closure_mono h_support_subset
-        -- tsupport v.toFun is compact, closed subset of compact is compact
-        exact HasCompactSupport.mk (hvs.isCompact.of_isClosed_subset isClosed_closure h_tsupport_subset)
-      -- Continuous + HasCompactSupport → MemLp 2 — standard
-      exact memLp_of_hasCompactSupport_of_continuous h_compact h_cont 2
-    MemLp.toLp f_i h_mem
+  fun i => Memℒp.toLp (fun x : R3 => (v.toFun x) i) (v.component_L2 i)
 
 /-- Coercion so (v : R3 → R3) works via .toFun -/
 instance : CoeFun TestVectorField (fun _ => R3 → R3) where
@@ -94,9 +80,6 @@ noncomputable def gradTest (ψ : TestFunction) : R3 → R3 :=
 /-- Divergence of a vector field, classical pointwise for smooth -/
 noncomputable def divClassical (v : R3 → R3) (x : R3) : ℝ :=
   ∑ i : Fin 3, deriv (fun t => (v (x + t • EuclideanSpace.single i 1)).i) 0
-
-/-- L² vector field: each component in L²(ℝ³) -/
-def L2VectorField := Fin 3 → Lp ℝ 2 (μ := volume : Measure R3)
 
 /-- Weak divergence-free: ∫ v · ∇ψ = 0 for all ψ ∈ C_c^∞(ℝ³) -/
 def IsWeakDivFree (v : L2VectorField) : Prop :=

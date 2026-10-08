@@ -51,11 +51,15 @@ this is only the underlying L2 norm. It is a placeholder, not an H4 norm. -/
 noncomputable def H4Norm_placeholder (v : L2DivFree) : ℝ := ‖v‖
 
 /-- OPEN AXIOM (not proved): the standard three-dimensional Sobolev embedding
-H1 → L4, stated for smooth compactly supported vector fields. The vector L4
-quantity uses the pointwise Euclidean norm. A proof via interpolation between
-L2 and L6 remains future work. -/
+H1 → L4, stated for smooth L2 vector fields with L2 first derivatives.
+Path A no longer assumes compact support, so derivative L2 membership must
+be explicit; smoothness and L2 membership alone do not provide it.
+The vector L4 quantity uses the pointwise Euclidean norm. A proof via
+interpolation between L2 and L6 remains future work. -/
 axiom H1_embedding_L4 :
   ∃ C : ℝ, ∀ v : TestVectorField,
+    (∀ i j : Fin 3,
+      Memℒp (partialDerivative v.toFun i j) 2 (volume : Measure R3)) →
     eLpNorm_L4 (fun x : R3 => ‖v.toFun x‖) ≤ C * H1Norm v.toFun
 
 /-- The 4-4-2 Holder inequality for scalar functions

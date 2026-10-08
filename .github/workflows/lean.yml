@@ -1,13 +1,13 @@
-name: NS-Tower CI
+name: Lean Wall266 proofs
 on:
   push:
-    branches: [main]
+    branches: [main, claude-close-sorry1]
   pull_request:
     branches: [main]
 
 jobs:
   build:
-    name: Lake build
+    name: Typecheck Wall266 modules
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,6 +27,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-lake-
 
-      - name: Build Wall266 proofs
+      - name: Build new proofs
         run: |
           lake build Towers.NS.Wall266_H4L4 Towers.NS.Wall266_TrilinearForm Towers.NS.Wall266_L2Extension

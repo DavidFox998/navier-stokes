@@ -109,7 +109,7 @@ noncomputable instance : (volume : Measure R3).IsNegInvariant where
       funext x
       simp [f]
     have hmap :=
-      map_linearMap_addHaar_eq_smul_addHaar (μ := (volume : Measure R3)) (F := ℝ) hne
+      Measure.map_linearMap_addHaar_eq_smul_addHaar (μ := (volume : Measure R3)) (F := ℝ) hne
     rw [hfun] at hmap
     rw [← Measure.neg_def] at hmap
     rw [hdet] at hmap
@@ -222,26 +222,10 @@ theorem NS_MollifiedFamily_Smooth_PROVED
     ContDiff ℝ ⊤ (Function.uncurry v) := hv
     -- No claim of new joint time/space regularity is made here.
 
-/-! ## §III. NS_M6_CLOSED_v104 — 4 deps -/
+/-! ## §III. Zero initial datum -/
 
-/-- Historical master wrapper, retained here rather than reworked as part
-of the density repair. Its four named hypotheses are listed below.
-The old claim that unconditional smooth approximation was proved and
-dropped from the dependency ledger is NOT supported by §I: the two
-mollifier bridges remain OPEN. This repair does not certify the master
-wrapper or a Navier-Stokes regularity result; compilation is unverified.
-
-    HISTORICAL FOUR HYPOTHESES:
-      1. NS_BlowupConcentration_OPEN    (L^{3,inf}, ETA 2-3 months)
-      2. NS_Carleman_LimitPass_OPEN     (limit pass, ETA 2-4 months)
-      3. NS_CarlemanHeat_OPEN           (CRITICAL — Hormander, ETA 3-6 months)
-      4. NS_CarlemanDriftAbsorption_OPEN (after heat)
-
-    CMI STATUS: NS is NOT solved. This is not a verified total gap count. -/
 /-- The zero field is a weak solution of zero initial data, and it is smooth.
-The four historical hypotheses are not a construction of a weak solution for
-arbitrary square-integrable data. `NS_M6_OPEN` stays the full statement and
-is not claimed here. -/
+`NS_M6_OPEN` is the statement for arbitrary data and is not claimed here. -/
 theorem NS_M6_CLOSED_v104
     (hConc     : NS_BlowupConcentration_OPEN)
     (hLimit    : NS_Carleman_LimitPass_OPEN)

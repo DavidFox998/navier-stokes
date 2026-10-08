@@ -85,34 +85,56 @@ noncomputable def C_Sobolev : ℝ≥0 :=
 noncomputable def C_GN : ℝ≥0 := C_Sobolev ^ (3 / 4 : ℝ)
 
 private theorem ennreal_ofNat (n : ℕ) : (n : ℝ≥0∞) = ENNReal.ofReal (n : ℝ) :=
-  (ENNReal.ofReal_coe_nnreal (n : ℝ≥0)).symm
+  (ENNReal.ofReal_coe_nnreal (p := (n : ℝ≥0))).symm
 
 private theorem ennreal_inv_add_inv_two :
     (2 : ℝ≥0∞)⁻¹ + (2 : ℝ≥0∞)⁻¹ = 1 := by
   have h2 : (0 : ℝ) < 2 := by norm_num
+  have hcoe : (2 : ℝ≥0∞) = ENNReal.ofReal (2 : ℝ) := by
+    rw [← Nat.cast_ofNat]
+    exact ennreal_ofNat 2
+  have hinv : (2 : ℝ≥0∞)⁻¹ = ENNReal.ofReal (2 : ℝ)⁻¹ := by
+    rw [hcoe, ENNReal.ofReal_inv_of_pos h2]
+  rw [hinv, ← ENNReal.ofReal_add (inv_nonneg.2 h2.le) (inv_nonneg.2 h2.le)]
   have hsum : (2 : ℝ)⁻¹ + (2 : ℝ)⁻¹ = 1 := by norm_num
-  calc
-    (2 : ℝ≥0∞)⁻¹ + (2 : ℝ≥0∞)⁻¹
-        = ENNReal.ofReal (2 : ℝ)⁻¹ + ENNReal.ofReal (2 : ℝ)⁻¹ := by
-          rw [ennreal_ofNat 2, ← ENNReal.ofReal_inv_of_pos h2]
-    _ = ENNReal.ofReal ((2 : ℝ)⁻¹ + (2 : ℝ)⁻¹) :=
-          (ENNReal.ofReal_add (inv_nonneg.2 h2.le) (inv_nonneg.2 h2.le)).symm
-    _ = ENNReal.ofReal 1 := by rw [hsum]
-    _ = 1 := ENNReal.ofReal_one
+  rw [hsum]
+  exact ENNReal.ofReal_one
 
 private theorem ennreal_inv_four_add :
     (4 : ℝ≥0∞)⁻¹ + (4 : ℝ≥0∞)⁻¹ = (2 : ℝ≥0∞)⁻¹ := by
   have h4 : (0 : ℝ) < 4 := by norm_num
   have h2 : (0 : ℝ) < 2 := by norm_num
+  have hcoe4 : (4 : ℝ≥0∞) = ENNReal.ofReal (4 : ℝ) := by
+    rw [← Nat.cast_ofNat]
+    exact ennreal_ofNat 4
+  have hcoe2 : (2 : ℝ≥0∞) = ENNReal.ofReal (2 : ℝ) := by
+    rw [← Nat.cast_ofNat]
+    exact ennreal_ofNat 2
+  have hinv4 : (4 : ℝ≥0∞)⁻¹ = ENNReal.ofReal (4 : ℝ)⁻¹ := by
+    rw [hcoe4, ENNReal.ofReal_inv_of_pos h4]
+  have hinv2 : (2 : ℝ≥0∞)⁻¹ = ENNReal.ofReal (2 : ℝ)⁻¹ := by
+    rw [hcoe2, ENNReal.ofReal_inv_of_pos h2]
+  rw [hinv4, hinv2, ← ENNReal.ofReal_add (inv_nonneg.2 h4.le) (inv_nonneg.2 h4.le)]
   have hsum : (4 : ℝ)⁻¹ + (4 : ℝ)⁻¹ = (2 : ℝ)⁻¹ := by norm_num
-  calc
-    (4 : ℝ≥0∞)⁻¹ + (4 : ℝ≥0∞)⁻¹
-        = ENNReal.ofReal (4 : ℝ)⁻¹ + ENNReal.ofReal (4 : ℝ)⁻¹ := by
-          rw [ennreal_ofNat 4, ← ENNReal.ofReal_inv_of_pos h4]
-    _ = ENNReal.ofReal ((4 : ℝ)⁻¹ + (4 : ℝ)⁻¹) :=
-          (ENNReal.ofReal_add (inv_nonneg.2 h4.le) (inv_nonneg.2 h4.le)).symm
-    _ = ENNReal.ofReal (2 : ℝ)⁻¹ := by rw [hsum]
-    _ = (2 : ℝ≥0∞)⁻¹ := by rw [← ENNReal.ofReal_inv_of_pos h2, ← ennreal_ofNat 2]
+  rw [hsum]
+
+private theorem ennreal_holder_div_122 :
+    (1 : ℝ≥0∞) / 1 = 1 / 2 + 1 / 2 := by
+  have hdiv1 : (1 : ℝ≥0∞) / 1 = 1 := by
+    rw [div_eq_mul_inv, inv_one, mul_one]
+  have hdiv2 : (1 : ℝ≥0∞) / 2 = (2 : ℝ≥0∞)⁻¹ := by
+    rw [div_eq_mul_inv, one_mul]
+  rw [hdiv1, hdiv2]
+  exact ennreal_inv_add_inv_two.symm
+
+private theorem ennreal_holder_div_244 :
+    (1 : ℝ≥0∞) / 2 = 1 / 4 + 1 / 4 := by
+  have hdiv2 : (1 : ℝ≥0∞) / 2 = (2 : ℝ≥0∞)⁻¹ := by
+    rw [div_eq_mul_inv, one_mul]
+  have hdiv4 : (1 : ℝ≥0∞) / 4 = (4 : ℝ≥0∞)⁻¹ := by
+    rw [div_eq_mul_inv, one_mul]
+  rw [hdiv2, hdiv4]
+  exact ennreal_inv_four_add.symm
 
 section SobolevSteps
 
@@ -135,13 +157,23 @@ theorem L4_interpolation_L2_L6 {u : R3 → F}
         (eLpNorm u 4 volume) ^ (4 : ℝ) := by
     have h := eLpNorm_norm_rpow (p := (1 : ℝ≥0∞))
       (μ := (volume : Measure R3)) u (by norm_num : 0 < (4 : ℝ))
-    convert h using 1 <;> first | rfl | norm_num [Real.rpow_natCast]
+    have hfun : (fun x => ‖u x‖ ^ (4 : ℕ)) = fun x => ‖u x‖ ^ (4 : ℝ) := by
+      funext x
+      exact (Real.rpow_natCast (‖u x‖) 4).symm
+    rw [hfun, ← ennreal_ofNat 4, one_mul, Nat.cast_ofNat] at h
+    exact h
   have h3 :
       eLpNorm (fun x => ‖u x‖ ^ (3 : ℕ)) 2 volume =
         (eLpNorm u 6 volume) ^ (3 : ℝ) := by
     have h := eLpNorm_norm_rpow (p := (2 : ℝ≥0∞))
       (μ := (volume : Measure R3)) u (by norm_num : 0 < (3 : ℝ))
-    convert h using 1 <;> first | rfl | norm_num [Real.rpow_natCast]
+    have hfun : (fun x => ‖u x‖ ^ (3 : ℕ)) = fun x => ‖u x‖ ^ (3 : ℝ) := by
+      funext x
+      exact (Real.rpow_natCast (‖u x‖) 3).symm
+    have hmul : (2 : ℝ≥0∞) * ENNReal.ofReal (3 : ℝ) = 6 := by
+      rw [← ennreal_ofNat 3, ← Nat.cast_ofNat (n := 2), ← Nat.cast_mul, Nat.cast_ofNat]
+    rw [hfun, hmul] at h
+    exact h
   have hHolder :
       eLpNorm (fun x => ‖u x‖ * ‖u x‖ ^ (3 : ℕ)) 1 volume ≤
         eLpNorm (fun x => ‖u x‖) 2 volume *
@@ -150,7 +182,7 @@ theorem L4_interpolation_L2_L6 {u : R3 → F}
       hu.norm (hu.norm.pow 3) (fun a b : ℝ => a * b) ?_ ?_
     · exact Filter.Eventually.of_forall
         (fun x => le_of_eq (nnnorm_mul (‖u x‖) (‖u x‖ ^ (3 : ℕ))))
-    · exact ennreal_inv_add_inv_two.symm
+    · exact ennreal_holder_div_122
   have hPower :
       (eLpNorm u 4 volume) ^ (4 : ℝ) ≤
         eLpNorm u 2 volume * (eLpNorm u 6 volume) ^ (3 : ℝ) := by
@@ -323,11 +355,16 @@ private theorem euclidean_norm_le_sum_coordinates (z : R3) :
     _ ≤ ∑ i : Fin 3, ‖z i • EuclideanSpace.single i 1‖ := norm_sum_le _ _
     _ = _ := by simp only [norm_smul, EuclideanSpace.norm_single, norm_one, mul_one]
 
+set_option maxHeartbeats 2000000 in
 private theorem scalar_operator_norm_le_coordinates (L : R3 →L[ℝ] ℝ) :
     ‖L‖ ≤ (coordinateNormConstant : ℝ) *
       ∑ i : Fin 3, ‖L (EuclideanSpace.single i 1)‖ := by
-  apply L.opNorm_le_bound (mul_nonneg (NNReal.coe_nonneg coordinateNormConstant)
-    (Finset.sum_nonneg fun i _ => norm_nonneg _))
+  let M : ℝ := (coordinateNormConstant : ℝ) *
+    ∑ i : Fin 3, ‖L (EuclideanSpace.single i 1)‖
+  have hM : 0 ≤ M :=
+    mul_nonneg (NNReal.coe_nonneg coordinateNormConstant)
+      (Finset.sum_nonneg fun _ _ => norm_nonneg _)
+  apply L.opNorm_le_bound hM
   intro z
   have hL : L z = ∑ i : Fin 3, z i • L (EuclideanSpace.single i 1) := by
     calc
@@ -562,7 +599,7 @@ private theorem component_fderiv_L2_bound (v : TestVectorField)
       mul_le_mul_left' (Finset.sum_le_sum fun i _ => hpartial i j) _
     _ = _ := by
       simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
-      rw [mul_left_comm, mul_assoc]
+      rw [mul_left_comm, mul_assoc, Nat.cast_ofNat]
 
 private theorem L4_bound_of_L2_L6 {u : R3 → ℝ}
     (hu : AEStronglyMeasurable u (volume : Measure R3)) (M : ℝ≥0∞)
@@ -671,11 +708,11 @@ theorem H1_embedding_L4_extended (v : TestVectorField)
               (mul_le_mul_left' hU2 _)) _
         _ = _ := by
           simp only [ENNReal.coe_mul, ENNReal.coe_add, ENNReal.coe_ofNat]
-          rw [mul_assoc (3 : ℝ≥0∞), ← add_mul]
-          rw [mul_assoc ((3 : ℝ≥0∞) + (spatialCutoffLipschitzConstant : ℝ≥0∞))]
-          rw [mul_comm ((3 : ℝ≥0∞) + (spatialCutoffLipschitzConstant : ℝ≥0∞))
-            (coordinateNormConstant : ℝ≥0∞)]
-          rw [mul_assoc (C_Sobolev : ℝ≥0∞), mul_assoc (C_Sobolev : ℝ≥0∞)]
+          rw [mul_assoc (3 : ℝ≥0∞), ← add_mul,
+            ← mul_assoc ((3 : ℝ≥0∞) + (spatialCutoffLipschitzConstant : ℝ≥0∞)),
+            mul_comm ((3 : ℝ≥0∞) + (spatialCutoffLipschitzConstant : ℝ≥0∞))
+              (coordinateNormConstant : ℝ≥0∞),
+            ← mul_assoc (C_Sobolev : ℝ≥0∞), ← mul_assoc (C_Sobolev : ℝ≥0∞)]
     apply L4_bound_of_L2_L6 hs.continuous.aestronglyMeasurable
     · exact hU2.trans (by
         simpa only [ENNReal.coe_mul] using
@@ -699,7 +736,7 @@ theorem H1_embedding_L4_extended (v : TestVectorField)
       Finset.sum_le_sum fun j _ => hcomponents j
     _ = (((3 : ℝ≥0) * componentH1L4Constant * H : ℝ≥0) : ℝ≥0∞) := by
       simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin,
-        nsmul_eq_mul, ENNReal.coe_mul, ENNReal.coe_ofNat, mul_assoc]
+        nsmul_eq_mul, ENNReal.coe_mul, ENNReal.coe_ofNat, Nat.cast_ofNat, mul_assoc]
     _ = ENNReal.ofReal (H1L4Constant * H1Norm v.toFun) := by
       change (((3 : ℝ≥0) * componentH1L4Constant * H : ℝ≥0) : ℝ≥0∞) =
         ENNReal.ofReal (((3 : ℝ≥0) * componentH1L4Constant * H : ℝ≥0) : ℝ)
@@ -759,7 +796,7 @@ theorem holder_4442 (f g h : R3 → ℝ)
       hf hg (fun a b : ℝ => a * b) ?_ ?_
     · exact Filter.Eventually.of_forall
         (fun x => le_of_eq (nnnorm_mul (f x) (g x)))
-    · exact ennreal_inv_four_add
+    · exact ennreal_holder_div_244
   calc
     eLpNorm (fun x => f x * g x * h x) 1 volume
         ≤ eLpNorm (fun x => f x * g x) 2 volume * eLpNorm h 2 volume := by
@@ -767,7 +804,7 @@ theorem holder_4442 (f g h : R3 → ℝ)
             (hf.mul hg) hh (fun a b : ℝ => a * b) ?_ ?_
           · exact Filter.Eventually.of_forall
               (fun x => le_of_eq (nnnorm_mul (f x * g x) (h x)))
-          · exact ennreal_inv_add_inv_two.symm
+          · exact ennreal_holder_div_122
     _ ≤ eLpNorm f 4 volume * eLpNorm g 4 volume * eLpNorm h 2 volume :=
       mul_le_mul_right' h_fg_L2 _
 
@@ -1072,7 +1109,7 @@ private theorem scalar_fderiv_L2_bound {f : R3 → ℝ} (hf : ContDiff ℝ ⊤ f
     _ = (3 : ℝ≥0∞) * (coordinateNormConstant : ℝ≥0∞) * H := by
       simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul,
         ENNReal.ofReal_coe_nnreal]
-      rw [mul_left_comm, mul_assoc]
+      rw [mul_left_comm, mul_assoc, Nat.cast_ofNat]
 
 private theorem partialDerivative_L4_extended (v : TestVectorField) (i j : Fin 3)
     (hv1 : Memℒp (partialDerivative v.toFun i j) 2 (volume : Measure R3))

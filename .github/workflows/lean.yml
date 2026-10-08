@@ -5,6 +5,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: lean-wall266-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Typecheck Wall266 modules
@@ -23,9 +27,9 @@ jobs:
           path: |
             ~/.elan
             .lake
-          key: ${{ runner.os }}-lake-${{ hashFiles('lake-manifest.json') }}
+          key: ${{ runner.os }}-lake-v2-${{ hashFiles('lake-manifest.json') }}
           restore-keys: |
-            ${{ runner.os }}-lake-
+            ${{ runner.os }}-lake-v2-
 
       - name: Build new proofs
         run: |

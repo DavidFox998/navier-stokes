@@ -64,8 +64,8 @@ structure NS_WeakSolution
   init : v 0 = v₀
   /-- L² energy inequality: kinetic energy is non-increasing for t ≥ 0. -/
   energy_le_L2 : ∀ t : ℝ, 0 ≤ t →
-    ∫ x, ‖v t x‖ ^ 2 ∂MeasureTheory.Measure.haar ≤
-    ∫ x, ‖v 0 x‖ ^ 2 ∂MeasureTheory.Measure.haar
+    ∫ x, ‖v t x‖ ^ 2 ∂volume ≤
+    ∫ x, ‖v 0 x‖ ^ 2 ∂volume
 
 /-- **NS_WeakSolution.init_apply**: pointwise form of the initial condition.
     `v 0 x = v₀ x` for every `x : EuclideanSpace ℝ (Fin 3)`. -/

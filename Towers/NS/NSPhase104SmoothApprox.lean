@@ -69,7 +69,7 @@ def NS_CarlemanDriftAbsorption_OPEN : Prop :=
   ∀ (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)), True
 def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    MeasureTheory.Memℒp v₀ 2 MeasureTheory.Measure.haar →
+    MeasureTheory.Memℒp v₀ 2 (volume : Measure (EuclideanSpace ℝ (Fin 3))) →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
       NS_WeakSolution v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
 

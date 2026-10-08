@@ -362,6 +362,22 @@ private theorem euclidean_norm_le_sum_coordinates (z : R3) :
     _ ≤ ∑ i : Fin 3, ‖z i • EuclideanSpace.single i 1‖ := norm_sum_le _ _
     _ = _ := by simp only [norm_smul, EuclideanSpace.norm_single, norm_one, mul_one]
 
+private theorem coordinate_abs_le_norm (z : R3) (i : Fin 3) : ‖z i‖ ≤ ‖z‖ := by
+  have hsq : ‖z i‖ ^ 2 ≤ ‖z‖ ^ 2 := by
+    rw [PiLp.norm_sq_eq_of_L2 z]
+    exact Finset.single_le_sum
+      (f := fun j : Fin 3 => ‖z j‖ ^ 2)
+      (fun _ _ => sq_nonneg _) (Finset.mem_univ i)
+  have h := sq_le_sq.1 hsq
+  simpa [abs_of_nonneg (norm_nonneg (z i)), abs_of_nonneg (norm_nonneg z)] using h
+
+private theorem coordinateNormConstant_real_ge_one :
+    (1 : ℝ) ≤ (coordinateNormConstant : ℝ) := by
+  have : (1 : ℝ≥0) ≤ coordinateNormConstant := by
+    unfold coordinateNormConstant
+    exact le_add_of_nonneg_right (Finset.sum_nonneg fun _ _ => zero_le _)
+  exact_mod_cast this
+
 private theorem scalar_operator_norm_le_coordinates (L : R3 →L[ℝ] ℝ) :
     ‖L‖ ≤ (coordinateNormConstant : ℝ) *
       ∑ i : Fin 3, ‖L (EuclideanSpace.single i 1)‖ := by
@@ -375,11 +391,14 @@ private theorem scalar_operator_norm_le_coordinates (L : R3 →L[ℝ] ℝ) :
   rw [hL]
   refine (norm_sum_le _ _).trans ?_
   simp only [norm_smul]
-  refine (Finset.sum_le_sum fun i _ => ?_).trans ?_
+  refine (Finset.sum_le_sum
+    (f := fun i => ‖z i‖ * ‖L (EuclideanSpace.single i 1)‖)
+    (g := fun i => ((coordinateNormConstant : ℝ) * ‖z‖) *
+      ‖L (EuclideanSpace.single i 1)‖)
+    fun i _ => ?_).trans ?_
   · apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
-    rw [← EuclideanSpace.proj_apply i z]
-    exact ((EuclideanSpace.proj i).le_opNorm z).trans
-      (mul_le_mul_of_nonneg_right (coordinate_projection_norm_le i) (norm_nonneg _))
+    exact (coordinate_abs_le_norm z i).trans
+      (le_mul_of_one_le_left (norm_nonneg z) coordinateNormConstant_real_ge_one)
   · rw [← Finset.mul_sum, mul_assoc,
       mul_comm (‖z‖) (∑ i : Fin 3, ‖L (EuclideanSpace.single i 1)‖), ← mul_assoc]
 
@@ -693,10 +712,8 @@ theorem H1_embedding_L4_extended (v : TestVectorField)
       intro x
       apply NNReal.coe_le_coe.mp
       simp only [NNReal.coe_mul, coe_nnnorm]
-      rw [← EuclideanSpace.proj_apply j (v.toFun x)]
-      exact ((EuclideanSpace.proj j).le_opNorm (v.toFun x)).trans
-        (mul_le_mul_of_nonneg_right (coordinate_projection_norm_le j)
-          (norm_nonneg _))
+      exact (coordinate_abs_le_norm (v.toFun x) j).trans
+        (le_mul_of_one_le_left (norm_nonneg _) coordinateNormConstant_real_ge_one)
     have hU2 : eLpNorm (fun x => v.toFun x j) 2 volume ≤
         (coordinateNormConstant : ℝ≥0∞) * (H : ℝ≥0∞) := by
       refine (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul

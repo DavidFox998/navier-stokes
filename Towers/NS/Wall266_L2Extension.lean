@@ -48,7 +48,7 @@ private theorem divClassical_eq_trace {w : R3 → R3} {x : R3}
 private theorem gradient_component (f : R3 → ℝ) (x : R3) (i : Fin 3) :
     (gradient f x) i = fderiv ℝ f x (EuclideanSpace.single i 1) := by
   have hcoord : (gradient f x) i =
-      ⟪gradient f x, EuclideanSpace.single i (1 : ℝ)⟫ := by
+      inner (gradient f x) (EuclideanSpace.single i (1 : ℝ)) := by
     rw [EuclideanSpace.inner_single_right]
     simp
   rw [hcoord, gradient]
@@ -372,7 +372,8 @@ private theorem mollifierL2Average_setIntegral_eq (v : L2VectorField)
         ∂(volume : Measure R3) := by
       apply integral_congr_ae
       exact Filter.Eventually.of_forall fun y => by
-        rw [ContinuousLinearMap.map_smul, htest (translateL2 v (-y))]
+        show Q (normalizedMollifiers.kernel n y • translateL2 v (-y)) = _
+        rw [Q.map_smul, smul_eq_mul, htest (translateL2 v (-y))]
         change normalizedMollifiers.kernel n y *
           (∫ x in s, (translateL2 v (-y) i) x ∂(volume : Measure R3)) = _
         congr 1
@@ -500,11 +501,12 @@ noncomputable def trilinearForm : L2DivFree → L2DivFree → L2DivFree → ℝ 
     0 -- Zero placeholder; no Cauchy-sequence extension is constructed here.
     -- OPEN: the analytic extension needs density and the appropriate norm estimates.
 
+instance : TopologicalSpace L2DivFree := by
+  unfold L2DivFree
+  infer_instance
+
 theorem trilinearForm_continuous (u v : L2DivFree) :
   Continuous (fun w : L2DivFree => trilinearForm u v w) := by
-  letI : TopologicalSpace L2DivFree := by
-    unfold L2DivFree
-    infer_instance
   simp [trilinearForm]
   exact continuous_const
 

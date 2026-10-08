@@ -50,9 +50,12 @@ open TheoremaAureum.Towers.YM.Wall264
 /-- ℝ³ as a normed space -/
 abbrev R3 := EuclideanSpace ℝ (Fin 3)
 
+/-- `2` is an `L^p` exponent, so each component `Lp ℝ 2` is a normed group. -/
+instance : Fact ((1 : ℝ≥0∞) ≤ 2) := ⟨by norm_num⟩
+
 /-- L² vector field: each component in L²(ℝ³).
-Declared before the smooth-to-L2 bridge that uses it. -/
-def L2VectorField := Fin 3 → Lp ℝ 2 (volume : Measure R3)
+An `abbrev` so the finite-product sup norm on `Fin 3 → Lp` is found. -/
+abbrev L2VectorField := Fin 3 → Lp ℝ 2 (volume : Measure R3)
 
 /-- Assemble chosen Lp representatives into a vector field.
 This is not an equality of pointwise representatives modulo null sets;
@@ -152,7 +155,7 @@ noncomputable instance : Norm L2DivFree where
 /-- Trilinear form for SMOOTH fields first - the building block -/
 noncomputable def trilinearSmooth (u v w : R3 → R3) : ℝ :=
   ∫ x, (∑ i : Fin 3, ∑ j : Fin 3, (u x) i *
-    (deriv (fun t => (v (x + t • EuclideanSpace.single i 1)) j) 0) *
+    (deriv (fun t : ℝ => (v (x + t • EuclideanSpace.single i (1 : ℝ))) j) (0 : ℝ)) *
     (w x) j) ∂(volume : Measure R3)
 
 /-- Trilinear form for L² fields via density — Mathlib doesn't have density of C_c^∞_div-free in L²_div-free, so we axiomatize the extension property as a Prop to be proved later -/

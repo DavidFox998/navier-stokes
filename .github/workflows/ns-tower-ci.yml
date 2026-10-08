@@ -21,17 +21,26 @@ jobs:
           curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
-      - name: Cache Lake packages
-        if: always()
-        uses: actions/cache@v4
+      - name: Restore Lake packages
+        id: lake-cache
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.elan
             .lake
-          key: ${{ runner.os }}-lake-v2-${{ hashFiles('lake-manifest.json') }}
+          key: ${{ runner.os }}-lake-v3-${{ hashFiles('lake-manifest.json') }}
           restore-keys: |
-            ${{ runner.os }}-lake-v2-
+            ${{ runner.os }}-lake-v3-
 
       - name: Build Wall266 proofs
         run: |
           lake build Towers.NS.Wall266_H4L4 Towers.NS.Wall266_TrilinearForm Towers.NS.Wall266_L2Extension
+
+      - name: Save Lake packages
+        if: always() && steps.lake-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.elan
+            .lake
+          key: ${{ steps.lake-cache.outputs.cache-primary-key }}

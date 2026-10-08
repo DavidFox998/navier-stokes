@@ -51,7 +51,7 @@ open TheoremaAureum.Towers.YM.Wall264
 abbrev R3 := EuclideanSpace ℝ (Fin 3)
 
 /-- `2` is an `L^p` exponent, so each component `Lp ℝ 2` is a normed group. -/
-instance : Fact ((1 : ℝ≥0∞) ≤ 2) := ⟨by norm_num⟩
+instance : Fact ((1 : ENNReal) ≤ 2) := ⟨by norm_num⟩
 
 /-- L² vector field: each component in L²(ℝ³).
 An `abbrev` so the finite-product sup norm on `Fin 3 → Lp` is found. -/

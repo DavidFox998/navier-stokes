@@ -63,9 +63,22 @@ noncomputable def L2_of_smooth (v : TestVectorField) : L2VectorField :=
         -- projection (fun y => y i) is continuous
         exact (continuous_apply i).comp h1
       have h_compact : HasCompactSupport f_i := by
-        -- v.compact_support : HasCompactSupport v.toFun
-        -- each component inherits compact support (support f_i ⊆ support v.toFun)
-        sorry -- one-liner API — find lemma: hasCompactSupport_comp or similar
+        -- f_i x = (v.toFun x) i
+        -- If v.toFun x = 0 then f_i x = 0, so support f_i ⊆ support v.toFun
+        have hvs : HasCompactSupport v.toFun := v.compact_support
+        -- Show tsupport f_i ⊆ tsupport v.toFun
+        have h_support_subset : Function.support f_i ⊆ Function.support v.toFun := by
+          intro x hx
+          -- hx: f_i x ≠ 0 → (v.toFun x) i ≠ 0 → v.toFun x ≠ 0
+          simp only [f_i, Function.mem_support] at hx ⊢
+          intro h_eq_zero
+          have : (v.toFun x) i = 0 := by rw [h_eq_zero]; rfl
+          exact hx this
+        -- tsupport is closure of support, so closure subset
+        have h_tsupport_subset : tsupport f_i ⊆ tsupport v.toFun := by
+          apply closure_mono h_support_subset
+        -- tsupport v.toFun is compact, closed subset of compact is compact
+        exact HasCompactSupport.mk (hvs.isCompact.of_isClosed_subset isClosed_closure h_tsupport_subset)
       -- Continuous + HasCompactSupport → MemLp 2 — standard
       exact memLp_of_hasCompactSupport_of_continuous h_compact h_cont 2
     MemLp.toLp f_i h_mem

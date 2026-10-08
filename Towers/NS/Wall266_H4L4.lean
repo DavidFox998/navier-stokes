@@ -176,8 +176,9 @@ theorem L4_interpolation_L2_L6 {u : R3 → F}
     have hmul : (2 : ℝ≥0∞) * ENNReal.ofReal (3 : ℝ) = 6 := by
       have h3eq : ENNReal.ofReal (3 : ℝ) = 3 := by
         simpa [Nat.cast_ofNat] using (ennreal_ofNat 3).symm
-      rw [h3eq, ← Nat.cast_ofNat (n := 2), ← Nat.cast_ofNat (n := 3), ← Nat.cast_mul,
-        Nat.cast_ofNat]
+      rw [h3eq, ← Nat.cast_ofNat (n := 2), ← Nat.cast_ofNat (n := 3), ← Nat.cast_mul]
+      rw [show (2 * 3 : ℕ) = 6 from rfl]
+      exact Nat.cast_ofNat
     rw [hfun, hmul] at h
     exact h
   have hHolder :
@@ -369,7 +370,7 @@ private theorem scalar_operator_norm_le_coordinates (L : R3 →L[ℝ] ℝ) :
       (Finset.sum_nonneg fun _ _ => norm_nonneg _)
   intro z
   have hL : L z = ∑ i : Fin 3, z i • L (EuclideanSpace.single i 1) := by
-    rw [euclidean_sum_coordinates z]
+    conv_lhs => rw [euclidean_sum_coordinates z]
     simp only [map_sum, ContinuousLinearMap.map_smul]
   rw [hL]
   refine (norm_sum_le _ _).trans ?_
@@ -579,7 +580,7 @@ private theorem component_fderiv_L2_bound (v : TestVectorField)
         ‖∑ i : Fin 3, ‖partialDerivative v.toFun i j x‖‖₊ := by
     intro x
     apply NNReal.coe_le_coe.mp
-    simp only [NNReal.coe_mul, NNReal.coe_nnnorm]
+    simp only [NNReal.coe_mul, coe_nnnorm]
     exact hbound x
   have hsum :
       eLpNorm (fun x => ∑ i : Fin 3, ‖partialDerivative v.toFun i j x‖) 2 volume ≤
@@ -691,7 +692,7 @@ theorem H1_embedding_L4_extended (v : TestVectorField)
         coordinateNormConstant * ‖v.toFun x‖₊ := by
       intro x
       apply NNReal.coe_le_coe.mp
-      simp only [NNReal.coe_mul, NNReal.coe_nnnorm]
+      simp only [NNReal.coe_mul, coe_nnnorm]
       rw [← EuclideanSpace.proj_apply j (v.toFun x)]
       exact ((EuclideanSpace.proj j).le_opNorm (v.toFun x)).trans
         (mul_le_mul_of_nonneg_right (coordinate_projection_norm_le j)
@@ -1245,9 +1246,13 @@ private theorem component_L4_real_le (u : TestVectorField)
   have hle : eLpNorm (fun x => u.toFun x j) 4 volume ≤
       ENNReal.ofReal (H1L4Constant * H4Norm u.toFun) :=
     hmono.trans hvec
+  have hH : 0 ≤ H4Norm u.toFun := by
+    rw [H4Norm]
+    exact Real.sqrt_nonneg _
+  have hnonneg : 0 ≤ H1L4Constant * H4Norm u.toFun :=
+    mul_nonneg (by unfold H1L4Constant; exact NNReal.coe_nonneg _) hH
   have hto := ENNReal.toReal_mono ENNReal.ofReal_ne_top hle
-  rwa [ENNReal.toReal_ofReal (mul_nonneg
-    (by unfold H1L4Constant; exact NNReal.coe_nonneg _) (Real.sqrt_nonneg _))] at hto
+  rwa [ENNReal.toReal_ofReal hnonneg] at hto
 
 private theorem component_L2_real_le {w : R3 → R3}
     (hw : Memℒp w 2 (volume : Measure R3)) (j : Fin 3) :

@@ -39,16 +39,20 @@ private theorem divClassical_eq_trace {w : R3 → R3} {x : R3}
   apply Finset.sum_congr rfl
   intro i _
   have hi : HasFDerivAt (fun y => (w y) i)
-      ((EuclideanSpace.proj i).comp (fderiv ℝ w x)) x :=
-    (EuclideanSpace.proj i).hasFDerivAt.comp x hw.hasFDerivAt
+      ((EuclideanSpace.proj i).comp (fderiv ℝ w x)) x := by
+    simpa [Function.comp_def, EuclideanSpace.proj_apply] using
+      ((EuclideanSpace.proj i).hasFDerivAt.comp x hw.hasFDerivAt)
   rw [hi.fderiv]
   rfl
 
 private theorem gradient_component (f : R3 → ℝ) (x : R3) (i : Fin 3) :
     (gradient f x) i = fderiv ℝ f x (EuclideanSpace.single i 1) := by
-  simpa [gradient, EuclideanSpace.inner_single_right] using
-    (InnerProductSpace.toDual_symm_apply (𝕜 := ℝ) (E := R3)
-      (x := EuclideanSpace.single i 1) (y := fderiv ℝ f x))
+  have hcoord : (gradient f x) i =
+      ⟪gradient f x, EuclideanSpace.single i (1 : ℝ)⟫ := by
+    rw [EuclideanSpace.inner_single_right]
+    simp
+  rw [hcoord, gradient]
+  exact InnerProductSpace.toDual_symm_apply
 
 /-- Weak divergence is preserved by smooth compact-kernel convolution.
 The input is only locally integrable, not classically differentiable.
@@ -134,7 +138,7 @@ measure-preserving composition theorem. This is one ingredient for the
 remaining approximate-identity proof, not the approximation theorem itself. -/
 theorem translateL2_continuous (v : L2VectorField) :
     Continuous (translateL2 v) := by
-  letI : Fact ((1 : ℝ≥0∞) ≤ 2) := ⟨by norm_num⟩
+  letI : Fact ((1 : ENNReal) ≤ 2) := ⟨by norm_num⟩
   let shifts : C(R3, C(R3, R3)) :=
     (ContinuousMap.mk (fun p : R3 × R3 => p.2 + p.1)
       (continuous_snd.add continuous_fst)).curry
@@ -205,6 +209,7 @@ theorem mollifierKernel_L1_norm (n : ℕ) :
         ∫ x, normalizedMollifiers.kernel n x ∂(volume : Measure R3) := by
       apply integral_congr_ae
       exact Filter.Eventually.of_forall fun x => by
+        show ‖normalizedMollifiers.kernel n x‖ = normalizedMollifiers.kernel n x
         rw [Real.norm_eq_abs, abs_of_nonneg (normalizedMollifiers.nonnegative n x)]
     _ = 1 := normalizedMollifiers.integral_one n
 
@@ -254,7 +259,9 @@ theorem mollifierL2Average_norm_le (v : L2VectorField) (n : ℕ) :
         ∂(volume : Measure R3) := by
       apply integral_congr_ae
       exact Filter.Eventually.of_forall fun y => by
-        rw [norm_smul, translateL2_norm, Real.norm_eq_abs,
+        show ‖normalizedMollifiers.kernel n y • translateL2 v (-y)‖ =
+          normalizedMollifiers.kernel n y * ‖v‖
+        rw [norm_smul, Real.norm_eq_abs, translateL2_norm,
           abs_of_nonneg (normalizedMollifiers.nonnegative n y)]
     _ = ‖v‖ := by
       rw [integral_mul_right, normalizedMollifiers.integral_one, one_mul]
@@ -365,7 +372,7 @@ private theorem mollifierL2Average_setIntegral_eq (v : L2VectorField)
         ∂(volume : Measure R3) := by
       apply integral_congr_ae
       exact Filter.Eventually.of_forall fun y => by
-        rw [map_smul, htest (translateL2 v (-y))]
+        rw [ContinuousLinearMap.map_smul, htest (translateL2 v (-y))]
         change normalizedMollifiers.kernel n y *
           (∫ x in s, (translateL2 v (-y) i) x ∂(volume : Measure R3)) = _
         congr 1
@@ -378,7 +385,7 @@ private theorem mollifierL2Average_setIntegral_eq (v : L2VectorField)
         ∂(volume : Measure R3) ∂(volume : Measure R3) := by
       apply integral_congr_ae
       exact Filter.Eventually.of_forall fun y => by
-        rw [← integral_mul_left]
+        simp only [← integral_mul_left]
         apply setIntegral_congr_ae hs.measurableSet
         exact Filter.Eventually.of_forall fun x hxs => hcut x hxs y
     _ = ∫ x in s, ∫ y, normalizedMollifiers.kernel n y * w (x - y)
@@ -476,9 +483,11 @@ theorem L2DivFree_dense_smooth : ∀ v : L2DivFree,
   have hDivFree : NS_ConvolutionDivFree_OPEN := weak_div_preservation
   have hL2Conv : NS_ConvolutionL2Conv_OPEN := by
     intro v
-    exact ⟨{ mollifiers := normalizedMollifiers,
-      component_L2 := mollifiedL2_component_mem v,
-      converges := mollifiedL2_norm_sub_tendsto v }⟩
+    exact ⟨({
+      mollifiers := normalizedMollifiers
+      component_L2 := mollifiedL2_component_mem v
+      converges := mollifiedL2_norm_sub_tendsto v
+    } : L2MollifierApproximation v)⟩
   exact L2DivFree_dense_smooth_of_mollifier_bridges hDivFree hL2Conv
 
 -- Step 2b: OPEN analytic extension of trilinearSmooth from a dense set.
@@ -493,7 +502,9 @@ noncomputable def trilinearForm : L2DivFree → L2DivFree → L2DivFree → ℝ 
 
 theorem trilinearForm_continuous (u v : L2DivFree) :
   Continuous (fun w : L2DivFree => trilinearForm u v w) := by
-  -- trilinearForm currently = fun _ _ _ => 0, so Continuous trivially
+  letI : TopologicalSpace L2DivFree := by
+    unfold L2DivFree
+    infer_instance
   simp [trilinearForm]
   exact continuous_const
 
@@ -508,13 +519,12 @@ theorem trilinearForm_bound (v : L2DivFree) (hSym : Is120CellSymmetric v) :
   · intro w
     simp only [trilinearForm, abs_zero]
     -- Need 0 ≤ C * ‖w‖
-    have hC_nonneg : 0 ≤ H4_BKM_constant * sobolevConstant_H4 := by
-      -- H4_BKM_constant = (1+phi)/(2-phi)/5 >0, sobolevConstant_H4 = π/(4√2) >0
-      unfold H4_BKM_constant sobolevConstant_H4
-      positivity -- phi>0, 2-phi>0, pi>0, sqrt 2 >0
-    have : 0 ≤ (H4_BKM_constant * sobolevConstant_H4) * ‖w‖ := by
-      apply mul_nonneg hC_nonneg (norm_nonneg _)
-    linarith
+    have hC_nonneg : 0 ≤ H4_BKM_constant * sobolevConstant_H4 :=
+      mul_nonneg H4_BKM_constant_pos.le sobolevConstant_H4_pos.le
+    have hnorm : 0 ≤ ‖w‖ := by
+      change 0 ≤ ‖w.val‖
+      exact norm_nonneg _
+    exact mul_nonneg hC_nonneg hnorm
 
 -- Step 2d: A derived constant estimate for the same zero placeholder only.
 theorem H4_controls_trilinear_REAL (v : L2DivFree) (hSym : Is120CellSymmetric v) :
@@ -524,7 +534,7 @@ theorem H4_controls_trilinear_REAL (v : L2DivFree) (hSym : Is120CellSymmetric v)
   obtain ⟨C, hCeq, hBound'⟩ := hBound
   use C
   constructor
-  · rfl
+  · exact hCeq
   constructor
   · calc C = H4_BKM_constant * sobolevConstant_H4 := hCeq
         _ < 11 * sobolevConstant_H4 := by

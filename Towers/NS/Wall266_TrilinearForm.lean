@@ -136,6 +136,8 @@ def Is120CellSymmetric (v : L2DivFree) : Prop :=
     C₀ = (1+φ)/(2-φ)/5 ≈ 0.85 < 11. -/
 def H4_BKM_constant : ℝ := (1 + phi) / (2 - phi) / 5
 
+theorem H4_BKM_constant_eq : H4_BKM_constant = (1 + phi) / (2 - phi) / 5 := rfl
+
 theorem H4_BKM_constant_pos : 0 < H4_BKM_constant := by
   have h_phi_pos : 0 < phi := phi_pos
   have h_gap_pos : 0 < 2 - phi := by

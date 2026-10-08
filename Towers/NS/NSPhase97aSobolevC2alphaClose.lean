@@ -56,21 +56,90 @@ theorem weight_L1_pow4 : Integrable (fun ξ : R3 => (1 + ‖ξ‖^2)⁻¹ ^ 4) v
   exact MemLp.integrable_sq h_wL2
 
 -- H⁴ norm finite → f̂ ∈ L¹ via Cauchy-Schwarz with weight
-theorem fourier_hat_L1_of_H4 {f : R3 → ℝ} (hH4 : MemLp (fun ξ => (1+‖ξ‖^2)^2 * fourierIntegral f ξ) 2 volume) :
-  Integrable (fun ξ => fourierIntegral f ξ) volume := by
-  have hW := weight_L2
-  -- ‖f̂‖_L¹ = ∫ |f̂| = ∫ (1+|ξ|²)⁻² * (1+|ξ|²)² |f̂|
-  -- ≤ ‖(1+|ξ|²)⁻²‖_L² * ‖(1+|ξ|²)² f̂‖_L² by Cauchy-Schwarz
-  -- = ‖weight‖_L² * ‖f‖_H⁴ < ∞
-  sorry -- 3rd sorry: Cauchy-Schwarz = Holder with p=q=2, L1 via L2*L2
+theorem fourier_hat_L1_of_H4 (f : R3 → ℝ)
+  (hH4 : MemLp (fun ξ => (1 + ‖ξ‖ ^ 2) ^ 2 * fourierIntegral f ξ) 2 volume) :
+  MemLp (fun ξ => fourierIntegral f ξ) 1 volume := by
+  -- YOUR factorization — same math, correct names:
+  -- f̂ = (1+|ξ|²)⁻² * (1+|ξ|²)² f̂
+  -- where f̂ = fourierIntegral f (not fourierTransform)
+
+  have h_factor : ∀ ξ, fourierIntegral f ξ =
+      (1 + ‖ξ‖ ^ 2)⁻¹ ^ 2 * ((1 + ‖ξ‖ ^ 2) ^ 2 * fourierIntegral f ξ) := by
+    intro ξ
+    have h_pos : (1 + ‖ξ‖ ^ 2) ^ 2 ≠ 0 := by positivity
+    field_simp
+
+  -- ‖f̂‖_L¹ ≤ ‖(1+|ξ|²)⁻²‖_L² * ‖(1+|ξ|²)² f̂‖_L² — Holder p=q=2
+  -- First factor = weight_L2 (Sorry 1) — already proved YOUR bound
+  have h_first : MemLp (fun ξ => (1 + ‖ξ‖ ^ 2)⁻¹ ^ 2) 2 volume := weight_L2
+
+  -- Second factor = hH4 — hypothesis of this theorem
+  -- No .fourier_weighted_L2 field — hH4 IS that
+
+  -- Product of L² * L² → L¹ by Holder
+  have h_prod : MemLp (fun ξ => (1 + ‖ξ‖ ^ 2)⁻¹ ^ 2 * ((1 + ‖ξ‖ ^ 2) ^ 2 * fourierIntegral f ξ)) 1 volume := by
+    -- Holder: MemLp 2 * MemLp 2 → MemLp 1
+    sorry -- API: MemLp.mul, Holder p=2 q=2
+
+  -- But that product = f̂ by h_factor
+  have h_eq : (fun ξ => fourierIntegral f ξ) =
+      (fun ξ => (1 + ‖ξ‖ ^ 2)⁻¹ ^ 2 * ((1 + ‖ξ‖ ^ 2) ^ 2 * fourierIntegral f ξ)) := by
+    funext ξ
+    exact (h_factor ξ).symm
+
+  rw [h_eq]
+  exact h_prod
 
 -- Fourier inversion → sup bound
-theorem sobolev_embedding_H4_C2alpha {f : R3 → ℝ} (hH4 : MemLp f 4 volume) :
-  ∃ C_S, ∀ x, |f x| ≤ C_S * ‖f‖ := by
-  -- |f(x)| = |∫ f̂(ξ) e^{i ξ·x} dξ| ≤ ∫ |f̂| = ‖f̂‖_L¹ ≤ C_S ‖f‖_H⁴
-  -- C_S = ‖(1+|ξ|²)⁻²‖_L²
-  have h_hat_L1 := fourier_hat_L1_of_H4
-  sorry -- 4th sorry: Fourier inversion theorem + sup bound
+theorem sobolev_embedding_H4_C2alpha (f : R3 → ℝ)
+  (hH4 : MemLp (fun ξ => (1 + ‖ξ‖ ^ 2) ^ 2 * fourierIntegral f ξ) 2 volume)
+  (x : R3) :
+  ‖f x‖ ≤ ∫ ξ, ‖fourierIntegral f ξ‖ := by
+  -- For real f, inversion is:
+  -- f(x) = ∫ fourierIntegral f ξ * cos(⟪ξ,x⟫) or similar — check your file's inversion lemma
+  -- YOUR file may have: fourierIntegral defined with Real.cos / Real.sin
+  -- Use existing lemma name in file — likely `fourier_inversion_real` or `fourierIntegral_inversion`
+
+  have h_inversion : f x = ∫ ξ, fourierIntegral f ξ * Real.cos ⟪ξ, x⟫ := by
+    sorry -- API: YOUR file's inversion lemma — NOT Complex.exp
+          -- Search: grep "fourierIntegral" in Phase97a file for inversion lemma name
+
+  calc ‖f x‖
+      = ‖∫ ξ, fourierIntegral f ξ * Real.cos ⟪ξ, x⟫‖ := by rw [h_inversion]
+    _ ≤ ∫ ξ, ‖fourierIntegral f ξ * Real.cos ⟪ξ, x⟫‖ := by
+        sorry -- API: norm_integral_le_integral_norm
+    _ = ∫ ξ, ‖fourierIntegral f ξ‖ * ‖Real.cos ⟪ξ, x⟫‖ := by
+        simp [norm_mul]
+    _ ≤ ∫ ξ, ‖fourierIntegral f ξ‖ * 1 := by
+        have h_cos_le : ∀ ξ, ‖Real.cos ⟪ξ, x⟫‖ ≤ 1 := by
+          intro ξ
+          -- |cos| ≤ 1
+          have : |Real.cos ⟪ξ, x⟫| ≤ 1 := Real.abs_cos_le_one _
+          simp [Real.norm_eq_abs, this]
+        apply integral_mono_of_nonneg
+        · sorry -- integrability
+        · sorry -- integrability
+        · intro ξ
+          apply mul_le_mul_of_nonneg_left (h_cos_le ξ)
+          exact norm_nonneg _
+    _ = ∫ ξ, ‖fourierIntegral f ξ‖ := by simp
+
+-- Constant stays same — real version:
+theorem sobolevConstant_H4_pos : 0 < sobolevConstant_H4 := by
+  unfold sobolevConstant_H4
+  positivity
+
+theorem H4_embedding_bound (f : R3 → ℝ)
+  (hH4 : MemLp (fun ξ => (1 + ‖ξ‖ ^ 2) ^ 2 * fourierIntegral f ξ) 2 volume)
+  (x : R3) :
+  ‖f x‖ ≤ sobolevConstant_H4 * ‖(fun ξ => (1 + ‖ξ‖ ^ 2) ^ 2 * fourierIntegral f ξ)‖_L2 := by
+  -- ‖f(x)‖ ≤ ‖f̂‖_L¹ ≤ ‖(1+|ξ|²)⁻²‖_L² * ‖(1+|ξ|²)² f̂‖_L²
+  -- ‖(1+|ξ|²)⁻²‖_L² = sobolevConstant_H4 = π/(4√2) — Sorry 1
+  -- ‖(1+|ξ|²)² f̂‖_L² = ‖f‖_H4 = second factor
+  calc ‖f x‖
+      ≤ ∫ ξ, ‖fourierIntegral f ξ‖ := sobolev_embedding_H4_C2alpha f hH4 x
+    _ ≤ sobolevConstant_H4 * ‖(fun ξ => (1 + ‖ξ‖ ^ 2) ^ 2 * fourierIntegral f ξ)‖_L2 := by
+        sorry -- API: from Sorry 3 Holder bound + norm of weight_L2 = sobolevConstant_H4
 
 -- The exact constant you need for Wall266 True → real bound
 noncomputable def sobolevConstant_H4 : ℝ :=

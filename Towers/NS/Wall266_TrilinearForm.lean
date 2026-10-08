@@ -58,10 +58,16 @@ noncomputable def L2_of_smooth (v : TestVectorField) : L2VectorField :=
     let f_i : R3 → ℝ := fun x => (v.toFun x) i
     have h_mem : MemLp f_i 2 volume := by
       have h_cont : Continuous f_i := by
-        sorry -- API: Continuous (fun x => (v.toFun x) i) from v.smooth
+        -- v.toFun : R3 → R3 is ContDiff → Continuous
+        have h1 : Continuous v.toFun := v.smooth.continuous
+        -- projection (fun y => y i) is continuous
+        exact (continuous_apply i).comp h1
       have h_compact : HasCompactSupport f_i := by
-        sorry -- API: HasCompactSupport component-wise from v.compact_support
-      sorry -- API: MemLp 2 from Continuous + HasCompactSupport (bounded on compact support)
+        -- v.compact_support : HasCompactSupport v.toFun
+        -- each component inherits compact support (support f_i ⊆ support v.toFun)
+        sorry -- one-liner API — find lemma: hasCompactSupport_comp or similar
+      -- Continuous + HasCompactSupport → MemLp 2 — standard
+      exact memLp_of_hasCompactSupport_of_continuous h_compact h_cont 2
     MemLp.toLp f_i h_mem
 
 /-- Coercion so (v : R3 → R3) works via .toFun -/
@@ -147,23 +153,24 @@ theorem H4_BKM_constant_pos : 0 < H4_BKM_constant := by
   positivity
 
 theorem H4_BKM_constant_lt_11 : H4_BKM_constant < 11 := by
-  have h1 := one_add_phi_lt_six
-  have h_gap : 0 < 2 - phi := by linarith [phi_pos, one_add_phi_lt_six]
-  -- (1+φ)/(2-φ)/5 ≤ 6/0.381/5 ≈ 3.14 < 11
   unfold H4_BKM_constant
-  have h1' : 1 + phi < 6 := h1
-  have h2 : 2 - phi > 0.3 := by
-    have : phi < 1.7 := by linarith
+  -- H4_BKM_constant = (1+phi)/(2-phi)/5, phi = (1+√5)/2 ≈1.618
+  -- So (1+1.618)/(2-1.618)/5 = 2.618/0.382/5 ≈ 1.37 < 11
+  have hphi : phi = (1 + Real.sqrt 5) / 2 := by rfl
+  have hsqrt5_lt3 : Real.sqrt 5 < 3 := by
+    have : Real.sqrt 5 < Real.sqrt 9 := Real.sqrt_lt_sqrt (by norm_num) (by norm_num)
+    simp at this ⊢
     linarith
-  calc (1 + phi) / (2 - phi) / 5
-      < 6 / (2 - phi) / 5 := by
-        apply div_lt_div_of_pos_right _ (by norm_num : (0:ℝ) < 5)
-        apply div_lt_div_of_pos_right h1' h_gap
-    _ < 6 / 0.3 / 5 := by
-        have : (0.3 : ℝ) < 2 - phi := h2
-        sorry -- monotonicity of 1/x, mechanical linarith
-    _ = 4 := by norm_num
-    _ < 11 := by norm_num
+  have hphi_lt2 : phi < 2 := by
+    rw [hphi]
+    linarith [hsqrt5_lt3]
+  have h2_sub_phi_pos : 0 < 2 - phi := by linarith
+  have h1_add_phi_pos : 0 < 1 + phi := by linarith [hphi_lt2]
+  -- Now (1+phi)/(2-phi)/5 < 11 via positivity + bounds
+  have h : (1+phi)/(2-phi) < 55 := by
+    rw [div_lt_iff₀ h2_sub_phi_pos]
+    nlinarith
+  linarith
 
 /-- The key theorem: H4 averaging controls the trilinear term.
 

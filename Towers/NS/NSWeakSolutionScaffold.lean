@@ -19,7 +19,7 @@ PATTERN: BSD_MissingDefinitionsRegistry — honest, scoped, repository-only.
 -/
 
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.MeasureTheory.Integral.Bochner
 import Towers.NS.NSWeakSolutionClay
 
 open MeasureTheory

@@ -27,7 +27,7 @@ SORRY COUNT: 0
 -/
 
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 open MeasureTheory

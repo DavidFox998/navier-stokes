@@ -36,4 +36,12 @@ lean_lib Towers where
     -- they are not reached by the Phase 97 roots above.
     `Towers.NS.Wall266_TrilinearForm,
     `Towers.NS.Wall266_H4L4,
-    `Towers.NS.Wall266_L2Extension]
+    `Towers.NS.Wall266_L2Extension,
+    -- Import closure of those three modules. Explicit `roots` are exact
+    -- modules, so an imported local file is typechecked only if it is also a root.
+    `Towers.YM.Wall260_ClayReduction,
+    `Towers.YM.Wall261_H4Defect,
+    `Towers.YM.Wall263_CoxeterSpectral,
+    `Towers.YM.Wall264_H4Vertices,
+    `Towers.NS.NSWeakSolutionClay,
+    `Towers.NS.NSPhase104SmoothApprox]

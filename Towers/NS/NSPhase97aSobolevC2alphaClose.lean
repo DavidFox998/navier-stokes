@@ -149,6 +149,8 @@ noncomputable def sobolevConstant_H4 : ℝ :=
 
 theorem sobolevConstant_H4_pos : 0 < sobolevConstant_H4 := by positivity
 
+theorem sobolevConstant_H4_eq : sobolevConstant_H4 = Real.pi / (4 * Real.sqrt 2) := rfl
+
 -- Final: H⁴ ↪ C^{2,α} — Morrey in ℝ³, k=4 > 3/2 + 2
 theorem NS_H4_Sobolev_C2alpha_PROVED :
   ∃ C_S, ∀ f, ‖f‖_{C^{2,α}} ≤ C_S * ‖f‖_{H⁴} := by

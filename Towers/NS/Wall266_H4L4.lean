@@ -13,14 +13,18 @@ close the analytic trilinear-form bound.
 
 import Towers.NS.Wall266_TrilinearForm
 import Mathlib.Analysis.SpecialFunctions.Sqrt
+import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 
 namespace TheoremaAureum.Towers.NS.Wall266
 
 open MeasureTheory EuclideanSpace
+open scoped BigOperators
 
 /-- The real-valued L4 quantity, obtained from Mathlib's extended-real
 eLpNorm. The .toReal conversion is needed because eLpNorm itself is
-ℝ≥0∞-valued. -/
+ℝ≥0∞-valued. This is the usual real L4 norm when the extended norm is
+finite; .toReal maps infinity to zero, so finiteness is required when using
+this quantity as a norm. -/
 noncomputable def eLpNorm_L4 (f : R3 → ℝ) : ℝ :=
   (eLpNorm f 4 (volume : Measure R3)).toReal
 
@@ -31,7 +35,10 @@ noncomputable def partialDerivative (v : R3 → R3) (i j : Fin 3) : R3 → ℝ :
   fun x => deriv (fun t : ℝ => (v (x + t • EuclideanSpace.single i 1)) j) 0
 
 /-- The H1 quantity sqrt(‖v‖_L2^2 + ‖∇v‖_L2^2), with the gradient L2
-term expressed as the sum of the nine componentwise derivative L2 norms. -/
+term expressed as the sum of the nine componentwise derivative L2 norms.
+This is the classical H1 norm on smooth fields with finite L2 quantities, not
+a norm on all arbitrary functions: .toReal maps infinity to zero, and deriv
+is the classical derivative. A general weak-derivative H1 space remains OPEN. -/
 noncomputable def H1Norm (v : R3 → R3) : ℝ :=
   Real.sqrt
     ((eLpNorm v 2 (volume : Measure R3)).toReal ^ 2 +
@@ -51,9 +58,15 @@ axiom H1_embedding_L4 :
     eLpNorm_L4 (fun x : R3 => ‖v.toFun x‖) ≤ C * H1Norm v.toFun
 
 /-- OPEN AXIOM (not proved): the 4-4-2 Holder inequality for scalar functions
-on R3. Its exponents satisfy 1/4 + 1/4 + 1/2 = 1. -/
+on R3. Its exponents satisfy 1/4 + 1/4 + 1/2 = 1.
+Mathlib v4.12.0 supplies eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm with
+AEStronglyMeasurable hypotheses. The future proof applies it first with
+(p,q,r) = (2,4,4), then with (p,q,r) = (1,2,2). -/
 axiom holder_4442 :
   ∀ (f g h : R3 → ℝ),
+    AEStronglyMeasurable f (volume : Measure R3) →
+    AEStronglyMeasurable g (volume : Measure R3) →
+    AEStronglyMeasurable h (volume : Measure R3) →
     eLpNorm (f * g * h) 1 (volume : Measure R3) ≤
       eLpNorm f 4 (volume : Measure R3) *
         eLpNorm g 4 (volume : Measure R3) *

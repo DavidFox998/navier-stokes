@@ -169,7 +169,7 @@ theorem translateL2_norm (v : L2VectorField) (a : R3) :
 the outer radius. Mathlib constructs the underlying function on R3.
 We normalize its actual volume integral rather than assuming an unproved
 Jacobian/scaling wrapper or using the zero cutoff from the Bogovskii scaffold. -/
-def normalizedBump (n : ℕ) : ContDiffBump (0 : R3) where
+noncomputable def normalizedBump (n : ℕ) : ContDiffBump (0 : R3) where
   rIn := mollifierScale n / 2
   rOut := mollifierScale n
   rIn_pos := div_pos (mollifierScale_pos n) (by norm_num)

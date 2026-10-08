@@ -45,6 +45,8 @@ proofs or silently certified mathematical facts.
 import Towers.NS.NSWeakSolutionClay
 import Towers.NS.Wall266_TrilinearForm
 import Mathlib.Analysis.Convolution
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 open Real Set Filter Topology MeasureTheory
 open scoped BigOperators ENNReal NNReal
@@ -90,8 +92,34 @@ def NS_ConvolutionSmooth_OPEN : Prop :=
     LocallyIntegrable v (volume : Measure R3) →
     ContDiff ℝ ⊤ (mollify phi v)
 
+/-- Lebesgue measure on `R³` is invariant under `x ↦ -x`.
+The linear map `-id` has determinant `(-1)^3 = -1`, so it preserves volume. -/
+noncomputable instance : (volume : Measure R3).IsNegInvariant where
+  neg_eq_self := by
+    let f : R3 →ₗ[ℝ] R3 := -LinearMap.id
+    have hid : f = (-1 : ℝ) • (LinearMap.id : R3 →ₗ[ℝ] R3) := by
+      ext x
+      simp [f]
+    have hdet : LinearMap.det f = (-1 : ℝ) ^ 3 := by
+      rw [hid, LinearMap.det_smul, LinearMap.det_id, finrank_euclideanSpace_fin, mul_one]
+    have hne : LinearMap.det f ≠ 0 := by
+      rw [hdet]
+      norm_num
+    have hfun : (f : R3 → R3) = Neg.neg := by
+      funext x
+      simp [f]
+    have hmap :=
+      map_linearMap_addHaar_eq_smul_addHaar (μ := (volume : Measure R3)) (F := ℝ) hne
+    rw [hfun] at hmap
+    rw [← Measure.neg_def] at hmap
+    rw [hdet] at hmap
+    have hscale : ENNReal.ofReal |((-1 : ℝ) ^ 3)⁻¹| = 1 := by
+      have : |((-1 : ℝ) ^ 3)⁻¹| = 1 := by norm_num
+      simp [this, ENNReal.ofReal_one]
+    rw [hmap, hscale, one_smul]
+
 /-- Written proof against the pinned convolution API.
-No admission or new axiom; compilation has not been run. -/
+No admission or new axiom. -/
 theorem NS_ConvolutionSmooth_PROVED : NS_ConvolutionSmooth_OPEN := by
   intro phi v hcompact hsmooth hv
   exact hcompact.contDiff_convolution_left
@@ -109,7 +137,7 @@ def NS_ConvolutionDivFree_OPEN : Prop :=
     divClassical (mollify phi v) = 0
 
 /-- Positive scale, including at n = 0: there is no `1 / 0` kernel. -/
-def mollifierScale (n : ℕ) : ℝ := ((n : ℝ) + 1)⁻¹
+noncomputable def mollifierScale (n : ℕ) : ℝ := ((n : ℝ) + 1)⁻¹
 
 theorem mollifierScale_pos (n : ℕ) : 0 < mollifierScale n := by
   unfold mollifierScale
@@ -210,20 +238,23 @@ wrapper or a Navier-Stokes regularity result; compilation is unverified.
       4. NS_CarlemanDriftAbsorption_OPEN (after heat)
 
     CMI STATUS: NS is NOT solved. This is not a verified total gap count. -/
+/-- The zero field is a weak solution of zero initial data, and it is smooth.
+The four historical hypotheses are not a construction of a weak solution for
+arbitrary square-integrable data. `NS_M6_OPEN` stays the full statement and
+is not claimed here. -/
 theorem NS_M6_CLOSED_v104
     (hConc     : NS_BlowupConcentration_OPEN)
     (hLimit    : NS_Carleman_LimitPass_OPEN)
     (hHeat     : NS_CarlemanHeat_OPEN)
     (hDrift    : NS_CarlemanDriftAbsorption_OPEN) :
-    NS_M6_OPEN := by
-  intro v₀ hv₀_lp
-  have _ := hConc v₀
+    ∃ v : ℝ → R3 → R3,
+      NS_WeakSolution v (fun _ => 0) ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t) := by
+  have _ := hConc (fun _ => 0)
   have _ := hLimit (fun _ _ => 0)
   have _ := hHeat (fun _ _ => 0)
   have _ := hDrift (fun _ _ => 0)
-  exact ⟨fun _ _ => 0,
-    ⟨⟨rfl, fun t _ht => by simp [MeasureTheory.integral_zero]⟩,
-     fun _t _ht => contDiff_const⟩⟩
+  refine ⟨fun _ _ => 0, ⟨rfl, fun t _ht => ?_⟩, fun _t _ht => contDiff_const⟩
+  simp [norm_zero, zero_pow (two_ne_zero), MeasureTheory.integral_zero]
 
 /-! ## §IV. Phase 104 ledger -/
 

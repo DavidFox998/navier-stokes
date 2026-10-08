@@ -157,21 +157,27 @@ theorem L4_interpolation_L2_L6 {u : R3 → F}
         (eLpNorm u 4 volume) ^ (4 : ℝ) := by
     have h := eLpNorm_norm_rpow (p := (1 : ℝ≥0∞))
       (μ := (volume : Measure R3)) u (by norm_num : 0 < (4 : ℝ))
-    have hfun : (fun x => ‖u x‖ ^ (4 : ℕ)) = fun x => ‖u x‖ ^ (4 : ℝ) := by
+    have hfun : (fun x => ‖u x‖ ^ (4 : ℝ)) = fun x => ‖u x‖ ^ (4 : ℕ) := by
       funext x
-      exact (Real.rpow_natCast (‖u x‖) 4).symm
-    rw [hfun, ← ennreal_ofNat 4, one_mul, Nat.cast_ofNat] at h
+      exact Real.rpow_natCast (‖u x‖) 4
+    have hidx : (1 : ℝ≥0∞) * ENNReal.ofReal (4 : ℝ) = 4 := by
+      rw [one_mul]
+      simpa [Nat.cast_ofNat] using (ennreal_ofNat 4).symm
+    rw [hfun, hidx] at h
     exact h
   have h3 :
       eLpNorm (fun x => ‖u x‖ ^ (3 : ℕ)) 2 volume =
         (eLpNorm u 6 volume) ^ (3 : ℝ) := by
     have h := eLpNorm_norm_rpow (p := (2 : ℝ≥0∞))
       (μ := (volume : Measure R3)) u (by norm_num : 0 < (3 : ℝ))
-    have hfun : (fun x => ‖u x‖ ^ (3 : ℕ)) = fun x => ‖u x‖ ^ (3 : ℝ) := by
+    have hfun : (fun x => ‖u x‖ ^ (3 : ℝ)) = fun x => ‖u x‖ ^ (3 : ℕ) := by
       funext x
-      exact (Real.rpow_natCast (‖u x‖) 3).symm
+      exact Real.rpow_natCast (‖u x‖) 3
     have hmul : (2 : ℝ≥0∞) * ENNReal.ofReal (3 : ℝ) = 6 := by
-      rw [← ennreal_ofNat 3, ← Nat.cast_ofNat (n := 2), ← Nat.cast_mul, Nat.cast_ofNat]
+      have h3eq : ENNReal.ofReal (3 : ℝ) = 3 := by
+        simpa [Nat.cast_ofNat] using (ennreal_ofNat 3).symm
+      rw [h3eq, ← Nat.cast_ofNat (n := 2), ← Nat.cast_ofNat (n := 3), ← Nat.cast_mul,
+        Nat.cast_ofNat]
     rw [hfun, hmul] at h
     exact h
   have hHolder :
@@ -355,35 +361,26 @@ private theorem euclidean_norm_le_sum_coordinates (z : R3) :
     _ ≤ ∑ i : Fin 3, ‖z i • EuclideanSpace.single i 1‖ := norm_sum_le _ _
     _ = _ := by simp only [norm_smul, EuclideanSpace.norm_single, norm_one, mul_one]
 
-set_option maxHeartbeats 2000000 in
 private theorem scalar_operator_norm_le_coordinates (L : R3 →L[ℝ] ℝ) :
     ‖L‖ ≤ (coordinateNormConstant : ℝ) *
       ∑ i : Fin 3, ‖L (EuclideanSpace.single i 1)‖ := by
-  let M : ℝ := (coordinateNormConstant : ℝ) *
-    ∑ i : Fin 3, ‖L (EuclideanSpace.single i 1)‖
-  have hM : 0 ≤ M :=
-    mul_nonneg (NNReal.coe_nonneg coordinateNormConstant)
+  refine L.opNorm_le_bound ?_ ?_
+  · exact mul_nonneg (NNReal.coe_nonneg coordinateNormConstant)
       (Finset.sum_nonneg fun _ _ => norm_nonneg _)
-  apply L.opNorm_le_bound hM
   intro z
   have hL : L z = ∑ i : Fin 3, z i • L (EuclideanSpace.single i 1) := by
-    calc
-      L z = L (∑ i : Fin 3, z i • EuclideanSpace.single i 1) :=
-        congrArg L (euclidean_sum_coordinates z)
-      _ = _ := by simp only [map_sum, ContinuousLinearMap.map_smul]
-  calc
-    ‖L z‖ = ‖∑ i : Fin 3, z i • L (EuclideanSpace.single i 1)‖ := congrArg norm hL
-    _ ≤ ∑ i : Fin 3, ‖z i • L (EuclideanSpace.single i 1)‖ := norm_sum_le _ _
-    _ = ∑ i : Fin 3, ‖z i‖ * ‖L (EuclideanSpace.single i 1)‖ := by
-      simp only [norm_smul]
-    _ ≤ ∑ i : Fin 3,
-        ((coordinateNormConstant : ℝ) * ‖z‖) * ‖L (EuclideanSpace.single i 1)‖ := by
-      apply Finset.sum_le_sum
-      intro i _
-      apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
-      exact ((EuclideanSpace.proj i).le_opNorm z).trans
-        (mul_le_mul_of_nonneg_right (coordinate_projection_norm_le i) (norm_nonneg _))
-    _ = _ := by rw [← Finset.mul_sum]; ring
+    rw [euclidean_sum_coordinates z]
+    simp only [map_sum, ContinuousLinearMap.map_smul]
+  rw [hL]
+  refine (norm_sum_le _ _).trans ?_
+  simp only [norm_smul]
+  refine (Finset.sum_le_sum fun i _ => ?_).trans ?_
+  · apply mul_le_mul_of_nonneg_right _ (norm_nonneg _)
+    rw [← EuclideanSpace.proj_apply i z]
+    exact ((EuclideanSpace.proj i).le_opNorm z).trans
+      (mul_le_mul_of_nonneg_right (coordinate_projection_norm_le i) (norm_nonneg _))
+  · rw [← Finset.mul_sum, mul_assoc,
+      mul_comm (‖z‖) (∑ i : Fin 3, ‖L (EuclideanSpace.single i 1)‖), ← mul_assoc]
 
 private theorem partialDerivative_eq_fderiv_component {v : R3 → R3}
     (i j : Fin 3) (x : R3)
@@ -577,6 +574,13 @@ private theorem component_fderiv_L2_bound (v : TestVectorField)
       rw [Real.norm_eq_abs, abs_of_nonneg hsum_nonneg]
     rw [hsum_norm]
     simpa only [heq] using h
+  have hnn : ∀ x, ‖fderiv ℝ (fun y => v.toFun y j) x‖₊ ≤
+      coordinateNormConstant *
+        ‖∑ i : Fin 3, ‖partialDerivative v.toFun i j x‖‖₊ := by
+    intro x
+    apply NNReal.coe_le_coe.mp
+    simp only [NNReal.coe_mul, NNReal.coe_nnnorm]
+    exact hbound x
   have hsum :
       eLpNorm (fun x => ∑ i : Fin 3, ‖partialDerivative v.toFun i j x‖) 2 volume ≤
         ∑ i : Fin 3, eLpNorm (partialDerivative v.toFun i j) 2 volume := by
@@ -587,11 +591,14 @@ private theorem component_fderiv_L2_bound (v : TestVectorField)
         (by norm_num : 1 ≤ (2 : ℝ≥0∞)))
   calc
     eLpNorm (fderiv ℝ (fun x => v.toFun x j)) 2 volume ≤
-        (coordinateNormConstant : ℝ≥0∞) *
+        coordinateNormConstant •
           eLpNorm (fun x => ∑ i : Fin 3, ‖partialDerivative v.toFun i j x‖) 2 volume :=
       eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
         (c := coordinateNormConstant)
-        (Filter.Eventually.of_forall hbound) 2
+        (Filter.Eventually.of_forall hnn) 2
+    _ = (coordinateNormConstant : ℝ≥0∞) *
+          eLpNorm (fun x => ∑ i : Fin 3, ‖partialDerivative v.toFun i j x‖) 2 volume := by
+      rw [ENNReal.smul_def, smul_eq_mul]
     _ ≤ (coordinateNormConstant : ℝ≥0∞) *
         (∑ i : Fin 3, eLpNorm (partialDerivative v.toFun i j) 2 volume) :=
       mul_le_mul_left' hsum _
@@ -680,14 +687,22 @@ theorem H1_embedding_L4_extended (v : TestVectorField)
       rw [hfun]
       exact (ContDiff.of_le (EuclideanSpace.proj j).contDiff le_top).comp
         (ContDiff.of_le v.smooth le_top)
+    have hpoint : ∀ x, ‖v.toFun x j‖₊ ≤
+        coordinateNormConstant * ‖v.toFun x‖₊ := by
+      intro x
+      apply NNReal.coe_le_coe.mp
+      simp only [NNReal.coe_mul, NNReal.coe_nnnorm]
+      rw [← EuclideanSpace.proj_apply j (v.toFun x)]
+      exact ((EuclideanSpace.proj j).le_opNorm (v.toFun x)).trans
+        (mul_le_mul_of_nonneg_right (coordinate_projection_norm_le j)
+          (norm_nonneg _))
     have hU2 : eLpNorm (fun x => v.toFun x j) 2 volume ≤
         (coordinateNormConstant : ℝ≥0∞) * (H : ℝ≥0∞) := by
       refine (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
+        (f := fun x => v.toFun x j) (g := v.toFun)
         (c := coordinateNormConstant)
-        (Filter.Eventually.of_forall (fun x =>
-          ((EuclideanSpace.proj j).le_opNorm (v.toFun x)).trans
-            (mul_le_mul_of_nonneg_right (coordinate_projection_norm_le j)
-              (norm_nonneg (v.toFun x))))) 2).trans ?_
+        (Filter.Eventually.of_forall hpoint) 2).trans ?_
+      rw [ENNReal.smul_def, smul_eq_mul]
       exact mul_le_mul_left' hV2 _
     have hU6 : eLpNorm (fun x => v.toFun x j) 6 volume ≤
         ((C_Sobolev * coordinateNormConstant *
@@ -1227,9 +1242,10 @@ private theorem component_L4_real_le (u : TestVectorField)
       (ENNReal.ofReal_le_ofReal (mul_le_mul_of_nonneg_left (H4_controls_H1 u.toFun) hC))
   have hmono : eLpNorm (fun x => u.toFun x j) 4 volume ≤ eLpNorm u.toFun 4 volume :=
     eLpNorm_mono fun x => component_norm_le (u.toFun x) j
-  have hfin : eLpNorm u.toFun 4 volume ≠ ⊤ :=
-    ne_of_lt ((H1_embedding_L4_extended u hu).trans_lt ENNReal.ofReal_lt_top)
-  have hto := ENNReal.toReal_mono hfin (hmono.trans hvec)
+  have hle : eLpNorm (fun x => u.toFun x j) 4 volume ≤
+      ENNReal.ofReal (H1L4Constant * H4Norm u.toFun) :=
+    hmono.trans hvec
+  have hto := ENNReal.toReal_mono ENNReal.ofReal_ne_top hle
   rwa [ENNReal.toReal_ofReal (mul_nonneg
     (by unfold H1L4Constant; exact NNReal.coe_nonneg _) (Real.sqrt_nonneg _))] at hto
 

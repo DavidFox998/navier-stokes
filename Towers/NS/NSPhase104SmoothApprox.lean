@@ -109,7 +109,7 @@ noncomputable instance : (volume : Measure R3).IsNegInvariant where
       funext x
       simp [f]
     have hmap :=
-      Measure.map_linearMap_addHaar_eq_smul_addHaar (μ := (volume : Measure R3)) (F := ℝ) hne
+      Measure.map_linearMap_addHaar_eq_smul_addHaar (volume : Measure R3) hne
     rw [hfun] at hmap
     rw [← Measure.neg_def] at hmap
     rw [hdet] at hmap

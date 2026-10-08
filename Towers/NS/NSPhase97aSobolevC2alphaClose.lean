@@ -12,9 +12,35 @@ abbrev R3 := EuclideanSpace ℝ (Fin 3)
 
 -- Weight (1+|ξ|²)⁻² ∈ L²(R³) — needed for Cauchy-Schwarz
 theorem weight_L2 : MemLp (fun ξ : R3 => (1 + ‖ξ‖^2)⁻¹ ^ 2) 2 volume := by
-  -- Polar: ∫ (1+r²)⁻⁴ r² dr * 4π < ∞
-  -- ∫₀^∞ r²/(1+r²)⁴ dr ≤ ∫₀^∞ 1/(1+r²)² dr = π/4
-  sorry -- 1st sorry: polar + integral_rpow
+  -- YOUR bound: r² ≤ (1+r²)²  →  r²/(1+r²)⁴ ≤ 1/(1+r²)²
+  have h_r_le : ∀ r : ℝ, 0 ≤ r → r ^ 2 ≤ (1 + r ^ 2) ^ 2 := by
+    intro r hr
+    have : 0 ≤ r ^ 2 := sq_nonneg r
+    nlinarith [sq_nonneg r]
+
+  have h_ratio_le : ∀ r : ℝ, 0 ≤ r → r ^ 2 / (1 + r ^ 2) ^ 4 ≤ 1 / (1 + r ^ 2) ^ 2 := by
+    intro r hr
+    have h1 : 0 < 1 + r ^ 2 := by positivity
+    have h2 := h_r_le r hr
+    have h3 : (1 + r ^ 2) ^ 2 > 0 := by positivity
+    have h4 : (1 + r ^ 2) ^ 4 > 0 := by positivity
+    calc r ^ 2 / (1 + r ^ 2) ^ 4
+        = (r ^ 2 / (1 + r ^ 2) ^ 2) / (1 + r ^ 2) ^ 2 := by
+          field_simp
+      _ ≤ 1 / (1 + r ^ 2) ^ 2 := by
+          apply div_le_div_of_nonneg_right _ (by positivity)
+          rw [div_le_one h3]
+          exact h2
+
+  -- ∫₀^∞ 1/(1+r²)² dr = π/4 < ∞ — from Mathlib integrals
+  have h_int_converges : IntegrableOn (fun r : ℝ => (1 + r ^ 2)⁻¹ ^ 2) (Ioi 0) := by
+    -- This is ∫ 1/(1+r²)² — known convergent, value π/4
+    sorry -- API: integral_rpow, needs Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+
+  -- Polar in ℝ³: ∫_{ℝ³} f(|ξ|) dξ = 4π ∫₀^∞ f(r) r² dr
+  -- So ∫ (1+r²)⁻⁴ r² dr ≤ ∫ (1+r²)⁻² dr = π/4
+  -- Times 4π = π² < ∞ → in L² after sqrt
+  sorry -- API: volume_eq, spherical coordinates — mechanical
 
 theorem weight_L1_pow4 : Integrable (fun ξ : R3 => (1 + ‖ξ‖^2)⁻¹ ^ 4) volume := by
   -- (1+|ξ|²)⁻⁴ ∈ L¹(R³) — same polar integral with power 4

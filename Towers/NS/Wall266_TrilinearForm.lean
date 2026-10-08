@@ -51,6 +51,23 @@ structure TestVectorField where
   smooth : ContDiff ℝ ⊤ toFun
   compact_support : HasCompactSupport toFun
 
+/-- Bridge: embed smooth compactly-supported vector field into L² vector field.
+    Each component (v.toFun x) i is ContDiff + compact support → MemLp 2. -/
+noncomputable def L2_of_smooth (v : TestVectorField) : L2VectorField :=
+  fun i =>
+    let f_i : R3 → ℝ := fun x => (v.toFun x) i
+    have h_mem : MemLp f_i 2 volume := by
+      have h_cont : Continuous f_i := by
+        sorry -- API: Continuous (fun x => (v.toFun x) i) from v.smooth
+      have h_compact : HasCompactSupport f_i := by
+        sorry -- API: HasCompactSupport component-wise from v.compact_support
+      sorry -- API: MemLp 2 from Continuous + HasCompactSupport (bounded on compact support)
+    MemLp.toLp f_i h_mem
+
+/-- Coercion so (v : R3 → R3) works via .toFun -/
+instance : CoeFun TestVectorField (fun _ => R3 → R3) where
+  coe v := v.toFun
+
 /-- Gradient of a scalar test function -/
 noncomputable def gradTest (ψ : TestFunction) : R3 → R3 :=
   fun x => EuclideanSpace.gradient ψ.toFun x

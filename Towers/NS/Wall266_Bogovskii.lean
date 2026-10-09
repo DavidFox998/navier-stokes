@@ -12,13 +12,19 @@ What is proved, with no `sorry` and no new axiom:
   the scaling `C / R⁴` coming from the Jacobian factor `R⁻³` and the chain
   rule factor `R⁻¹`.
 
-What is not proved:
-* `div (Bogovskii ω R f) = f`. The kernel identity has a diagonal delta
-  and a cutoff correction. Cutoff Lipschitz bounds do not supply that
-  cancellation.
-* The Calderón–Zygmund bound `‖∇(B f)‖₂ ≤ C ‖f‖₂` and the radius-scaled
-  bound `‖B f‖₂ ≤ C R ‖f‖₂`. Those remain the analytic content of the
-  Bogovskii operator. This file does not make the M6 pressure term work.
+What is recorded as OPEN, with no `sorry` and no new axiom:
+* `BogovskiiDiv_OPEN`: the kernel identity `div (Bogovskii ω R f) = f`
+  for smooth, compactly supported, mean-zero data in the ball of radius R.
+  The proved fact `∫ ω_R = 1` is the normalization that identity uses.
+  It does not prove the identity. The missing step is integration by parts
+  and Fubini for the distributional derivative of the kernel, including
+  the diagonal delta. Mathlib v4.12 has no Bogovskii theorem.
+* `BogovskiiCZ_OPEN`: `‖∇(B f)‖₂ ≤ C ‖f‖₂` and the radius-scaled bound
+  inside `H1Norm (B f) ≤ C (1 + R) ‖f‖₂`. The cutoff Lipschitz constant
+  `C / R⁴` is not a singular-integral bound. Mathlib v4.12 has no
+  Calderón–Zygmund theorem to import.
+* Neither proposition is asserted. This file does not make the M6
+  pressure term work.
 -/
 
 import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
@@ -205,6 +211,38 @@ theorem unit_bogovskii_cutoff_lipschitz {R : ℝ} (hR : 0 < R) :
       (bogovskii_cutoff unitBogovskiiCutoff R) := by
   simpa [mul_assoc] using
     bogovskii_cutoff_lipschitz unitBogovskiiCutoff hR unitCutoff_lipschitz
+
+/-- OPEN. Classical divergence inverts the Bogovskii integral on mean-zero
+data. `bogovskii_cutoff_integral` is the supporting normalization
+`∫ ω_R = 1`. Closing this proposition needs the kernel cancellation, not
+the cutoff Lipschitz bound. -/
+def BogovskiiDiv_OPEN : Prop :=
+  ∀ (omega : BogovskiiCutoff) (R : ℝ) (f : R3 → ℝ),
+    0 < R →
+    ContDiff ℝ ⊤ f →
+    HasCompactSupport f →
+    (∫ y, f y ∂(volume : Measure R3)) = 0 →
+    Function.support f ⊆ ballR R →
+    ContDiff ℝ ⊤ (Bogovskii omega R f) ∧
+      HasCompactSupport (Bogovskii omega R f) ∧
+      Function.support (Bogovskii omega R f) ⊆ ballR R ∧
+      ∀ x, divClassical (Bogovskii omega R f) x = f x
+
+/-- OPEN. Singular-integral bound for the Bogovskii operator. The factor
+`(1 + R)` is the standard scaling: `‖B f‖₂` carries a radius and
+`‖∇(B f)‖₂` does not. `H1Norm` packages both. The cutoff constant
+`‖R⁻³‖₊ * K * ‖R⁻¹‖₊` does not prove this. -/
+def BogovskiiCZ_OPEN : Prop :=
+  ∀ omega : BogovskiiCutoff,
+    ∃ C : ℝ, 0 < C ∧
+      ∀ (R : ℝ) (f : R3 → ℝ),
+        0 < R →
+        ContDiff ℝ ⊤ f →
+        HasCompactSupport f →
+        (∫ y, f y ∂(volume : Measure R3)) = 0 →
+        Function.support f ⊆ ballR R →
+        H1Regular (Bogovskii omega R f) ∧
+          H1Norm (Bogovskii omega R f) ≤ C * (1 + R) * L2Norm f
 
 end
 

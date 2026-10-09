@@ -8,6 +8,7 @@ require mathlib from git
 
 lean_lib Towers where
   roots := #[
+    `Towers.NS.Wall266_Bogovskii,
     `Towers.NS.EnergyIneq,
     `Towers.NS.EnergyV2,
     `Towers.NS.Divergence,
@@ -30,4 +31,17 @@ lean_lib Towers where
     `Towers.NS.NSPhase97aSobolevC2alphaClose,
     `Towers.NS.NSPhase97bH4EnergyClose,
     `Towers.NS.NSPhase97c120CellLinftyClose,
-    `Towers.NS.NSPhase97dNoStationaryL3Close]
+    `Towers.NS.NSPhase97dNoStationaryL3Close,
+    -- Wall266 analytic proofs. `lake build` of the library must typecheck these;
+    -- they are not reached by the Phase 97 roots above.
+    `Towers.NS.Wall266_TrilinearForm,
+    `Towers.NS.Wall266_H4L4,
+    `Towers.NS.Wall266_L2Extension,
+    -- Import closure of those three modules. Explicit `roots` are exact
+    -- modules, so an imported local file is typechecked only if it is also a root.
+    `Towers.YM.Wall260_ClayReduction,
+    `Towers.YM.Wall261_H4Defect,
+    `Towers.YM.Wall263_CoxeterSpectral,
+    `Towers.YM.Wall264_H4Vertices,
+    `Towers.NS.NSWeakSolutionClay,
+    `Towers.NS.NSPhase104SmoothApprox]

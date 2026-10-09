@@ -66,6 +66,12 @@ no `sorryAx`, no new axioms. Imports `Towers.YM.Wall260_ClayReduction` and
 -/
 
 import Towers.YM.Wall260_ClayReduction
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
 
 namespace TheoremaAureum.Towers.YM.Wall261
 

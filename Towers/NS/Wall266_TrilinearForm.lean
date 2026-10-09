@@ -4,30 +4,41 @@ Towers / NS / Wall266_TrilinearForm — Trilinear form infrastructure
 with H4 bound.
 
 This is the missing infrastructure for the weak momentum equation.
-Compiles on Mathlib v4.26.0 — no distributions package needed.
+Pinned toolchain: Mathlib v4.12.0; compilation remains unverified.
 Everything defined in weak form via integrals.
 
-Closes the two gaps:
-1. ✅ div_free field now exists as IsWeakDivFree
-2. ✅ momentum field now exists as WeakMomentumEquation with trilinear form
+Provides the weak-divergence predicate used by the density construction.
+WeakMomentumEquation below remains a True-valued shape, not the completed
+distributional momentum equation.
 
 H4 BOUND: H4_BKM_constant = (1+φ)/(2-φ)/5 < 11, from Wall261 defect
 (1+φ < 6) and Wall263 spectral gap (φ ∉ spectrum, gap = 2-φ).
-The main estimate H4_controls_trilinear has one remaining sorry:
-the Phase 97a H4↪C^{2,α} Sobolev embedding.
+H4_controls_trilinear below is unchanged: it is still a True-valued
+placeholder for the 120-cell averaging argument. The analytic estimate
+|trilinearSmooth u v w| ≤ C_trilinear * H4Norm u * H4Norm v * L2Norm w
+is `trilinear_H4_bound` in Wall266_H4L4.lean. This file is imported there,
+so that proof cannot be stated here without an import cycle.
 
-AXIOM FOOTPRINT: classical trio only (plus sorrys marked as open math).
+No new axiom is introduced by the representative/weak-divergence repair.
+Compilation and an actual kernel dependency audit remain unverified.
 ================================================================
 -/
 
 import Towers.YM.Wall261_H4Defect
 import Towers.YM.Wall263_CoxeterSpectral
 import Towers.YM.Wall264_H4Vertices
-import Mathlib.Analysis.NormedSpace.Lp.Lp
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Function.LpSpace
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.Analysis.Calculus.Gradient.Basic
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
+import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.Data.Finset.Basic
+import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Linarith
 
 namespace TheoremaAureum.Towers.NS.Wall266
 
@@ -39,33 +50,100 @@ open TheoremaAureum.Towers.YM.Wall264
 /-- ℝ³ as a normed space -/
 abbrev R3 := EuclideanSpace ℝ (Fin 3)
 
+/-- `2` is an `L^p` exponent, so each component `Lp ℝ 2` is a normed group. -/
+instance : Fact ((1 : ENNReal) ≤ 2) := ⟨by norm_num⟩
+
+/-- L² vector field: each component in L²(ℝ³).
+An `abbrev` so the finite-product sup norm on `Fin 3 → Lp` is found. -/
+abbrev L2VectorField := Fin 3 → Lp ℝ 2 (volume : Measure R3)
+
+/-- Assemble chosen Lp representatives into a vector field.
+This is not an equality of pointwise representatives modulo null sets;
+the Lp objects remain the underlying componentwise equivalence classes. -/
+noncomputable def L2Representative (v : L2VectorField) : R3 → R3 :=
+  fun x => ∑ i : Fin 3, (v i x) • EuclideanSpace.single i 1
+
+@[simp]
+theorem L2Representative_apply (v : L2VectorField) (x : R3) (i : Fin 3) :
+    (L2Representative v x) i = v i x := by
+  let ev : R3 →+ ℝ :=
+    { toFun := fun z => z i
+      map_zero' := rfl
+      map_add' := fun _ _ => rfl }
+  change ev (∑ j : Fin 3, (v j x) • EuclideanSpace.single j 1) = v i x
+  rw [map_sum]
+  simp [ev, EuclideanSpace.single_apply]
+
+/-- Componentwise L2 membership gives local integrability of the vector
+representative, by a finite sum of scalar functions times fixed vectors. -/
+theorem L2Representative_locallyIntegrable (v : L2VectorField) :
+    LocallyIntegrable (L2Representative v) (volume : Measure R3) := by
+  unfold L2Representative
+  apply locallyIntegrable_finset_sum
+  intro i _
+  have hi : LocallyIntegrable (fun x : R3 => v i x) (volume : Measure R3) :=
+    (Lp.memℒp (v i)).locallyIntegrable (by norm_num)
+  intro x
+  obtain ⟨s, hs, hsi⟩ := hi x
+  exact ⟨s, hs, hsi.smul_const (EuclideanSpace.single i 1)⟩
+
 /-- Test function: C_c^∞ (ℝ³ → ℝ) - compact support + smooth -/
 structure TestFunction where
   toFun : R3 → ℝ
   smooth : ContDiff ℝ ⊤ toFun
   compact_support : HasCompactSupport toFun
 
-/-- Test vector field: C_c^∞ (ℝ³ → ℝ³) -/
+/-- Path A: smooth, componentwise L2 vector fields, with no compact-support
+requirement. The historical TestVectorField name is retained, but this is
+no longer the C_c^∞ test space. Divergence-free is a separate condition.
+Explicit L2 membership replaces the old compact-support argument:
+smoothness alone does not imply square-integrability. -/
 structure TestVectorField where
   toFun : R3 → R3
   smooth : ContDiff ℝ ⊤ toFun
-  compact_support : HasCompactSupport toFun
+  component_L2 : ∀ i : Fin 3,
+    Memℒp (fun x : R3 => (toFun x) i) 2 (volume : Measure R3)
+
+-- Path A: compact_support dropped. Noncompact smooth L2 density needs
+-- mollification, not a Bogovskii cutoff. Phase104 supplies a smoothness proof;
+-- weak-divergence preservation and L2 approximation remain OPEN.
+
+/-- Embed each component using its explicit L2 membership witness.
+No compact-support lemma or new admitted proof is needed for this bridge. -/
+noncomputable def L2_of_smooth (v : TestVectorField) : L2VectorField :=
+  fun i => Memℒp.toLp (fun x : R3 => (v.toFun x) i) (v.component_L2 i)
+
+/-- Coercion so (v : R3 → R3) works via .toFun -/
+instance : CoeFun TestVectorField (fun _ => R3 → R3) where
+  coe v := v.toFun
 
 /-- Gradient of a scalar test function -/
 noncomputable def gradTest (ψ : TestFunction) : R3 → R3 :=
-  fun x => EuclideanSpace.gradient ψ.toFun x
+  gradient ψ.toFun
 
 /-- Divergence of a vector field, classical pointwise for smooth -/
 noncomputable def divClassical (v : R3 → R3) (x : R3) : ℝ :=
-  ∑ i : Fin 3, deriv (fun t => (v (x + t • EuclideanSpace.single i 1)).i) 0
+  ∑ i : Fin 3, fderiv ℝ (fun y => (v y) i) x (EuclideanSpace.single i 1)
 
-/-- L² vector field: each component in L²(ℝ³) -/
-def L2VectorField := Fin 3 → Lp ℝ 2 (μ := volume : Measure R3)
-
-/-- Weak divergence-free: ∫ v · ∇ψ = 0 for all ψ ∈ C_c^∞(ℝ³) -/
-def IsWeakDivFree (v : L2VectorField) : Prop :=
+/-- Distributional divergence-free for an actual vector-valued function.
+Analytic convolution theorems also require local integrability explicitly.
+Pointwise `fderiv = 0` for an arbitrary nonsmooth input is NOT a substitute. -/
+def IsWeakDivFreeFun (v : R3 → R3) : Prop :=
   ∀ (ψ : TestFunction),
-    ∫ x, (∑ i : Fin 3, (v i x) * (gradTest ψ x).i) ∂(volume : Measure R3) = 0
+    ∫ x, (∑ i : Fin 3, (v x) i * (gradTest ψ x) i) ∂(volume : Measure R3) = 0
+
+/-- Weak divergence-free: ∫ v · ∇ψ = 0 for all ψ ∈ C_c^∞(ℝ³),
+using the same representatives as the convolution bridge. -/
+def IsWeakDivFree (v : L2VectorField) : Prop :=
+  IsWeakDivFreeFun (L2Representative v)
+
+/-- The representative formulation retains the original componentwise
+weak-divergence condition; no stronger regularity assumption was added. -/
+theorem isWeakDivFree_iff_components (v : L2VectorField) :
+    IsWeakDivFree v ↔ ∀ ψ : TestFunction,
+      ∫ x, (∑ i : Fin 3, (v i x) * (gradTest ψ x) i)
+        ∂(volume : Measure R3) = 0 := by
+  simp only [IsWeakDivFree, IsWeakDivFreeFun, L2Representative_apply]
 
 /-- Space of divergence-free L² fields -/
 def L2DivFree := { v : L2VectorField // IsWeakDivFree v }
@@ -76,7 +154,9 @@ noncomputable instance : Norm L2DivFree where
 
 /-- Trilinear form for SMOOTH fields first - the building block -/
 noncomputable def trilinearSmooth (u v w : R3 → R3) : ℝ :=
-  ∫ x, (∑ i j : Fin 3, (u i x) * (deriv (fun t => (v j (x + t • EuclideanSpace.single i 1))) 0) * (w j x)) ∂(volume : Measure R3)
+  ∫ x, (∑ i : Fin 3, ∑ j : Fin 3, (u x) i *
+    (deriv (fun t : ℝ => (v (x + t • EuclideanSpace.single i (1 : ℝ))) j) (0 : ℝ)) *
+    (w x) j) ∂(volume : Measure R3)
 
 /-- Trilinear form for L² fields via density — Mathlib doesn't have density of C_c^∞_div-free in L²_div-free, so we axiomatize the extension property as a Prop to be proved later -/
 def trilinearFormExists : Prop :=
@@ -85,7 +165,7 @@ def trilinearFormExists : Prop :=
     (∀ u v w : TestVectorField, True) -- placeholder for coincidence
     ∧
     -- (2) Bounded: |b(u,v,w)| ≤ C ‖u‖_2 ‖∇v‖_2 ‖w‖_∞ or similar
-    (∀ u v w, True) -- placeholder for bound
+    (∀ _u _v _w : L2DivFree, True) -- placeholder for bound
 
 /-- Weak momentum equation — full distributional form for Leray-Hopf -/
 def WeakMomentumEquation (v : ℝ → L2DivFree) (p : ℝ → R3 → ℝ) : Prop :=
@@ -117,34 +197,24 @@ def Is120CellSymmetric (v : L2DivFree) : Prop :=
     120 vertices, 600 tetrahedra, stabilizer 600/120 = 5,
     defect 1+φ < 6 (Wall261), gap 2-φ (Wall263).
     C₀ = (1+φ)/(2-φ)/5 ≈ 0.85 < 11. -/
-def H4_BKM_constant : ℝ := (1 + phi) / (2 - phi) / 5
+noncomputable def H4_BKM_constant : ℝ := (1 + phi) / (2 - phi) / 5
+
+theorem H4_BKM_constant_eq : H4_BKM_constant = (1 + phi) / (2 - phi) / 5 := rfl
 
 theorem H4_BKM_constant_pos : 0 < H4_BKM_constant := by
   have h_phi_pos : 0 < phi := phi_pos
-  have h_gap_pos : 0 < 2 - phi := by
-    have : phi < 2 := by linarith [one_add_phi_lt_six]
-    linarith
+  have h_gap_pos : 0 < 2 - phi := by linarith [phi_lt_two]
   unfold H4_BKM_constant
   positivity
 
 theorem H4_BKM_constant_lt_11 : H4_BKM_constant < 11 := by
-  have h1 := one_add_phi_lt_six
-  have h_gap : 0 < 2 - phi := by linarith [phi_pos, one_add_phi_lt_six]
-  -- (1+φ)/(2-φ)/5 ≤ 6/0.381/5 ≈ 3.14 < 11
-  unfold H4_BKM_constant
-  have h1' : 1 + phi < 6 := h1
-  have h2 : 2 - phi > 0.3 := by
-    have : phi < 1.7 := by linarith
-    linarith
-  calc (1 + phi) / (2 - phi) / 5
-      < 6 / (2 - phi) / 5 := by
-        apply div_lt_div_of_pos_right _ (by norm_num : (0:ℝ) < 5)
-        apply div_lt_div_of_pos_right h1' h_gap
-    _ < 6 / 0.3 / 5 := by
-        have : (0.3 : ℝ) < 2 - phi := h2
-        sorry -- monotonicity of 1/x, mechanical linarith
-    _ = 4 := by norm_num
-    _ < 11 := by norm_num
+  unfold H4_BKM_constant phi
+  have hsq : Real.sqrt 5 ^ 2 = 5 := sqrt_five_sq
+  have hnn : 0 ≤ Real.sqrt 5 := Real.sqrt_nonneg 5
+  have hpos : 0 < 2 - (1 + Real.sqrt 5) / 2 := by nlinarith [hsq, hnn]
+  rw [div_lt_iff (by norm_num : (0 : ℝ) < 5)]
+  rw [div_lt_iff hpos]
+  nlinarith [hsq, hnn]
 
 /-- The key theorem: H4 averaging controls the trilinear term.
 
@@ -160,7 +230,7 @@ theorem H4_controls_trilinear (v : L2DivFree) (hSym : Is120CellSymmetric v) :
   ∃ C, C = H4_BKM_constant ∧ C < 11 ∧ ∀ w : L2DivFree, True := by
   -- Step 1: Symmetry gives averaging identity
   -- v = (1/120) ∑_{g∈W(H4)/Stab} R_g v
-  have h_ave : ∀ x, True := by trivial -- unpack hSym
+  have h_ave : True := trivial -- unpack hSym
 
   -- Step 2: Wall261 defect bound controls each reflected gradient
   have h_defect := one_add_phi_lt_six
@@ -187,5 +257,21 @@ theorem H4_controls_trilinear (v : L2DivFree) (hSym : Is120CellSymmetric v) :
     -- = H4_BKM_constant * ‖w‖
     trivial -- THIS IS THE ONE REAL MATH STEP: needs Phase 97a H4↪C^{2,α} + Wall261 + Wall263
   -- Intended: |trilinearSmooth v_smooth v_smooth w_smooth| ≤ C * ‖w‖
+
+/-
+Analytic bound, proved in `Wall266_H4L4.lean` as `trilinear_H4_bound`.
+
+This file is imported by that one, so the proof cannot be stated here.
+`H4_controls_trilinear` above is unchanged.
+
+`trilinearSmooth u v w = ∫ ∑_{i,j} u_i ∂_i v_j w_j`.
+`holder_4442` gives `1/4 + 1/4 + 1/2 = 1`, hence
+`|b(u,v,w)| ≤ ‖u‖_L4 ‖∇v‖_L4 ‖w‖_L2`.
+`H4_controls_L4` and the same L⁴ estimate on first derivatives, whose H¹
+energy is controlled by second derivatives inside `H4Norm`, close
+`|trilinearSmooth u v w| ≤ C_trilinear * H4Norm u * H4Norm v * L2Norm w`
+with `C_trilinear = 9 * H1L4Constant * H1L4Constant`.
+No new axiom and no `sorry` are added here.
+-/
 
 end TheoremaAureum.Towers.NS.Wall266

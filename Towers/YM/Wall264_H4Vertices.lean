@@ -261,7 +261,10 @@ theorem famB_sum_zero :
     φ/2 pairs with −φ/2, etc. No golden-ratio identity needed. -/
 theorem famC_sum_zero :
     famC.foldl addV (0, 0, 0, 0) = ((0 : ℝ), 0, 0, 0) := by
-  simp only [famC, addV, List.foldl]; ring
+  set_option maxRecDepth 20000 in
+  set_option maxHeartbeats 2000000 in
+  simp only [famC, addV, List.foldl]
+  ring
 
 /-- **MACHINE-CHECKED.** All 120 vertices of the 600-cell sum to zero:
     `∑_{v ∈ vertices} v = (0,0,0,0)`.
@@ -272,7 +275,6 @@ theorem vertex_sum_zero :
     vertices.foldl addV (0, 0, 0, 0) = ((0 : ℝ), 0, 0, 0) := by
   simp only [vertices, List.foldl_append, famA_sum_zero, famB_sum_zero, famC_sum_zero,
              addV]
-  ring
 
 /-! ### The nearest-neighbor edge length `2 − φ` is realized. -/
 

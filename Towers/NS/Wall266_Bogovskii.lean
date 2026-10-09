@@ -34,8 +34,8 @@ import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
 namespace TheoremaAureum.Towers.NS.Wall266Bogovskii
 
-open MeasureTheory
-open scoped BigOperators
+open FiniteDimensional MeasureTheory
+open scoped BigOperators NNReal
 
 noncomputable section
 
@@ -162,9 +162,10 @@ theorem bogovskii_cutoff_support_subset (omega : BogovskiiCutoff) {R : ℝ} (hR 
 
 theorem bogovskii_cutoff_hasCompactSupport (omega : BogovskiiCutoff) {R : ℝ} (hR : 0 < R) :
     HasCompactSupport (bogovskii_cutoff omega R) := by
-  have hscaled : HasCompactSupport (fun x : R3 => omega.toFun (R⁻¹ • x)) :=
-    omega.compact_support.comp_smul (inv_ne_zero hR.ne')
-  simpa [bogovskii_cutoff, smul_eq_mul] using hscaled.smul_left ((R ^ 3)⁻¹)
+  rw [HasCompactSupport, tsupport]
+  have hsubset := closure_mono (bogovskii_cutoff_support_subset omega hR)
+  rw [ballR, closure_ball (0 : R3) hR.ne'] at hsubset
+  exact isCompact_of_isClosed_subset isCompact_closedBall isClosed_closure hsubset
 
 /-- The rescaled cutoff keeps integral 1. The factor `R⁻³` cancels the
 Jacobian `R³` of `x ↦ R⁻¹ • x` on `R3`. -/
@@ -175,7 +176,6 @@ theorem bogovskii_cutoff_integral (omega : BogovskiiCutoff) {R : ℝ} (hR : 0 < 
   have hscale :=
     Measure.integral_comp_inv_smul_of_nonneg (volume : Measure R3) omega.toFun hR.le
   rw [hscale, omega.integral_one, finrank_R3, smul_eq_mul, mul_one]
-  exact inv_mul_cancel₀ (pow_ne_zero 3 hR.ne')
 
 /-- Chain rule plus the normalization factor. If `ω` is `K`-Lipschitz, then
 `x ↦ R⁻³ * ω(R⁻¹ • x)` is Lipschitz with constant `‖R⁻³‖₊ * K * ‖R⁻¹‖₊`. -/
@@ -184,7 +184,16 @@ theorem bogovskii_cutoff_lipschitz (omega : BogovskiiCutoff) {R : ℝ} (hR : 0 <
     LipschitzWith (‖(R ^ 3)⁻¹‖₊ * (K * ‖R⁻¹‖₊)) (bogovskii_cutoff omega R) := by
   have hinner : LipschitzWith (K * ‖R⁻¹‖₊) (fun x : R3 => omega.toFun (R⁻¹ • x)) :=
     hK.comp (lipschitzWith_smul (R⁻¹))
-  simpa [bogovskii_cutoff, smul_eq_mul, mul_comm] using hinner.const_mul ((R ^ 3)⁻¹)
+  refine lipschitzWith_iff_dist_le_mul.2 fun x y => ?_
+  calc
+    dist (bogovskii_cutoff omega R x) (bogovskii_cutoff omega R y)
+        = ‖(R ^ 3)⁻¹‖ * dist (omega.toFun (R⁻¹ • x)) (omega.toFun (R⁻¹ • y)) := by
+          unfold bogovskii_cutoff
+          rw [dist_mul_left]
+    _ ≤ ‖(R ^ 3)⁻¹‖ * ((K * ‖R⁻¹‖₊ : ℝ≥0) * dist x y) :=
+          mul_le_mul_of_nonneg_left (hinner.dist_le_mul x y) (norm_nonneg _)
+    _ = (‖(R ^ 3)⁻¹‖₊ * (K * ‖R⁻¹‖₊) : ℝ≥0) * dist x y := by
+          rw [← coe_nnnorm, mul_assoc, ← NNReal.coe_mul]
 
 /-- The unit cutoff's expanding rescales. The constant depends on R only
 through `‖R⁻³‖₊ * ‖R⁻¹‖₊`. -/

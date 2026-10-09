@@ -11,6 +11,11 @@ What is proved, with no `sorry` and no new axiom:
   constant is the unit-cutoff constant times `‖R⁻³‖₊ * ‖R⁻¹‖₊`, which is
   the scaling `C / R⁴` coming from the Jacobian factor `R⁻³` and the chain
   rule factor `R⁻¹`.
+* `rayIntegral_reparam`: on a finite interval `1 ≤ r ≤ M`, the kernel ray
+  `∫ ω(y + r(x-y)) r² dr` equals `∫ ω(y + t⁻¹(x-y)) t⁻⁴ dt` after
+  `r = t⁻¹`. This is the change of variables for the nonsingular formula
+  `u(x) = ∫₀¹ ∫ z ω(x+(1-t)z) f(x-tz) dz dt`. It does not identify the
+  divergence of `Bogovskii` with `f`.
 
 What is recorded as OPEN, with no `sorry` and no new axiom:
 * `BogovskiiDiv_OPEN`: the kernel identity `div (Bogovskii ω R f) = f`
@@ -31,17 +36,22 @@ import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 import Mathlib.Analysis.Calculus.BumpFunction.Normed
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Analysis.SpecialFunctions.Sqrt
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+import Mathlib.MeasureTheory.Function.LpSpace
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
 
 namespace TheoremaAureum.Towers.NS.Wall266Bogovskii
 
-open FiniteDimensional MeasureTheory
-open scoped BigOperators NNReal
+open FiniteDimensional MeasureTheory Filter
+open scoped BigOperators NNReal Interval Topology
 
 noncomputable section
 
@@ -211,6 +221,73 @@ theorem unit_bogovskii_cutoff_lipschitz {R : ℝ} (hR : 0 < R) :
       (bogovskii_cutoff unitBogovskiiCutoff R) := by
   simpa [mul_assoc] using
     bogovskii_cutoff_lipschitz unitBogovskiiCutoff hR unitCutoff_lipschitz
+
+/-- The ray integral in the kernel, cut at a finite upper limit, is the same
+integral after `r = t⁻¹`. Off the diagonal the integrand vanishes for large
+`r`, so this is the bridge from `BogovskiiKernel` to the nonsingular
+double-integral formula. -/
+private lemma rayIntegral_reparam (omega : BogovskiiCutoff) (R : ℝ) (x y : R3) {M : ℝ}
+    (hM : 1 < M) :
+    (∫ r in (1 : ℝ)..M,
+        bogovskii_cutoff omega R (y + r • (x - y)) * r ^ 2) =
+      ∫ t in (1 / M)..1,
+        bogovskii_cutoff omega R (y + t⁻¹ • (x - y)) * (t ^ 4)⁻¹ := by
+  let g : ℝ → ℝ := fun r =>
+    bogovskii_cutoff omega R (y + r • (x - y)) * r ^ 2
+  have hMpos : 0 < M := lt_trans zero_lt_one hM
+  have hinvpos : 0 < 1 / M := one_div_pos.2 hMpos
+  have hle : 1 / M ≤ 1 := by
+    rw [div_le_one hMpos]
+    exact hM.le
+  have ht_pos : ∀ t ∈ Set.uIcc (1 / M) (1 : ℝ), 0 < t := by
+    intro t ht
+    rw [Set.uIcc_of_le hle] at ht
+    exact lt_of_lt_of_le hinvpos ht.1
+  have hg : Continuous g := by
+    have hc : Continuous (bogovskii_cutoff omega R) :=
+      (bogovskii_cutoff_smooth omega R).continuous
+    exact (hc.comp <| continuous_const.add <| continuous_id.smul continuous_const).mul
+      (continuous_id.pow 2)
+  have hder : ∀ t ∈ Set.uIcc (1 / M) (1 : ℝ),
+      HasDerivAt (fun s : ℝ => s⁻¹) (-(t ^ 2)⁻¹) t := by
+    intro t ht
+    exact hasDerivAt_inv (x := t) (ht_pos t ht).ne'
+  have hf' : ContinuousOn (fun t : ℝ => -(t ^ 2)⁻¹) (Set.uIcc (1 / M) 1) :=
+    ((continuous_id.pow 2).continuousOn.inv₀ (fun t ht => pow_ne_zero 2 (ht_pos t ht).ne')).neg
+  have hsub :=
+    _root_.intervalIntegral.integral_comp_smul_deriv'
+      (f := fun t : ℝ => t⁻¹) (f' := fun t : ℝ => -(t ^ 2)⁻¹) (g := g) (a := 1 / M) (b := 1)
+      hder hf' (hg.continuousOn.mono (Set.subset_univ _))
+  have hrewrite : ∀ t, t ≠ 0 →
+      (-(t ^ 2)⁻¹) * g (t⁻¹) =
+        -(bogovskii_cutoff omega R (y + t⁻¹ • (x - y)) * (t ^ 4)⁻¹) := by
+    intro t ht
+    have hgdef : g (t⁻¹) =
+        bogovskii_cutoff omega R (y + t⁻¹ • (x - y)) * (t⁻¹) ^ 2 := rfl
+    have hsq : (t⁻¹) ^ 2 = (t ^ 2)⁻¹ := by field_simp [ht]
+    have hmul : (t ^ 2)⁻¹ * (t ^ 2)⁻¹ = (t ^ 4)⁻¹ := by
+      rw [← mul_inv, ← pow_add]
+    rw [hgdef, hsq]
+    calc
+      (-(t ^ 2)⁻¹) *
+          (bogovskii_cutoff omega R (y + t⁻¹ • (x - y)) * (t ^ 2)⁻¹) =
+          -(bogovskii_cutoff omega R (y + t⁻¹ • (x - y)) *
+            ((t ^ 2)⁻¹ * (t ^ 2)⁻¹)) := by ring
+      _ = -(bogovskii_cutoff omega R (y + t⁻¹ • (x - y)) * (t ^ 4)⁻¹) := by rw [hmul]
+  have hneg :
+      ∫ t in (1 / M)..1,
+          bogovskii_cutoff omega R (y + t⁻¹ • (x - y)) * (t ^ 4)⁻¹ =
+        -(∫ t in (1 / M)..1, (-(t ^ 2)⁻¹) * g (t⁻¹)) := by
+    rw [← _root_.intervalIntegral.integral_neg]
+    refine _root_.intervalIntegral.integral_congr (fun t ht => ?_)
+    have ht0 : t ≠ 0 := (ht_pos t ht).ne'
+    simpa [neg_neg] using congrArg Neg.neg (hrewrite t ht0).symm
+  have hray : ∫ r in (M : ℝ)..1, g r = -(∫ r in (1 : ℝ)..M, g r) :=
+    _root_.intervalIntegral.integral_symm (f := g) (1 : ℝ) M
+  have hsub' :
+      ∫ t in (1 / M)..1, (-(t ^ 2)⁻¹) * g (t⁻¹) = ∫ r in (M : ℝ)..1, g r := by
+    simpa [smul_eq_mul] using hsub
+  rw [hneg, hsub', hray, neg_neg]
 
 /-- OPEN. Classical divergence inverts the Bogovskii integral on mean-zero
 data. `bogovskii_cutoff_integral` is the supporting normalization

@@ -165,7 +165,7 @@ theorem bogovskii_cutoff_hasCompactSupport (omega : BogovskiiCutoff) {R : ℝ} (
   rw [HasCompactSupport, tsupport]
   have hsubset := closure_mono (bogovskii_cutoff_support_subset omega hR)
   rw [ballR, closure_ball (0 : R3) hR.ne'] at hsubset
-  exact isCompact_closedBall.of_isClosed_subset isClosed_closure hsubset
+  exact IsCompact.of_isClosed_subset (isCompact_closedBall (0 : R3) R) isClosed_closure hsubset
 
 /-- The rescaled cutoff keeps integral 1. The factor `R⁻³` cancels the
 Jacobian `R³` of `x ↦ R⁻¹ • x` on `R3`. -/
@@ -192,7 +192,7 @@ theorem bogovskii_cutoff_lipschitz (omega : BogovskiiCutoff) {R : ℝ} (hR : 0 <
     dist (bogovskii_cutoff omega R x) (bogovskii_cutoff omega R y)
         = ‖(R ^ 3)⁻¹‖ * dist (omega.toFun (R⁻¹ • x)) (omega.toFun (R⁻¹ • y)) := by
           unfold bogovskii_cutoff
-          rw [dist_eq_norm, hsub, norm_mul, ← dist_eq_norm]
+          rw [dist_eq_norm, ← hsub, norm_mul, ← dist_eq_norm]
     _ ≤ ‖(R ^ 3)⁻¹‖ * ((K * ‖R⁻¹‖₊ : ℝ≥0) * dist x y) :=
           mul_le_mul_of_nonneg_left (hinner.dist_le_mul x y) (norm_nonneg _)
     _ = (‖(R ^ 3)⁻¹‖₊ * (K * ‖R⁻¹‖₊) : ℝ≥0) * dist x y := by

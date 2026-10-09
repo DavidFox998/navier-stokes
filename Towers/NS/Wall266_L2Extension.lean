@@ -501,7 +501,7 @@ noncomputable def trilinearForm : L2DivFree → L2DivFree → L2DivFree → ℝ 
     0 -- Zero placeholder; no Cauchy-sequence extension is constructed here.
     -- OPEN: the analytic extension needs density and the appropriate norm estimates.
 
-instance : TopologicalSpace L2DivFree := by
+noncomputable instance : TopologicalSpace L2DivFree := by
   unfold L2DivFree
   infer_instance
 

@@ -364,11 +364,12 @@ private theorem euclidean_norm_le_sum_coordinates (z : R3) :
 
 private theorem coordinate_abs_le_norm (z : R3) (i : Fin 3) : ‖z i‖ ≤ ‖z‖ := by
   have hsq : ‖z i‖ ^ 2 ≤ ‖z‖ ^ 2 := by
-    rw [PiLp.norm_sq_eq_of_L2 z]
+    -- `β` is an explicit argument of `norm_sq_eq_of_L2`; `R3` is `PiLp 2 (fun _ => ℝ)`.
+    rw [PiLp.norm_sq_eq_of_L2 (fun _ : Fin 3 => ℝ) z]
     exact Finset.single_le_sum
       (f := fun j : Fin 3 => ‖z j‖ ^ 2)
       (fun _ _ => sq_nonneg _) (Finset.mem_univ i)
-  have h := sq_le_sq.1 hsq
+  have h := sq_le_sq.mp hsq
   simpa [abs_of_nonneg (norm_nonneg (z i)), abs_of_nonneg (norm_nonneg z)] using h
 
 private theorem coordinateNormConstant_real_ge_one :

@@ -26,13 +26,30 @@ What is proved, with no `sorry` and no new axiom:
   side, not a Schur test on the kernel.
 * `BogovskiiDiv_closed`: `divClassical (Bogovskii ω R f) = f`, and the
   vector field is smooth and supported in the ball of radius R.
+* `bogovskii_L2_bound`: `‖B f‖₂ ≤ C R ‖f‖₂`. The nonsingular formula
+  equals `Bogovskii`, and on its support `|z| < 2R`. Cauchy–Schwarz in
+  `x` and Fubini in `(t,z)` give the same radius factor as the Schur
+  integral `∫_{|z|<2R} |z|⁻² dz`, which is `O(R)` in dimension three.
+  The constant is read off the unit cutoff and the volume of the unit ball.
 
 What is recorded as OPEN, with no `sorry` and no new axiom:
-* `BogovskiiCZ_OPEN`: `H1Norm (B f) ≤ C (1 + R) ‖f‖₂`. A Schur bound
-  `|∇K(x,y)| ≤ C / |x-y|³` does not close the gradient estimate. The
-  `H¹` bound is an elliptic argument and is not claimed here. The cutoff
-  Lipschitz constant `C / R⁴` is not that bound either. Mathlib v4.12
-  has no Calderón–Zygmund theorem to import.
+* `BogovskiiCZ_OPEN`: `H1Norm (B f) ≤ C (1 + R) ‖f‖₂`. The `L²` piece
+  is `bogovskii_L2_bound`. The gradient piece is not. A bound
+  `‖∇u‖₂² ≤ C (‖u‖₂² + ‖div u‖₂²)` is false for a general compactly
+  supported field: a high-frequency divergence-free field makes the left
+  side arbitrarily large while the right side stays fixed. Divergence,
+  smoothness, and support in the ball therefore do not close it.
+  Differentiating the nonsingular formula and integrating by parts in
+  `z` produces a factor `t⁻¹` on `(0,1]`. That factor is not absolutely
+  integrable, so a Schur test on the differentiated kernel does not
+  apply. The integration-by-parts identity
+  `‖∇u‖₂² = ‖div u‖₂² + ‖curl u‖₂²` for compactly supported fields
+  bounds the gradient from below by `‖f‖₂`. It does not bound it from
+  above: the curl of this particular solution is not controlled by
+  `div u = f`. Mathlib v4.12 has Fourier inversion and no Plancherel
+  theorem, and this cutoff operator is not the whole-space Fourier
+  multiplier right inverse of divergence. The missing lemma is an `L²`
+  bound on `coordinateDerivative (Bogovskii ω R f) i j`.
 * This file does not make the M6 pressure term work.
 -/
 
@@ -63,9 +80,13 @@ import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.MeasureTheory.Integral.IntervalIntegral
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Group.Measure
+import Mathlib.MeasureTheory.Function.L2Space
 import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Order.Monotone
 import Mathlib.Topology.Order.MonotoneConvergence
@@ -2175,12 +2196,628 @@ theorem BogovskiiDiv_closed (omega : BogovskiiCutoff) {R : ℝ} (hR : 0 < R)
     rw [heq]
     exact bogovskiiNonsingular_div omega hR hf hfsupp hf0 x
 
+open scoped RealInnerProductSpace
+
+private lemma cutoff_unit_bound (omega : BogovskiiCutoff) :
+    ∃ M : ℝ, 0 ≤ M ∧ ∀ x, |omega.toFun x| ≤ M :=
+  exists_abs_bound_of_ball omega.smooth.continuous omega.support_in_unit_ball one_pos
+
+private lemma cutoff_scaled_bound (omega : BogovskiiCutoff) {R : ℝ} (hR : 0 < R) :
+    ∃ M : ℝ, 0 ≤ M ∧ ∀ x, |bogovskii_cutoff omega R x| ≤ M * (R ^ 3)⁻¹ := by
+  obtain ⟨M, hM, hle⟩ := cutoff_unit_bound omega
+  refine ⟨M, hM, fun x => ?_⟩
+  unfold bogovskii_cutoff
+  have hinv : 0 ≤ (R ^ 3)⁻¹ := inv_nonneg.mpr (pow_nonneg hR.le 3)
+  calc |(R ^ 3)⁻¹ * omega.toFun (R⁻¹ • x)|
+      = (R ^ 3)⁻¹ * |omega.toFun (R⁻¹ • x)| := by rw [abs_mul, abs_of_nonneg hinv]
+    _ ≤ (R ^ 3)⁻¹ * M := mul_le_mul_of_nonneg_left (hle (R⁻¹ • x)) hinv
+    _ = M * (R ^ 3)⁻¹ := mul_comm _ _
+
+private lemma l2_sq_of_compact {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [CompleteSpace E] {g : R3 → E} (hg : Continuous g) (hsupp : HasCompactSupport g) :
+    Memℒp g 2 (volume : Measure R3) ∧
+      (eLpNorm g 2 (volume : Measure R3)).toReal ^ 2 =
+        ∫ x, ‖g x‖ ^ 2 ∂(volume : Measure R3) := by
+  have hsuppeq : Function.support (fun x => ‖g x‖ ^ 2) = Function.support g := by
+    ext x
+    simp [Function.mem_support, sq_eq_zero_iff, norm_eq_zero]
+  have hsqsupp : HasCompactSupport (fun x => ‖g x‖ ^ 2) := by
+    simpa [HasCompactSupport, tsupport, hsuppeq] using hsupp
+  have hsqcont : Continuous (fun x => ‖g x‖ ^ 2) := (continuous_norm.comp hg).pow 2
+  have hsq : Integrable (fun x => ‖g x‖ ^ 2) (volume : Measure R3) :=
+    hsqcont.integrable_of_hasCompactSupport hsqsupp
+  have hmem : Memℒp g 2 (volume : Measure R3) :=
+    (memℒp_two_iff_integrable_sq_norm hg.aestronglyMeasurable).2 hsq
+  have hnonneg : 0 ≤ ∫ x, ‖g x‖ ^ (2 : ℝ) ∂(volume : Measure R3) :=
+    integral_nonneg fun _ => by positivity
+  have hnorm := hmem.eLpNorm_eq_integral_rpow_norm two_ne_zero ENNReal.two_ne_top
+  have htwo : (2 : ENNReal).toReal = 2 := by norm_num
+  rw [htwo] at hnorm
+  have hto : (eLpNorm g 2 (volume : Measure R3)).toReal =
+      (∫ x, ‖g x‖ ^ (2 : ℝ) ∂(volume : Measure R3)) ^ (2 : ℝ)⁻¹ := by
+    rw [hnorm, ENNReal.toReal_ofReal (Real.rpow_nonneg hnonneg _)]
+  refine ⟨hmem, ?_⟩
+  have hhalf : (2 : ℝ)⁻¹ = 1 / 2 := by norm_num
+  calc (eLpNorm g 2 (volume : Measure R3)).toReal ^ 2
+      = ((∫ x, ‖g x‖ ^ (2 : ℝ) ∂(volume : Measure R3)) ^ (2 : ℝ)⁻¹) ^ 2 := by rw [hto]
+    _ = (Real.sqrt (∫ x, ‖g x‖ ^ (2 : ℝ) ∂(volume : Measure R3))) ^ 2 := by
+          rw [hhalf, ← Real.sqrt_eq_rpow]
+    _ = ∫ x, ‖g x‖ ^ (2 : ℝ) ∂(volume : Measure R3) :=
+          Real.sq_sqrt (integral_nonneg fun _ => by positivity)
+    _ = ∫ x, ‖g x‖ ^ 2 ∂(volume : Measure R3) := by
+          refine integral_congr_ae (ae_of_all _ fun x => ?_)
+          exact Real.rpow_two _
+
+private lemma mul_L2_of_ball {f : R3 → ℝ} {u : R3 → R3} {v : R3} {R : ℝ}
+    (hf : Continuous f) (hfsupp : Function.support f ⊆ ballR R)
+    (hu : Continuous u) (huc : HasCompactSupport u) :
+    ∫ x, |f (x - v)| * ‖u x‖ ∂(volume : Measure R3) ≤
+      (eLpNorm f 2 (volume : Measure R3)).toReal *
+        (eLpNorm u 2 (volume : Measure R3)).toReal := by
+  have hshift_supp : Function.support (fun x => f (x - v)) ⊆ Metric.closedBall v R := by
+    intro x hx
+    have hxball : x - v ∈ ballR R :=
+      hfsupp (by simpa [Function.mem_support] using hx)
+    have hlt : ‖x - v‖ < R := by
+      simpa [ballR, Metric.mem_ball, dist_zero_right] using hxball
+    rw [Metric.mem_closedBall, dist_eq_norm]
+    simpa using (le_of_lt hlt)
+  have hfc' : HasCompactSupport (fun x => f (x - v)) :=
+    HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall v R) hshift_supp
+  have hf' : Continuous (fun x => f (x - v)) :=
+    hf.comp (continuous_id.sub continuous_const)
+  have hfc0 : HasCompactSupport f :=
+    HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall (0 : R3) R)
+      (hfsupp.trans Metric.ball_subset_closedBall)
+  obtain ⟨hfmem, _⟩ := l2_sq_of_compact hf' hfc'
+  obtain ⟨_, hfsq0⟩ := l2_sq_of_compact hf hfc0
+  obtain ⟨_, husq⟩ := l2_sq_of_compact hu huc
+  have hunorm : Memℒp (fun x => ‖u x‖) 2 (volume : Measure R3) := by
+    have hint : Integrable (fun x => ‖u x‖ ^ 2) (volume : Measure R3) :=
+      (memℒp_two_iff_integrable_sq_norm hu.aestronglyMeasurable).1
+        (l2_sq_of_compact hu huc).1
+    exact (memℒp_two_iff_integrable_sq (continuous_norm.comp hu).aestronglyMeasurable).2 hint
+  have hshift := integral_add_right (fun x => ‖f x‖ ^ 2) (-v)
+  have hconj : (2 : ℝ).IsConjExponent 2 := by
+    rw [Real.isConjExponent_iff]
+    norm_num
+  have htwo : ENNReal.ofReal 2 = 2 := by norm_num
+  have hholder := integral_mul_norm_le_Lp_mul_Lq (μ := (volume : Measure R3)) hconj
+    (f := fun x => f (x - v)) (g := fun x => ‖u x‖)
+    (by simpa [htwo] using hfmem) (by simpa [htwo] using hunorm)
+  have habs : (∫ x, |f (x - v)| * ‖u x‖ ∂(volume : Measure R3)) =
+      ∫ x, ‖f (x - v)‖ * ‖‖u x‖‖ ∂(volume : Measure R3) := by
+    refine integral_congr_ae (ae_of_all _ fun x => ?_)
+    simp [norm_norm, Real.norm_eq_abs]
+  have hsqf : (∫ x, ‖f (x - v)‖ ^ 2 ∂(volume : Measure R3)) ^ (2 : ℝ)⁻¹ =
+      (eLpNorm f 2 (volume : Measure R3)).toReal := by
+    rw [show (∫ x, ‖f (x - v)‖ ^ 2 ∂(volume : Measure R3)) =
+        ∫ x, ‖f (x + -v)‖ ^ 2 ∂(volume : Measure R3) by rfl, hshift, ← hfsq0]
+    have hinv : (2 : ℝ)⁻¹ = 1 / 2 := by norm_num
+    rw [hinv, ← Real.sqrt_eq_rpow, Real.sqrt_sq ENNReal.toReal_nonneg]
+  have hsqu : (∫ x, ‖‖u x‖‖ ^ 2 ∂(volume : Measure R3)) ^ (2 : ℝ)⁻¹ =
+      (eLpNorm u 2 (volume : Measure R3)).toReal := by
+    rw [show (∫ x, ‖‖u x‖‖ ^ 2 ∂(volume : Measure R3)) =
+        ∫ x, ‖u x‖ ^ 2 ∂(volume : Measure R3) by
+          refine integral_congr_ae (ae_of_all _ fun x => ?_)
+          simp [norm_norm], ← husq]
+    have hinv : (2 : ℝ)⁻¹ = 1 / 2 := by norm_num
+    rw [hinv, ← Real.sqrt_eq_rpow, Real.sqrt_sq ENNReal.toReal_nonneg]
+  rw [habs]
+  calc ∫ x, ‖f (x - v)‖ * ‖‖u x‖‖ ∂(volume : Measure R3)
+      ≤ (∫ x, ‖f (x - v)‖ ^ 2 ∂(volume : Measure R3)) ^ (1 / 2 : ℝ) *
+          (∫ x, ‖‖u x‖‖ ^ 2 ∂(volume : Measure R3)) ^ (1 / 2 : ℝ) := hholder
+    _ = (∫ x, ‖f (x - v)‖ ^ 2 ∂(volume : Measure R3)) ^ (2 : ℝ)⁻¹ *
+          (∫ x, ‖‖u x‖‖ ^ 2 ∂(volume : Measure R3)) ^ (2 : ℝ)⁻¹ := by
+          congr 1 <;> congr 1 <;> norm_num
+    _ = (eLpNorm f 2 (volume : Measure R3)).toReal *
+          (eLpNorm u 2 (volume : Measure R3)).toReal := by rw [hsqf, hsqu]
+
+/-- Volume of a closed ball of radius `r` in `R3`, scaled from the unit ball. -/
+private lemma closedBall_volume_toReal {r : ℝ} (hr : 0 ≤ r) :
+    (volume (Metric.closedBall (0 : R3) r)).toReal =
+      r ^ 3 * (volume (Metric.closedBall (0 : R3) 1)).toReal := by
+  have hrB := InnerProductSpace.volume_closedBall (0 : R3) r
+  have h1 := InnerProductSpace.volume_closedBall (0 : R3) (1 : ℝ)
+  rw [finrank_R3] at hrB h1
+  have h1' : volume (Metric.closedBall (0 : R3) 1) =
+      ENNReal.ofReal (Real.sqrt Real.pi ^ 3 / Real.Gamma (↑(3 : ℕ) / 2 + 1)) := by
+    simpa [ENNReal.ofReal_one, one_pow, one_mul] using h1
+  rw [hrB, ← ENNReal.ofReal_pow hr 3, ← h1', ENNReal.toReal_mul,
+    ENNReal.toReal_ofReal (pow_nonneg hr 3)]
+
+/-- The radius factor produced by `|z| ≤ 2R` and the cutoff height `R⁻³`. -/
+private lemma bogovskii_L2_factor {R M V : ℝ} (hR : 0 < R) :
+    M * (R ^ 3)⁻¹ * (2 * R) * ((2 * R) ^ 3 * V) = 16 * M * V * R := by
+  have hpow : (2 * R) ^ 3 = 8 * (R ^ 3) := by ring
+  have hinv : (R ^ 3)⁻¹ * (R ^ 3) = 1 := inv_mul_cancel₀ (pow_ne_zero 3 hR.ne')
+  calc
+    M * (R ^ 3)⁻¹ * (2 * R) * ((2 * R) ^ 3 * V)
+        = M * (R ^ 3)⁻¹ * (2 * R) * ((8 * (R ^ 3)) * V) := by rw [hpow]
+    _ = M * ((R ^ 3)⁻¹ * (R ^ 3)) * (2 * R) * 8 * V := by ring
+    _ = M * 1 * (2 * R) * 8 * V := by rw [hinv]
+    _ = 16 * M * V * R := by ring
+
+/-- On the nonsingular slice, `|z| ≥ 2R` kills the density, and inside that ball
+`|ω_R| ≤ M R⁻³`. -/
+private lemma bogovskiiSlice_norm_le (omega : BogovskiiCutoff) {R : ℝ} (hR : 0 < R)
+    {f : R3 → ℝ} (hf : Continuous f) (hfsupp : Function.support f ⊆ ballR R)
+    {M : ℝ} (hM : 0 ≤ M)
+    (hcut : ∀ x, |bogovskii_cutoff omega R x| ≤ M * (R ^ 3)⁻¹) (t : ℝ) (x : R3) :
+    ‖∫ z, bogovskiiDensity omega R t f x z • z ∂(volume : Measure R3)‖ ≤
+      (M * (R ^ 3)⁻¹ * (2 * R)) *
+        ∫ z in Metric.closedBall (0 : R3) (2 * R),
+          |f (x - t • z)| ∂(volume : Measure R3) := by
+  let B : Set R3 := Metric.closedBall (0 : R3) (2 * R)
+  let c0 : ℝ := M * (R ^ 3)⁻¹ * (2 * R)
+  let F : R3 → R3 := fun z => bogovskiiDensity omega R t f x z • z
+  have hden : Continuous (fun z => bogovskiiDensity omega R t f x z) := by
+    unfold bogovskiiDensity
+    exact ((bogovskii_cutoff_smooth omega R).continuous.comp
+        (continuous_const.add ((continuous_const.sub continuous_const).smul continuous_id))).mul
+      (hf.comp (continuous_const.sub (continuous_const.smul continuous_id)))
+  have hFcont : Continuous F := hden.smul continuous_id
+  have hFsupp : Function.support F ⊆ B := by
+    intro z hz
+    by_contra hnot
+    have hlt : 2 * R < ‖z‖ :=
+      lt_of_not_ge fun hle => hnot ((mem_closedBall_norm_zero).2 hle)
+    have h0 : bogovskiiDensity omega R t f x z = 0 :=
+      bogovskiiDensity_eq_zero_of_large_z omega hR hfsupp t x z hlt.le
+    exact hz (by simp [F, h0, zero_smul])
+  have hFcs : HasCompactSupport F :=
+    HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall _ _) hFsupp
+  have hnormsupp : HasCompactSupport (fun z => ‖F z‖) := by
+    have hsuppeq : Function.support (fun z => ‖F z‖) = Function.support F := by
+      ext z
+      simp [Function.mem_support, norm_eq_zero]
+    simpa [HasCompactSupport, tsupport, hsuppeq] using hFcs
+  have hnormint : Integrable (fun z => ‖F z‖) (volume : Measure R3) :=
+    (continuous_norm.comp hFcont).integrable_of_hasCompactSupport hnormsupp
+  let major : R3 → ℝ := fun z => c0 * B.indicator (fun w => |f (x - t • w)|) z
+  have hfabs : Continuous (fun z => |f (x - t • z)|) :=
+    (continuous_abs.comp hf).comp (continuous_const.sub (continuous_const.smul continuous_id))
+  have hmaj : Integrable major (volume : Measure R3) := by
+    have hintB : IntegrableOn (fun z => |f (x - t • z)|) B (volume : Measure R3) :=
+      hfabs.continuousOn.integrableOn_compact (isCompact_closedBall _ _)
+    simpa [major] using
+      (hintB.integrable_indicator measurableSet_closedBall).const_mul c0
+  have hpoint : ∀ z, ‖F z‖ ≤ major z := by
+    intro z
+    by_cases hz : z ∈ B
+    · have hzn : ‖z‖ ≤ 2 * R := (mem_closedBall_norm_zero).1 hz
+      simp only [major, Set.indicator_of_mem hz]
+      calc ‖F z‖
+          = |bogovskiiDensity omega R t f x z| * ‖z‖ := by
+              rw [norm_smul, Real.norm_eq_abs]
+        _ = |bogovskii_cutoff omega R (x + (1 - t) • z)| * |f (x - t • z)| * ‖z‖ := by
+              rw [bogovskiiDensity, abs_mul]
+        _ ≤ (M * (R ^ 3)⁻¹) * |f (x - t • z)| * ‖z‖ := by
+              exact mul_le_mul_of_nonneg_right
+                (mul_le_mul_of_nonneg_right (hcut _) (abs_nonneg _)) (norm_nonneg _)
+        _ ≤ (M * (R ^ 3)⁻¹) * |f (x - t • z)| * (2 * R) := by
+              exact mul_le_mul_of_nonneg_left hzn
+                (mul_nonneg (mul_nonneg hM (inv_nonneg.mpr (pow_nonneg hR.le 3))) (abs_nonneg _))
+        _ = c0 * |f (x - t • z)| := by ring
+    · have hlt : 2 * R < ‖z‖ :=
+        lt_of_not_ge fun hle => hz ((mem_closedBall_norm_zero).2 hle)
+      have h0 : bogovskiiDensity omega R t f x z = 0 :=
+        bogovskiiDensity_eq_zero_of_large_z omega hR hfsupp t x z hlt.le
+      simp [F, major, h0, Set.indicator_of_not_mem hz, zero_smul, norm_zero]
+  have hint_eq : ∫ z, major z ∂(volume : Measure R3) =
+      c0 * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3) := by
+    simp only [major]
+    rw [integral_mul_left, integral_indicator measurableSet_closedBall]
+  calc ‖∫ z, F z ∂(volume : Measure R3)‖
+      ≤ ∫ z, ‖F z‖ ∂(volume : Measure R3) := norm_integral_le_integral_norm _
+    _ ≤ ∫ z, major z ∂(volume : Measure R3) := integral_mono hnormint hmaj hpoint
+    _ = c0 * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3) := hint_eq
+
+/-- Minkowski in the translation parameter, on a finite-measure set of shifts. -/
+private lemma shift_setIntegral_L2 {f : R3 → ℝ} {u : R3 → R3} {t r : ℝ}
+    (hf : Continuous f) (hfsupp : Function.support f ⊆ ballR r) (hr : 0 < r)
+    (hu : Continuous u) (huc : HasCompactSupport u) {B : Set R3}
+    (hBm : MeasurableSet B) (hBfin : volume B < ⊤) :
+    ∫ x, ‖u x‖ * (∫ z in B, |f (x - t • z)| ∂(volume : Measure R3))
+        ∂(volume : Measure R3) ≤
+      (volume B).toReal * (eLpNorm f 2 (volume : Measure R3)).toReal *
+        (eLpNorm u 2 (volume : Measure R3)).toReal := by
+  obtain ⟨Mf, hMf0, hMf⟩ := exists_abs_bound_of_ball hf hfsupp hr
+  have hun : Integrable (fun x => ‖u x‖) (volume : Measure R3) := by
+    have hsuppeq : Function.support (fun x => ‖u x‖) = Function.support u := by
+      ext x
+      simp [Function.mem_support, norm_eq_zero]
+    have hcs : HasCompactSupport (fun x => ‖u x‖) := by
+      simpa [HasCompactSupport, tsupport, hsuppeq] using huc
+    exact (continuous_norm.comp hu).integrable_of_hasCompactSupport hcs
+  let ν : Measure R3 := (volume : Measure R3).restrict B
+  have hone : Integrable (fun _ : R3 => (1 : ℝ)) ν := by
+    rw [integrable_const_iff]
+    refine Or.inr ?_
+    rw [Measure.restrict_apply_univ]
+    exact hBfin
+  have hdom : Integrable (fun p : R3 × R3 => Mf * ‖u p.1‖) ((volume : Measure R3).prod ν) := by
+    simpa using ((hun.const_mul Mf).prod_mul hone)
+  have hψ : Integrable (fun p : R3 × R3 => ‖u p.1‖ * |f (p.1 - t • p.2)|)
+      ((volume : Measure R3).prod ν) := by
+    refine hdom.mono' ?_ ?_
+    · exact ((continuous_norm.comp hu).comp continuous_fst).mul
+        ((continuous_abs.comp hf).comp
+          (continuous_fst.sub (continuous_const.smul continuous_snd)))
+        |>.aestronglyMeasurable
+    · refine ae_of_all _ fun p => ?_
+      have hnn : 0 ≤ ‖u p.1‖ * |f (p.1 - t • p.2)| :=
+        mul_nonneg (norm_nonneg _) (abs_nonneg _)
+      rw [Real.norm_eq_abs, abs_of_nonneg hnn]
+      exact mul_le_mul_of_nonneg_left (hMf _) (norm_nonneg _) |>.trans_eq (mul_comm _ _)
+  have hψu : Integrable (Function.uncurry fun x z => ‖u x‖ * |f (x - t • z)|)
+      ((volume : Measure R3).prod ν) := by
+    simpa [Function.uncurry] using hψ
+  have hswap := integral_integral_swap
+    (μ := (volume : Measure R3)) (ν := ν)
+    (f := fun x z => ‖u x‖ * |f (x - t • z)|) hψu
+  have hpull : ∀ x, ∫ z in B, ‖u x‖ * |f (x - t • z)| ∂(volume : Measure R3) =
+      ‖u x‖ * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3) := by
+    intro x
+    simpa using (integral_mul_left (‖u x‖) (fun z => |f (x - t • z)|) (μ := ν))
+  have hpt : ∀ z, ∫ x, ‖u x‖ * |f (x - t • z)| ∂(volume : Measure R3) ≤
+      (eLpNorm f 2 (volume : Measure R3)).toReal *
+        (eLpNorm u 2 (volume : Measure R3)).toReal := by
+    intro z
+    have hcomm : ∫ x, ‖u x‖ * |f (x - t • z)| ∂(volume : Measure R3) =
+        ∫ x, |f (x - t • z)| * ‖u x‖ ∂(volume : Measure R3) := by
+      refine integral_congr_ae (ae_of_all _ fun x => ?_)
+      ring
+    rw [hcomm]
+    exact mul_L2_of_ball hf hfsupp hu huc
+  have hintz : IntegrableOn
+      (fun z => ∫ x, ‖u x‖ * |f (x - t • z)| ∂(volume : Measure R3)) B
+      (volume : Measure R3) :=
+    hψu.integral_prod_right
+  have hconst : IntegrableOn
+      (fun _ : R3 => (eLpNorm f 2 (volume : Measure R3)).toReal *
+        (eLpNorm u 2 (volume : Measure R3)).toReal) B (volume : Measure R3) :=
+    (integrableOn_const.2 (Or.inr hBfin))
+  have hineq := setIntegral_mono_on (μ := (volume : Measure R3)) (s := B) hintz hconst hBm
+    (fun z _ => hpt z)
+  calc ∫ x, ‖u x‖ * (∫ z in B, |f (x - t • z)| ∂(volume : Measure R3))
+        ∂(volume : Measure R3)
+      = ∫ x, (∫ z in B, ‖u x‖ * |f (x - t • z)| ∂(volume : Measure R3))
+          ∂(volume : Measure R3) := by
+          refine integral_congr_ae (ae_of_all _ fun x => ?_)
+          exact (hpull x).symm
+    _ = ∫ z in B, (∫ x, ‖u x‖ * |f (x - t • z)| ∂(volume : Measure R3))
+          ∂(volume : Measure R3) := hswap
+    _ ≤ ∫ z in B, (eLpNorm f 2 (volume : Measure R3)).toReal *
+          (eLpNorm u 2 (volume : Measure R3)).toReal ∂(volume : Measure R3) := hineq
+    _ = (volume B).toReal * ((eLpNorm f 2 (volume : Measure R3)).toReal *
+          (eLpNorm u 2 (volume : Measure R3)).toReal) := by
+          simpa using (setIntegral_const (μ := (volume : Measure R3)) (s := B)
+            ((eLpNorm f 2 (volume : Measure R3)).toReal *
+              (eLpNorm u 2 (volume : Measure R3)).toReal))
+    _ = (volume B).toReal * (eLpNorm f 2 (volume : Measure R3)).toReal *
+          (eLpNorm u 2 (volume : Measure R3)).toReal := by ring
+
+set_option maxHeartbeats 2000000 in
+/-- `‖Bogovskii ω R f‖₂ ≤ C R ‖f‖₂`. The factor `R` is the volume of the
+region `|z| ≤ 2R` on which the nonsingular density can be nonzero, times
+the `R⁻³` height of the rescaled cutoff. This is the same scaling as
+`∫_{|z|<2R} |z|⁻² dz` in the Schur test for `|K| ≤ C / |x-y|²`. -/
+lemma bogovskii_L2_bound (omega : BogovskiiCutoff) :
+    ∃ C : ℝ, 0 ≤ C ∧ ∀ {R : ℝ} {f : R3 → ℝ},
+      0 < R →
+      ContDiff ℝ ⊤ f →
+      Function.support f ⊆ ballR R →
+      L2Norm (fun x => ‖Bogovskii omega R f x‖) ≤ C * R * L2Norm f := by
+  obtain ⟨M, hM, hcut⟩ := cutoff_unit_bound omega
+  let V : ℝ := (volume (Metric.closedBall (0 : R3) 1)).toReal
+  refine ⟨16 * M * V, mul_nonneg (mul_nonneg (by norm_num) hM) ENNReal.toReal_nonneg, ?_⟩
+  intro R f hR hf hfsupp
+  have hcutR : ∀ x, |bogovskii_cutoff omega R x| ≤ M * (R ^ 3)⁻¹ := by
+    intro x
+    unfold bogovskii_cutoff
+    have hinv : 0 ≤ (R ^ 3)⁻¹ := inv_nonneg.mpr (pow_nonneg hR.le 3)
+    calc |(R ^ 3)⁻¹ * omega.toFun (R⁻¹ • x)|
+        = (R ^ 3)⁻¹ * |omega.toFun (R⁻¹ • x)| := by rw [abs_mul, abs_of_nonneg hinv]
+      _ ≤ (R ^ 3)⁻¹ * M := mul_le_mul_of_nonneg_left (hcut _) hinv
+      _ = M * (R ^ 3)⁻¹ := mul_comm _ _
+  let H : ℝ → R3 → R3 := fun t x =>
+    ∫ z, bogovskiiDensity omega R t f x z • z ∂(volume : Measure R3)
+  let u : R3 → R3 := bogovskiiNonsingular omega R f
+  have hu_eq : Bogovskii omega R f = u :=
+    (bogovskiiNonsingular_eq_Bogovskii omega hR hf hfsupp).symm
+  have hu_supp : HasCompactSupport u := bogovskiiNonsingular_hasCompactSupport omega hR hfsupp
+  have hu_cont : Continuous u :=
+    (bogovskiiNonsingular_smooth omega hR hf hfsupp).continuous
+  have hf_supp : HasCompactSupport f :=
+    HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall (0 : R3) R)
+      (hfsupp.trans Metric.ball_subset_closedBall)
+  obtain ⟨_, hfu⟩ := l2_sq_of_compact hu_cont hu_supp
+  let Nu : ℝ := (eLpNorm u 2 (volume : Measure R3)).toReal
+  let Nf : ℝ := (eLpNorm f 2 (volume : Measure R3)).toReal
+  have hNu : L2Norm (fun x => ‖Bogovskii omega R f x‖) = Nu := by
+    simp [L2Norm, Nu, hu_eq, eLpNorm_norm]
+  have hNf : L2Norm f = Nf := rfl
+  have hNusq : Nu ^ 2 = ∫ x, ‖u x‖ ^ 2 ∂(volume : Measure R3) := hfu
+  let B : Set R3 := Metric.closedBall (0 : R3) (2 * R)
+  let c0 : ℝ := M * (R ^ 3)⁻¹ * (2 * R)
+  have hc0 : 0 ≤ c0 :=
+    mul_nonneg (mul_nonneg hM (inv_nonneg.mpr (pow_nonneg hR.le 3)))
+      (mul_nonneg zero_le_two hR.le)
+  have hslice : ∀ t x, ‖H t x‖ ≤
+      c0 * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3) := by
+    intro t x
+    simpa [H, B, c0] using
+      bogovskiiSlice_norm_le omega hR hf.continuous hfsupp hM hcutR t x
+  have hHjoint : Continuous (fun p : R3 × ℝ => H p.2 p.1) := by
+    refine (contDiff_zero (𝕜 := ℝ)).1 ?_
+    rw [contDiff_iff_contDiffAt]
+    intro p
+    dsimp only [H]
+    exact contDiffAt_zIntegral (n := 0) (S := 2 * R)
+      (F := fun q z => bogovskiiDensity omega R q.2 f q.1 z • z)
+      (bogovskiiIntegrand_contDiff omega R hf)
+      (fun q z hz => by
+        simp [bogovskiiDensity_eq_zero_of_large_z omega hR hfsupp q.2 q.1 z hz.le, zero_smul])
+      p
+  let S : Set (R3 × ℝ) := Metric.closedBall (0 : R3) R ×ˢ Set.Icc (0 : ℝ) 1
+  have hSne : S.Nonempty :=
+    ⟨(0, 0), ⟨Metric.mem_closedBall_self hR.le, ⟨le_rfl, zero_le_one⟩⟩⟩
+  obtain ⟨p0, -, hmax⟩ :=
+    ((isCompact_closedBall (0 : R3) R).prod isCompact_Icc).exists_isMaxOn hSne
+      (continuous_norm.comp hHjoint).continuousOn
+  let Cbound : ℝ := ‖H p0.2 p0.1‖
+  have hCbound : ∀ q ∈ S, ‖H q.2 q.1‖ ≤ Cbound := fun q hq => hmax hq
+  have hun : Integrable (fun x => ‖u x‖) (volume : Measure R3) := by
+    have hsuppeq : Function.support (fun x => ‖u x‖) = Function.support u := by
+      ext x
+      simp [Function.mem_support, norm_eq_zero]
+    have hcs : HasCompactSupport (fun x => ‖u x‖) := by
+      simpa [HasCompactSupport, tsupport, hsuppeq] using hu_supp
+    exact (continuous_norm.comp hu_cont).integrable_of_hasCompactSupport hcs
+  let ν : Measure ℝ := (volume : Measure ℝ).restrict (Set.Ioc (0 : ℝ) 1)
+  have hone : Integrable (fun _ : ℝ => (1 : ℝ)) ν := by
+    rw [integrable_const_iff]
+    refine Or.inr ?_
+    rw [Measure.restrict_apply_univ]
+    exact measure_Ioc_lt_top
+  have hdom : Integrable (fun p : R3 × ℝ => Cbound * ‖u p.1‖)
+      ((volume : Measure R3).prod ν) := by
+    simpa using ((hun.const_mul Cbound).prod_mul hone)
+  have hu_out : ∀ x, x ∉ Metric.closedBall (0 : R3) R → u x = 0 := by
+    intro x hx
+    exact Function.nmem_support.mp fun hs =>
+      hx (Metric.ball_subset_closedBall (bogovskiiNonsingular_support omega hR hfsupp hs))
+  have habs_ae : ∀ᵐ p ∂((volume : Measure R3).prod ν),
+      ‖⟪u p.1, H p.2 p.1⟫‖ ≤ Cbound * ‖u p.1‖ := by
+    have hfull : ∀ᵐ p ∂((volume : Measure R3).prod ν), p.2 ∈ Set.Ioc (0 : ℝ) 1 := by
+      rw [ae_iff]
+      have hs : {p : R3 × ℝ | p.2 ∉ Set.Ioc (0 : ℝ) 1} =
+          (Set.univ : Set R3) ×ˢ (Set.Ioc (0 : ℝ) 1)ᶜ := by
+        ext p
+        simp [Set.mem_prod]
+      rw [hs, Measure.prod_prod, Measure.restrict_apply measurableSet_Ioc.compl]
+      simp [Set.compl_inter_self]
+    refine hfull.mono fun p hp => ?_
+    by_cases hx : p.1 ∈ Metric.closedBall (0 : R3) R
+    · have ht : p.2 ∈ Set.Icc (0 : ℝ) 1 := Set.Ioc_subset_Icc_self hp
+      have hHle := hCbound (p.1, p.2) ⟨hx, ht⟩
+      calc ‖⟪u p.1, H p.2 p.1⟫‖
+          = |⟪u p.1, H p.2 p.1⟫| := by rw [Real.norm_eq_abs]
+        _ ≤ ‖u p.1‖ * ‖H p.2 p.1‖ := abs_real_inner_le_norm _ _
+        _ ≤ ‖u p.1‖ * Cbound := mul_le_mul_of_nonneg_left hHle (norm_nonneg _)
+        _ = Cbound * ‖u p.1‖ := mul_comm _ _
+    · have h0 : u p.1 = 0 := hu_out p.1 hx
+      simp [h0, Real.norm_eq_abs]
+  have hφ : Integrable (fun p : R3 × ℝ => ⟪u p.1, H p.2 p.1⟫)
+      ((volume : Measure R3).prod ν) := by
+    refine hdom.mono' ?_ habs_ae
+    exact (continuous_inner.comp (hu_cont.comp continuous_fst |>.prod_mk hHjoint)).aestronglyMeasurable
+  have hφu : Integrable (Function.uncurry fun x t => ⟪u x, H t x⟫)
+      ((volume : Measure R3).prod ν) := by
+    simpa [Function.uncurry] using hφ
+  have hswap := integral_integral_swap (μ := (volume : Measure R3)) (ν := ν)
+    (f := fun x t => ⟪u x, H t x⟫) hφu
+  have hsqx : ∀ x, ‖u x‖ ^ 2 =
+      ∫ t in Set.Ioc (0 : ℝ) 1, ⟪u x, H t x⟫ ∂(volume : Measure ℝ) := by
+    intro x
+    have hcont : Continuous (fun t => H t x) := continuous_bogovskiiSlice omega hR hf hfsupp x
+    have hintH : IntegrableOn (fun t => H t x) (Set.Ioc (0 : ℝ) 1) (volume : Measure ℝ) :=
+      hcont.integrableOn_Icc.mono_set Set.Ioc_subset_Icc_self
+    have hHu : u x = ∫ t in Set.Ioc (0 : ℝ) 1, H t x ∂(volume : Measure ℝ) := by
+      simpa [u, bogovskiiNonsingular, H] using
+        (_root_.intervalIntegral.integral_of_le (zero_le_one : (0 : ℝ) ≤ 1)
+          (μ := (volume : Measure ℝ))
+          (f := fun t =>
+            ∫ z, bogovskiiDensity omega R t f x z • z ∂(volume : Measure R3)))
+    rw [← real_inner_self_eq_norm_sq]
+    calc ⟪u x, u x⟫
+        = ⟪u x, ∫ t in Set.Ioc (0 : ℝ) 1, H t x ∂(volume : Measure ℝ)⟫ := by rw [hHu]
+      _ = ∫ t in Set.Ioc (0 : ℝ) 1, ⟪u x, H t x⟫ ∂(volume : Measure ℝ) :=
+          (integral_inner hintH (u x)).symm
+  have hsq_swap : ∫ x, ‖u x‖ ^ 2 ∂(volume : Measure R3) =
+      ∫ t in Set.Ioc (0 : ℝ) 1,
+        (∫ x, ⟪u x, H t x⟫ ∂(volume : Measure R3)) ∂(volume : Measure ℝ) := by
+    have hcongr : ∫ x, ‖u x‖ ^ 2 ∂(volume : Measure R3) =
+        ∫ x, (∫ t in Set.Ioc (0 : ℝ) 1, ⟪u x, H t x⟫ ∂(volume : Measure ℝ))
+          ∂(volume : Measure R3) := by
+      refine integral_congr_ae (ae_of_all _ fun x => ?_)
+      exact hsqx x
+    rw [hcongr]
+    simpa [ν] using hswap
+  have hshift : ∀ t : ℝ, ∫ x, ‖u x‖ *
+        (∫ z in B, |f (x - t • z)| ∂(volume : Measure R3)) ∂(volume : Measure R3) ≤
+      (volume B).toReal * Nf * Nu := by
+    intro t
+    simpa [B, Nf, Nu] using
+      shift_setIntegral_L2 hf.continuous hfsupp hR hu_cont hu_supp measurableSet_closedBall
+        ((isCompact_closedBall (0 : R3) (2 * R)).measure_lt_top) (t := t) (B := B)
+  have hinner_le : ∀ t : ℝ, ∫ x, ⟪u x, H t x⟫ ∂(volume : Measure R3) ≤
+      c0 * (volume B).toReal * Nf * Nu := by
+    intro t
+    have hHt : Continuous (fun x => H t x) :=
+      hHjoint.comp (continuous_id.prod_mk continuous_const)
+    have hφcont : Continuous (fun x => ⟪u x, H t x⟫) :=
+      continuous_inner.comp (hu_cont.prod_mk hHt)
+    have hφcs : HasCompactSupport (fun x => ⟪u x, H t x⟫) := by
+      have hsub : Function.support (fun x => ⟪u x, H t x⟫) ⊆ Function.support u := by
+        intro x hx
+        by_contra hnot
+        exact hx (by simp [Function.nmem_support.mp hnot])
+      exact HasCompactSupport.of_support_subset_isCompact (isCompact_closedBall (0 : R3) R)
+        (hsub.trans ((bogovskiiNonsingular_support omega hR hfsupp).trans
+          Metric.ball_subset_closedBall))
+    have hφint : Integrable (fun x => ⟪u x, H t x⟫) (volume : Measure R3) :=
+      hφcont.integrable_of_hasCompactSupport hφcs
+    have hrhs : Integrable (fun x => c0 * ‖u x‖ *
+        (∫ z in B, |f (x - t • z)| ∂(volume : Measure R3))) (volume : Measure R3) := by
+      obtain ⟨Mf, hMf0, hMf⟩ := exists_abs_bound_of_ball hf.continuous hfsupp hR
+      have hIle : ∀ x, ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3) ≤
+          Mf * (volume B).toReal := by
+        intro x
+        have hint : IntegrableOn (fun z => |f (x - t • z)|) B (volume : Measure R3) :=
+          ((continuous_abs.comp hf.continuous).comp
+            (continuous_const.sub (continuous_const.smul continuous_id))).continuousOn.integrableOn_compact
+            (isCompact_closedBall _ _)
+        have hconst : IntegrableOn (fun _ : R3 => Mf) B (volume : Measure R3) :=
+          (integrableOn_const.2 (Or.inr (isCompact_closedBall _ _).measure_lt_top))
+        have hmono := setIntegral_mono_on hint hconst measurableSet_closedBall
+          (fun z _ => hMf (x - t • z))
+        have hconst_int := setIntegral_const (μ := (volume : Measure R3)) (s := B) Mf
+        calc ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3)
+            ≤ ∫ z in B, Mf ∂(volume : Measure R3) := hmono
+          _ = (volume B).toReal * Mf := by simpa [smul_eq_mul] using hconst_int
+          _ = Mf * (volume B).toReal := by ring
+      let ρ : ℝ := R + |t| * (2 * R)
+      let K : Set R3 := Metric.closedBall (0 : R3) ρ
+      have hind : Integrable (K.indicator fun _ => Mf) (volume : Measure R3) := by
+        rw [integrable_indicator_iff measurableSet_closedBall]
+        exact integrableOn_const.2 (Or.inr (isCompact_closedBall _ _).measure_lt_top)
+      have honeB : Integrable (fun _ : R3 => (1 : ℝ))
+          ((volume : Measure R3).restrict B) := by
+        rw [integrable_const_iff]
+        refine Or.inr ?_
+        rw [Measure.restrict_apply_univ]
+        exact (isCompact_closedBall _ _).measure_lt_top
+      have hdomp : Integrable (fun p : R3 × R3 => K.indicator (fun _ => Mf) p.1 * (1 : ℝ))
+          ((volume : Measure R3).prod ((volume : Measure R3).restrict B)) :=
+        hind.prod_mul honeB
+      have hψf : Integrable (fun p : R3 × R3 => |f (p.1 - t • p.2)|)
+          ((volume : Measure R3).prod ((volume : Measure R3).restrict B)) := by
+        refine hdomp.mono' ?_ ?_
+        · exact ((continuous_abs.comp hf.continuous).comp
+            (continuous_fst.sub (continuous_const.smul continuous_snd))).aestronglyMeasurable
+        · have hfull : ∀ᵐ p ∂((volume : Measure R3).prod ((volume : Measure R3).restrict B)),
+              p.2 ∈ B := by
+            rw [ae_iff]
+            have hs : {p : R3 × R3 | p.2 ∉ B} =
+                (Set.univ : Set R3) ×ˢ Bᶜ := by
+              ext p; simp [Set.mem_prod]
+            rw [hs, Measure.prod_prod, Measure.restrict_apply measurableSet_closedBall.compl]
+            simp [Set.compl_inter_self]
+          refine hfull.mono fun p hp => ?_
+          have hnn : 0 ≤ |f (p.1 - t • p.2)| := abs_nonneg _
+          rw [Real.norm_eq_abs, abs_of_nonneg hnn]
+          by_cases hx : p.1 ∈ K
+          · rw [Set.indicator_of_mem hx, mul_one]
+            exact hMf _
+          · rw [Set.indicator_of_not_mem hx, zero_mul]
+            have hbig : ρ < ‖p.1‖ := by
+              rw [mem_closedBall_norm_zero] at hx
+              exact lt_of_not_ge hx
+            have hzero : f (p.1 - t • p.2) = 0 := by
+              rw [← Function.nmem_support]
+              intro hs
+              have hlt : ‖p.1 - t • p.2‖ < R := by
+                simpa [ballR, Metric.mem_ball, dist_zero_right] using hfsupp hs
+              have hzn : ‖p.2‖ ≤ 2 * R := (mem_closedBall_norm_zero).1 hp
+              have hle : ‖p.1‖ ≤ ‖p.1 - t • p.2‖ + ‖t • p.2‖ := by
+                simpa [sub_add_cancel] using norm_add_le (p.1 - t • p.2) (t • p.2)
+              have htz : ‖t • p.2‖ = |t| * ‖p.2‖ := by
+                rw [norm_smul, Real.norm_eq_abs]
+              have : ‖p.1‖ < R + |t| * (2 * R) := by
+                calc ‖p.1‖ ≤ ‖p.1 - t • p.2‖ + ‖t • p.2‖ := hle
+                  _ < R + |t| * ‖p.2‖ := by
+                      rw [htz]
+                      exact add_lt_add_right hlt _
+                  _ ≤ R + |t| * (2 * R) := by
+                      gcongr
+              exact lt_irrefl _ (this.trans hbig)
+            simp [hzero]
+      have hI : Integrable (fun x => ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3))
+          (volume : Measure R3) := by
+        simpa using hψf.integral_prod_left
+      have hdomx : Integrable (fun x => (c0 * Mf * (volume B).toReal) * ‖u x‖)
+          (volume : Measure R3) := hun.const_mul _
+      refine hdomx.mono' ?_ ?_
+      · exact (((continuous_const.mul (continuous_norm.comp hu_cont)).aestronglyMeasurable).mul
+          hI.aestronglyMeasurable)
+      · refine ae_of_all _ fun x => ?_
+        have hnn : 0 ≤ c0 * ‖u x‖ * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3) :=
+          mul_nonneg (mul_nonneg hc0 (norm_nonneg _))
+            (integral_nonneg fun _ => abs_nonneg _)
+        rw [Real.norm_eq_abs, abs_of_nonneg hnn]
+        calc c0 * ‖u x‖ * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3)
+            ≤ c0 * ‖u x‖ * (Mf * (volume B).toReal) := by
+              exact mul_le_mul_of_nonneg_left (hIle x) (mul_nonneg hc0 (norm_nonneg _))
+          _ = (c0 * Mf * (volume B).toReal) * ‖u x‖ := by ring
+    have habs : ∀ x, ⟪u x, H t x⟫ ≤
+        c0 * ‖u x‖ * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3) := by
+      intro x
+      calc ⟪u x, H t x⟫ ≤ |⟪u x, H t x⟫| := le_abs_self _
+        _ ≤ ‖u x‖ * ‖H t x‖ := abs_real_inner_le_norm _ _
+        _ ≤ ‖u x‖ * (c0 * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3)) :=
+            mul_le_mul_of_nonneg_left (hslice t x) (norm_nonneg _)
+        _ = c0 * ‖u x‖ * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3) := by ring
+    calc ∫ x, ⟪u x, H t x⟫ ∂(volume : Measure R3)
+        ≤ ∫ x, c0 * ‖u x‖ * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3)
+            ∂(volume : Measure R3) := integral_mono hφint hrhs habs
+      _ = c0 * ∫ x, ‖u x‖ * ∫ z in B, |f (x - t • z)| ∂(volume : Measure R3)
+            ∂(volume : Measure R3) := by
+          rw [← integral_mul_left]
+          refine integral_congr_ae (ae_of_all _ fun x => ?_)
+          ring
+      _ ≤ c0 * ((volume B).toReal * Nf * Nu) :=
+          mul_le_mul_of_nonneg_left (hshift t) hc0
+      _ = c0 * (volume B).toReal * Nf * Nu := by ring
+  have hton : IntegrableOn (fun t => ∫ x, ⟪u x, H t x⟫ ∂(volume : Measure R3))
+      (Set.Ioc (0 : ℝ) 1) (volume : Measure ℝ) := hφu.integral_prod_right
+  have hconst_t : IntegrableOn (fun _ : ℝ => c0 * (volume B).toReal * Nf * Nu)
+      (Set.Ioc (0 : ℝ) 1) (volume : Measure ℝ) :=
+    (integrableOn_const.2 (Or.inr measure_Ioc_lt_top))
+  have havg := setIntegral_mono_on (μ := (volume : Measure ℝ)) (s := Set.Ioc (0 : ℝ) 1)
+    hton hconst_t measurableSet_Ioc (fun t _ => hinner_le t)
+  have hlen : ∫ t in Set.Ioc (0 : ℝ) 1, c0 * (volume B).toReal * Nf * Nu
+      ∂(volume : Measure ℝ) = c0 * (volume B).toReal * Nf * Nu := by
+    rw [setIntegral_const, Real.volume_Ioc, sub_zero, ENNReal.toReal_ofReal zero_le_one, one_smul]
+  have hsq_le : Nu ^ 2 ≤ c0 * (volume B).toReal * Nf * Nu := by
+    rw [hNusq, hsq_swap]
+    exact havg.trans_eq hlen
+  have hvol : (volume B).toReal = (2 * R) ^ 3 * V := by
+    simpa [B, V] using closedBall_volume_toReal (mul_nonneg zero_le_two hR.le)
+  have hfac : c0 * (volume B).toReal = (16 * M * V) * R := by
+    rw [hvol]
+    simpa [c0] using bogovskii_L2_factor hR (M := M) (V := V)
+  have hfinal : Nu ^ 2 ≤ ((16 * M * V) * R * Nf) * Nu := by
+    calc Nu ^ 2 ≤ c0 * (volume B).toReal * Nf * Nu := hsq_le
+      _ = ((16 * M * V) * R) * Nf * Nu := by rw [hfac]
+      _ = ((16 * M * V) * R * Nf) * Nu := by ring
+  rw [hNu, hNf]
+  by_cases h0 : Nu = 0
+  · rw [h0]
+    positivity
+  · have hpos : 0 < Nu := lt_of_le_of_ne ENNReal.toReal_nonneg (Ne.symm h0)
+    have hmul : Nu * Nu ≤ Nu * ((16 * M * V) * R * Nf) := by
+      simpa [sq, mul_comm, mul_left_comm, mul_assoc] using hfinal
+    exact le_of_mul_le_mul_left hmul hpos
+
 /-- OPEN. `H¹` bound for the Bogovskii operator. The factor `(1 + R)` is
 the standard scaling: `‖B f‖₂` carries a radius and `‖∇(B f)‖₂` does not.
-`H1Norm` packages both. Neither the cutoff Lipschitz constant
-`‖R⁻³‖₊ * K * ‖R⁻¹‖₊` nor a Schur test on `|∇K| ≤ C/|x-y|³` proves this.
-The gradient estimate needs the divergence theorem above and an elliptic
-argument; it is not claimed in this file. -/
+`H1Norm` packages both. `bogovskii_L2_bound` is the `L²` piece. The gradient
+piece is not a Schur test on `|∇K| ≤ C/|x-y|³`, and it is not the identity
+`‖∇u‖₂² ≤ C(‖u‖₂² + ‖div u‖₂²)` for an arbitrary compactly supported field.
+That inequality is false for high-frequency divergence-free fields. The
+missing lemma is an `L²` bound on each `coordinateDerivative (Bogovskii ω R f)`. -/
 def BogovskiiCZ_OPEN : Prop :=
   ∀ omega : BogovskiiCutoff,
     ∃ C : ℝ, 0 < C ∧

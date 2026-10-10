@@ -54,6 +54,9 @@ What is recorded as OPEN, with no `sorry` and no new axiom:
   not finish the gradient bound. Mathlib v4.12 has no Calderón–Zygmund
   theorem. Closing the gradient estimate means proving, in this file, an
   `L²` bound on each `coordinateDerivative (Bogovskii ω R f) i j`.
+  `Wall266_Maximal` proves the closed-ball Hardy–Littlewood weak `(1,1)`
+  inequality with constant `4^3`, using Vitali's enlargement. That
+  estimate does not bound the gradient of `Bogovskii`.
 * `NS_M6_OPEN` is not discharged by this file. There is no
   `NS_M6_OPEN.lean`. The proposition, repeated in the Phase 101–108
   files, is the Clay statement: `L²` initial data yields a smooth global

@@ -39,9 +39,13 @@ What is recorded as OPEN, with no `sorry` and no new axiom:
   cutoff: `‖B f‖₂ ≤ C R ‖f‖₂`. The gradient piece is not proved.
   `H1Norm` packages both, so the full bound stays open.
   A Schur test on `|∇K| ≤ C / |x-y|³` fails: that kernel is not
-  integrable. Differentiating the nonsingular formula and integrating
-  by parts in `z` produces a factor `t⁻¹` on `(0,1]`, which is not
-  absolutely integrable. `div u = f` does not control `‖∇u‖₂`. For a
+  integrable. Truncating to `|x-y| > ε` leaves a Schur constant of order
+  `log(R / ε)`, which is not uniform as `ε → 0`. Differentiating the
+  nonsingular formula and integrating by parts in `z` produces `t⁻¹` from
+  the cutoff derivative and `(1-t) t⁻¹` from `∇f`; those coefficients add,
+  so the factor on `(0,1]` is not absolutely integrable and is not the
+  exact `t`-derivative used for `BogovskiiDiv_closed`. `div u = f` does
+  not control `‖∇u‖₂`. For a
   compactly supported field,
   `‖∇u‖₂² = ‖div u‖₂² + ‖curl u‖₂²`, so the left side is at least
   `‖f‖₂`, and a high-frequency divergence-free summand makes it
@@ -2820,15 +2824,28 @@ The factor `(1 + R)` is the standard scaling: `bogovskii_L2_bound` gives
 stays open until the gradient piece is proved.
 
 The gradient piece is not the Schur test `|∇K| ≤ C/|x-y|³`: that majorant
-is not integrable. Integration by parts in the nonsingular formula leaves
-a factor `t⁻¹` on `(0,1]`, which is not absolutely integrable. It is also
-not the identity `‖∇u‖₂² ≤ C(‖u‖₂² + ‖div u‖₂²)`. For a compactly supported
-field, `‖∇u‖₂² = ‖div u‖₂² + ‖curl u‖₂²`, so `div u = f` only lower-bounds
-the gradient by `‖f‖₂`. A high-frequency divergence-free summand makes the
-gradient arbitrarily larger. The cutoff operator is not the whole-space
-Fourier multiplier right inverse of divergence, so Plancherel would not
-close it. Mathlib v4.12 has no Calderón–Zygmund theorem. The missing
-lemma is an `L²` bound on each `coordinateDerivative (Bogovskii ω R f)`. -/
+is not integrable. Truncation does not repair it. On `ε < |x-y| < c R`,
+`∫ |z|⁻³ dz` is a constant times `log(R / ε)`, so Schur's constant for
+`∇K 1_{|x-y|>ε}` blows up as `ε → 0` and is not a uniform `L²` bound.
+
+Integration by parts in the nonsingular formula does not cancel that
+singularity. Differentiating
+`ω(x+(1-t)z) f(x-tz) z` in `x` and moving `∇f` onto `z` produces
+`t⁻¹` times `(∂_k ω) z_i` from the cutoff term and `(1-t) t⁻¹` times the
+same monomial from the `∇f` term. Those coefficients add to `t⁻¹`, together
+with `t⁻¹ ω δ_{ik}`. The factor is not absolutely integrable on `(0,1]`,
+and the `t`-integral is not an exact derivative the way `BogovskiiDiv_closed`
+is, so the divergence telescope does not transfer.
+
+It is also not the identity `‖∇u‖₂² ≤ C(‖u‖₂² + ‖div u‖₂²)`. For a compactly
+supported field, `‖∇u‖₂² = ‖div u‖₂² + ‖curl u‖₂²`, so `div u = f` only
+lower-bounds the gradient by `‖f‖₂`. A high-frequency divergence-free
+summand makes the gradient arbitrarily larger. The cutoff operator is not
+the whole-space Fourier multiplier right inverse of divergence, so
+Plancherel would not close it. Mathlib v4.12 has Vitali enlargement and no
+Hardy–Littlewood maximal inequality, no Marcinkiewicz interpolation, and no
+Calderón–Zygmund theorem. The missing lemma is an `L²` bound on each
+`coordinateDerivative (Bogovskii ω R f)`. -/
 def BogovskiiCZ_OPEN : Prop :=
   ∀ omega : BogovskiiCutoff,
     ∃ C : ℝ, 0 < C ∧

@@ -54,8 +54,16 @@ What is recorded as OPEN, with no `sorry` and no new axiom:
   not finish the gradient bound. Mathlib v4.12 has no Calderón–Zygmund
   theorem. Closing the gradient estimate means proving, in this file, an
   `L²` bound on each `coordinateDerivative (Bogovskii ω R f) i j`.
-* This file does not make the M6 pressure term work. The pressure term
-  stays blocked on this open gradient bound.
+* `NS_M6_OPEN` is not discharged by this file. There is no
+  `NS_M6_OPEN.lean`. The proposition, repeated in the Phase 101–108
+  files, is the Clay statement: `L²` initial data yields a smooth global
+  solution. It does not mention `Bogovskii`, `H1Norm`, `L2Norm`, or
+  `divClassical`, and no module imports this file. `bogovskii_L2_bound`
+  and `BogovskiiDiv_closed` are therefore not hypotheses of `NS_M6_OPEN`.
+  A pressure estimate written as `H1Norm (Bogovskii ω R f)` would need
+  the gradient bound above, which is still not a theorem. Phase 63
+  records that Marcinkiewicz interpolation is not in Mathlib v4.12, so
+  that route is not an import either. The M6 statement stays open.
 -/
 
 import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct

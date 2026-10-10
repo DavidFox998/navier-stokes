@@ -33,24 +33,25 @@ What is proved, with no `sorry` and no new axiom:
   The constant is read off the unit cutoff and the volume of the unit ball.
 
 What is recorded as OPEN, with no `sorry` and no new axiom:
-* `BogovskiiCZ_OPEN`: `H1Norm (B f) ≤ C (1 + R) ‖f‖₂`. The `L²` piece
-  is `bogovskii_L2_bound`. The gradient piece is not. A bound
-  `‖∇u‖₂² ≤ C (‖u‖₂² + ‖div u‖₂²)` is false for a general compactly
-  supported field: a high-frequency divergence-free field makes the left
-  side arbitrarily large while the right side stays fixed. Divergence,
-  smoothness, and support in the ball therefore do not close it.
-  Differentiating the nonsingular formula and integrating by parts in
-  `z` produces a factor `t⁻¹` on `(0,1]`. That factor is not absolutely
-  integrable, so a Schur test on the differentiated kernel does not
-  apply. The integration-by-parts identity
-  `‖∇u‖₂² = ‖div u‖₂² + ‖curl u‖₂²` for compactly supported fields
-  bounds the gradient from below by `‖f‖₂`. It does not bound it from
-  above: the curl of this particular solution is not controlled by
-  `div u = f`. Mathlib v4.12 has Fourier inversion and no Plancherel
-  theorem, and this cutoff operator is not the whole-space Fourier
-  multiplier right inverse of divergence. The missing lemma is an `L²`
-  bound on `coordinateDerivative (Bogovskii ω R f) i j`.
-* This file does not make the M6 pressure term work.
+* `BogovskiiCZ_OPEN`: `H1Norm (B f) ≤ C (1 + R) ‖f‖₂`. This is not a
+  theorem. The `L²` piece is the theorem `bogovskii_L2_bound`, with
+  constant `16 * M * vol(closedBall 0 1)`, where `M` bounds the unit
+  cutoff: `‖B f‖₂ ≤ C R ‖f‖₂`. The gradient piece is not proved.
+  `H1Norm` packages both, so the full bound stays open.
+  A Schur test on `|∇K| ≤ C / |x-y|³` fails: that kernel is not
+  integrable. Differentiating the nonsingular formula and integrating
+  by parts in `z` produces a factor `t⁻¹` on `(0,1]`, which is not
+  absolutely integrable. `div u = f` does not control `‖∇u‖₂`. For a
+  compactly supported field,
+  `‖∇u‖₂² = ‖div u‖₂² + ‖curl u‖₂²`, so the left side is at least
+  `‖f‖₂`, and a high-frequency divergence-free summand makes it
+  arbitrarily larger. This cutoff operator is not the whole-space
+  Fourier multiplier right inverse of divergence, so Plancherel would
+  not finish the gradient bound. Mathlib v4.12 has no Calderón–Zygmund
+  theorem. Closing the gradient estimate means proving, in this file, an
+  `L²` bound on each `coordinateDerivative (Bogovskii ω R f) i j`.
+* This file does not make the M6 pressure term work. The pressure term
+  stays blocked on this open gradient bound.
 -/
 
 import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
@@ -2811,13 +2812,23 @@ lemma bogovskii_L2_bound (omega : BogovskiiCutoff) :
       simpa [sq, mul_comm, mul_left_comm, mul_assoc] using hfinal
     exact le_of_mul_le_mul_left hmul hpos
 
-/-- OPEN. `H¹` bound for the Bogovskii operator. The factor `(1 + R)` is
-the standard scaling: `‖B f‖₂` carries a radius and `‖∇(B f)‖₂` does not.
-`H1Norm` packages both. `bogovskii_L2_bound` is the `L²` piece. The gradient
-piece is not a Schur test on `|∇K| ≤ C/|x-y|³`, and it is not the identity
-`‖∇u‖₂² ≤ C(‖u‖₂² + ‖div u‖₂²)` for an arbitrary compactly supported field.
-That inequality is false for high-frequency divergence-free fields. The
-missing lemma is an `L²` bound on each `coordinateDerivative (Bogovskii ω R f)`. -/
+/-- OPEN. `H¹` bound for the Bogovskii operator. Not a theorem.
+
+The factor `(1 + R)` is the standard scaling: `bogovskii_L2_bound` gives
+`‖B f‖₂ ≤ C R ‖f‖₂` with `C = 16 M vol(closedBall 0 1)`, while
+`‖∇(B f)‖₂` is dimensionless. `H1Norm` packages both, so this proposition
+stays open until the gradient piece is proved.
+
+The gradient piece is not the Schur test `|∇K| ≤ C/|x-y|³`: that majorant
+is not integrable. Integration by parts in the nonsingular formula leaves
+a factor `t⁻¹` on `(0,1]`, which is not absolutely integrable. It is also
+not the identity `‖∇u‖₂² ≤ C(‖u‖₂² + ‖div u‖₂²)`. For a compactly supported
+field, `‖∇u‖₂² = ‖div u‖₂² + ‖curl u‖₂²`, so `div u = f` only lower-bounds
+the gradient by `‖f‖₂`. A high-frequency divergence-free summand makes the
+gradient arbitrarily larger. The cutoff operator is not the whole-space
+Fourier multiplier right inverse of divergence, so Plancherel would not
+close it. Mathlib v4.12 has no Calderón–Zygmund theorem. The missing
+lemma is an `L²` bound on each `coordinateDerivative (Bogovskii ω R f)`. -/
 def BogovskiiCZ_OPEN : Prop :=
   ∀ omega : BogovskiiCutoff,
     ∃ C : ℝ, 0 < C ∧

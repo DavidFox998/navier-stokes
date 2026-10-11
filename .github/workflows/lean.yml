@@ -34,7 +34,7 @@ jobs:
 
       - name: Build new proofs
         run: |
-          lake build Towers.NS.Wall266_Bogovskii Towers.NS.Wall266_Maximal Towers.NS.Wall266_H4L4 Towers.NS.Wall266_TrilinearForm Towers.NS.Wall266_L2Extension
+          lake build Towers.NS.Wall266_Bogovskii Towers.NS.Wall266_Maximal Towers.NS.Wall266_CZDecomp Towers.NS.Wall266_H4L4 Towers.NS.Wall266_TrilinearForm Towers.NS.Wall266_L2Extension
 
       - name: Save Lake packages
         if: always() && steps.lake-cache.outputs.cache-hit != 'true'

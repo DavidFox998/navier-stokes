@@ -21,7 +21,7 @@ This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills.
 - **[rh-p5-bridge-14](https://github.com/DavidFox998/rh-p5-bridge-14)** — Keystone — `q5=226`, `q6=165849`, `cf_bound=82829`, `|S14|=14` — `P5_BSD_RH_closure_CLOSED`
 - **This repo** — `navier-stokes` — `Θ(t)` summable — `Δ>0` gap — Path A ESS + Path B H⁴ 120-cell
 
-## Path A — ESS Backward Uniqueness — 8/8 CLOSED (July 2 2026)
+## Path A — ESS Backward Uniqueness — July 2026 scaffold (superseded — see STATUS above)
 
 - `NS_WeakSol_EnergyLeL2_PROVED` — `.init + .energy_le_L2`
 - `NS_ZeroInit_Pointwise_PROVED` — `L²=0 → pointwise zero`
@@ -34,7 +34,7 @@ This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills.
 
 Dependency chain: `95(7)→98(10)→99(8)→100(8)→101(7)→102(6)→103(5)→104(4)→105(3)→106(2)→107(1)→108(0)`
 
-## Path B / Orion B — H⁴ Balance — 4/4 CLOSED (July 3 2026)
+## Path B / Orion B — H⁴ Balance — July 2026 scaffold (superseded — see STATUS above)
 
 - `NSPhase97aSobolevC2alphaClose` — Morrey `H⁴↪C^{2,α}`: `‖∇u‖_∞≤C_S‖u‖_H4` — #225 `184bedf`
 - `NSPhase97bH4EnergyClose` — Kato-Ponce: `d/dt‖u‖²_Ḣ⁴≤8‖∇u‖_∞‖u‖²` — #224 `becc11e`

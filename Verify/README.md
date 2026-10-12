@@ -1,3 +1,7 @@
+> SUPERSEDED October 2026 — the "Path B 4/4 CLOSED" claim below is superseded by root README STATUS: NS_M6_OPEN and the proved-vs-open ledger at Towers/NS/README.md. Preserved for chronology.
+>
+> ---
+>
 # Verify — Reproducibility & Audit Scripts
 ### Method: RH Route A-C + BSD — 2-file verification
 

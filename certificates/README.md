@@ -1,3 +1,7 @@
+> SUPERSEDED October 2026 — the "CLAY M6 CLOSED 0 deps" claim below is superseded by root README STATUS: NS_M6_OPEN. These certificates cover the Wall266 analytic core only, not Clay M6. See Towers/NS/README.md ledger. Preserved for chronology.
+>
+> ---
+>
 # certificates/ — Phase Certificates — Formal PDF Ledger
 
 **Author:** David J. Fox | ORCID 0009-0008-1290-6105

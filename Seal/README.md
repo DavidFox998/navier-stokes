@@ -1,3 +1,7 @@
+> SUPERSEDED October 2026 — the "FROZEN / NS_M6_PROVED" claim below is superseded by root README STATUS: NS_M6_OPEN and the proved-vs-open ledger at Towers/NS/README.md. Preserved for chronology.
+>
+> ---
+>
 # Seal — Immutable Proof of Closure
 
 **Method:** From RH Route A-C + BSD — after proof closed, freeze hashes.

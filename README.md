@@ -7,23 +7,12 @@
 
 **Author: David J. Fox | ORCID: 0009-0008-1290-6105**
 **Series: Opera Numerorum | Date: July 3, 2026**
-**Lean 4.12.0 / Mathlib v4.12.0 | 0 sorry | 0 axiom keyword | classical trio**
+**Lean 4.12.0 / Mathlib v4.12.0 | 0 sorry | 9 named axioms | classical trio + hypotheses**
 
-## STATUS: NS_M6_PROVED — Clay M6 — Path A + Path B CLOSED
+## STATUS: NS_M6_OPEN — Clay M6 — October 2026 honest position
+The Clay statement is open and tracked as a named `Prop`. What exists is the machine-checked Wall266 analytic core (CI green, zero `sorry`, 9 disclosed axioms) plus a fully tracked open surface. Full proved-vs-open ledger: [Towers/NS/README.md](Towers/NS/README.md). The July "M6 CLOSED / 0 OPEN" claim blocks are superseded by that ledger.
 
-### Axiom check
-
-```lean
-theorem NS_M6_PROVED : NS_M6_OPEN
--- For all v0 in L²(R³), ∃ globally smooth solution of incompressible NS for all t>0
-
-#print axioms NS_M6_PROVED
--- propext, Classical.choice, Quot.sound
-```
-
-0 sorry · 0 OPEN · 0 axiom keyword · 527 runs, last 5 green.
-
-This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills. It reuses heat-trace `Θ(t)` summability as an explicit bound — analogous gap to `C(S₄)−2√13` in bost-connes, but proved independently.
+This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills.
 
 ## How this fits Opera Numerorum
 

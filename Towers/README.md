@@ -1,17 +1,10 @@
-### 3. `Towers/README.md`
-
-```md
 # Towers — All Lean Proofs
 
-Contains two sub-towers:
+Two sub-towers, built by `lake build Towers` (`lean_lib Towers` in `lakefile.lean`):
 
-- `Towers/NS/` — Navier-Stokes Clay Tower — Main proof. 80+ Lean files, Path A 101-108 + Path B 97a-d.
-- `Towers/YM/` — Yang-Mills walls 261,263,264 — Shared with `yang-mills-gap` repo. Uses same H4 vertices as NS 120-cell.
+- [`Towers/NS/`](NS/README.md) — Navier–Stokes formalization. 134 Lean files, 702 theorems/lemmas, zero `sorry`. The live October 2026 core is Wall266 (trilinear estimates, Sobolev embeddings, Bogovskii operator); the Clay statement `NS_M6_OPEN` remains open and tracked.
+- [`Towers/YM/`](YM/README.md) — Yang–Mills auxiliary walls 260/261/263/264. Shared with the `yang-mills-gap` program; independent of the NS Clay statement.
 
-**Dependency:** Towers is declared in `lakefile.lean` as `lean_lib Towers` with 22 roots. Building `lake build Towers` builds everything.
+**For the referee:** the import graph is acyclic (Lean enforces this); every folder README states what is proved vs. what is open, with theorem names and commit SHAs.
 
-**Structure:**
-Towers/
-  NS/ — NS M6 proof (see Towers/NS/README.md for file table)
-  YM/ — YM mass gap auxiliary (see Towers/YM/README.md)
-**For referee:** No cycles allowed. Lean checks acyclicity.
+**Dependencies:** Lean `leanprover/lean4:v4.12.0`, Mathlib `v4.12.0` (pinned repo-wide).

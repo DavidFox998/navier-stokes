@@ -1,3 +1,7 @@
+> SUPERSEDED October 2026 — see root README STATUS: NS_M6_OPEN. The Clay statement is open and tracked as a named Prop. This file is preserved for chronology.
+>
+> ---
+>
 # Navier-Stokes Existence and Smoothness — CLAIM
 **Author:** David Fox
 **ORCID:** 0009-0008-1290-6105

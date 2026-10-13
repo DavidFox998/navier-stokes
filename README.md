@@ -2,7 +2,7 @@
 
 # Navier-Stokes Clay Tower (NS Tower) — Opera Numerorum
 
-> **Opera Numerorum ensemble** — 19 repos · chain `7472f4e5` · [REPOS.md →](https://github.com/DavidFox998/rh-p5-bridge-14/blob/main/REPOS.md)
+> **Opera Numerorum ensemble** — 18 public repos · chain `7472f4e5` · [REPOS.md →](https://github.com/DavidFox998/rh-p5-bridge-14/blob/main/REPOS.md)
 
 
 **Author: David J. Fox | ORCID: 0009-0008-1290-6105**
@@ -13,6 +13,8 @@
 The Clay statement is open and tracked as a named `Prop`. What exists is the machine-checked Wall266 analytic core (CI green, zero `sorry`, 9 disclosed axioms) plus a fully tracked open surface. Full proved-vs-open ledger: [Towers/NS/README.md](Towers/NS/README.md). The July "M6 CLOSED / 0 OPEN" claim blocks are superseded by that ledger.
 
 This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills.
+
+> **Ensemble note (October 2026):** the Opera Numerorum repositories are being structurally reworked with mechanical methods, so their contents are in flux and may state misleading claims until that work lands. Yang–Mills is private during this rework given its size — read access can be arranged on request. Navier–Stokes and Beal are the two repositories held stable for academic review.
 
 ## How this fits Opera Numerorum
 

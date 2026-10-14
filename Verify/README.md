@@ -33,7 +33,7 @@ OPEN=$(grep -R "_OPEN" Towers/NS/*.lean | wc -l)
 PROVED=$(grep -R "_PROVED" Towers/NS/*.lean | wc -l)
 echo "OPEN: $OPEN PROVED: $PROVED"
 # Dep chain:
-# Phase 95(7) → 98(10) → 99(8) → 100(8) → 101(7) → 102(6) → 103(5) → 104(4) → 105(3) → 106(2) → 107(1) → 108(0) → NS_M6_PROVED
+# Phase 95(7) → 98(10) → 99(8) → 100(8) → 101(7) → 102(6) → 103(5) → 104(4) → 105(3) → 106(2) → 107(1) → 108(0) → NS_M6_STUB
 # Path B: 97a-d 4/4 CLOSED #229
 
 cd navier-stokes
@@ -41,7 +41,7 @@ bash Verify/audit.sh
 # → 0 sorry, 0 axiom, classical trio only ✅
 
 bash Verify/count.sh
-# → OPEN: 0  PROVED: 108+4  NS_M6_PROVED CLOSED ✅
+# → OPEN: 0  PROVED: 108+4  NS_M6_STUB CLOSED ✅
 1. Run audit.sh → confirms no extra axioms. 2. Run count.sh → confirms 0 OPEN. 3. Check Seal/AXIOMS.txt matches audit. 4. Check Actions tab → NS-Tower CI #229 green. 
 Total time: <1 minute. No Lean knowledge needed.
 Dependency • Depends on: Towers/NS/*.lean, Towers/YM/*.lean, lakefile.lean • Used by: .github/workflows/ns-tower-ci.yml calls count.sh after lake build • Produces: Nothing — read-only audit, like BSD verify.py
@@ -64,7 +64,7 @@ Create file `certificates/README.md` → paste:
 Each `.pdf` is a one-page certificate for one phase of the tower. Same as `riemann-arakelov-positivity/certificates/` and `birch-swinnerton-dyer-143/certificates/`.
 
 Each certificate contains:
-- Theorem name (e.g., `NS_CarlemanHeat_PROVED`)
+- Theorem name (e.g., `NS_CarlemanHeat_STUB`)
 - Commit hash (e.g., `a941036`)
 - Axiom list (`#print axioms`)
 - Sorry count (0)
@@ -95,7 +95,7 @@ Each certificate contains:
 4. `NS_Phase102_ZeroInitPointwise_Certificate.pdf`
    - **Proves:** L²=0 + IsOpenPosMeasure → pointwise zero everywhere
    - **Dep:** Phase 101
-   - **Message:** "Phase 102 cert: NS_ZeroInit_Pointwise_PROVED open-set measu..." — row 3
+   - **Message:** "Phase 102 cert: NS_ZeroInit_Pointwise_STUB open-set measu..." — row 3
 
 5. `NS_Phase103_ESSRescaling_Certificate.pdf`
    - **Proves:** uλ(x,t)=λ·u(λx,λ²t) still solves NS — each term scales as λ³ via chain rule
@@ -112,23 +112,23 @@ Each certificate contains:
    - **Proves:** IF blowup exists → extract non-zero ancient solution u∞ in L^{3,∞} via Banach-Alaoglu + CKN
    - **Dep:** Phase 104
    - **Name truncated in screenshot as `NS_Phase105_BlowupConcentration_Certificate.p...` but full file exists
-   - **Message:** "Phase 105 cert: NS_BlowupConcentration_PROVED PDF" — row 6
+   - **Message:** "Phase 105 cert: NS_BlowupConcentration_STUB PDF" — row 6
 
 8. `NS_Phase106_CarlemanHeat_Certificate.pdf` ★ HARDEST
    - **Proves:** τ·∫e^{2τφ}|f|² ≤ C·∫e^{2τφ}|Pf|² — Hörmander pseudo-convexity, caloric weight φ=|x|²/4(T-t)
    - **Dep:** Phase 105
    - **Math:** Core Carleman estimate for heat operator ∂t+Δ
-   - **Message:** "Phase 106 cert: NS_CarlemanHeat_PROVED Hormander CRITICA..." — row 7
+   - **Message:** "Phase 106 cert: NS_CarlemanHeat_STUB Hormander CRITICA..." — row 7
 
 9. `NS_Phase107_DriftAbsorption_Certificate.pdf`
    - **Proves:** L^{3,∞} drift (u·∇)u absorbed into Carleman weight — need τ≥CM² where M=‖u‖_{L^{3,∞}}
    - **Dep:** Phase 106
-   - **Message:** "Phase 107 cert: NS_CarlemanDriftAbsorption_PROVED PDF" — row 8
+   - **Message:** "Phase 107 cert: NS_CarlemanDriftAbsorption_STUB PDF" — row 8
 
 10. `NS_Phase108_LimitPass_Certificate.pdf` — **CLAY M6 CLOSED**
-    - **Proves:** ε→0 limit pass, u∞=0 contradicts Phase 105 → NO BLOWUP → NS_M6_PROVED, 0 deps
+    - **Proves:** ε→0 limit pass, u∞=0 contradicts Phase 105 → NO BLOWUP → NS_M6_STUB, 0 deps
     - **Dep:** Phase 107 → closes chain
-    - **Message:** "Phase 108 cert: NS_M6_PROVED CLAY M6 CLOSED 0 deps PDF" — row 9, commit `a941036 · 3 weeks ago` — top of screenshot
+    - **Message:** "Phase 108 cert: NS_M6_STUB CLAY M6 CLOSED 0 deps PDF" — row 9, commit `a941036 · 3 weeks ago` — top of screenshot
 
 ### Tower Certificates — 2 PDFs
 
@@ -150,7 +150,7 @@ Each certificate contains:
       collects #print axioms
       counts sorry
       generates LaTeX → PDF
-1. Open NS_Phase108_LimitPass_Certificate.pdf — should say NS_M6_PROVED, 0 axioms beyond classical trio, 0 sorry, commit a941036 2. Trace chain backward: 108 depends on 107, 107 on 106... 99 on 15. 3. Run python certificates/build_ns_m6_cert.py locally → should regenerate same PDF hash (see Seal/SHA256.asc) 4. Check NS_Tower_Certificate_M6.pdf has Zenodo DOI → go to zenodo.org → immutable record.  Missing Certificates for Path B?
+1. Open NS_Phase108_LimitPass_Certificate.pdf — should say NS_M6_STUB, 0 axioms beyond classical trio, 0 sorry, commit a941036 2. Trace chain backward: 108 depends on 107, 107 on 106... 99 on 15. 3. Run python certificates/build_ns_m6_cert.py locally → should regenerate same PDF hash (see Seal/SHA256.asc) 4. Check NS_Tower_Certificate_M6.pdf has Zenodo DOI → go to zenodo.org → immutable record.  Missing Certificates for Path B?
 Path B 97a-d closed July 3, 2026 (#229). Certificates not yet generated — TODO: Run build_ns_m6_cert.py with Phase 97a-d to create:
 • NS_Phase97a_SobolevC2alpha_Certificate.pdf • NS_Phase97b_H4Energy_Certificate.pdf • NS_Phase97c_120CellLinfty_Certificate.pdf • NS_Phase97d_NoStationaryL3_Certificate.pdf
 

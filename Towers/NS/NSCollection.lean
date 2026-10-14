@@ -310,10 +310,10 @@ def ns_kp_pathway : List String := [
 -/
 
 /-- **Re-export (Phase 12A, formal closure)**: `NS_KPCascadeControl_OPEN s` is proved
-    by the trivial zero-shellEnergy witness.  See `NS_KPCascadeControl_CLOSED` in
+    by the trivial zero-shellEnergy witness.  See `NS_KPCascadeControl_STUB` in
     `NSLittlewoodPaley.lean` for the full honesty warning.  Classical trio, 0 sorry. -/
 theorem col_kp_cascade_formal_closure (s : ℝ) : NS_KPCascadeControl_OPEN s :=
-  NS_KPCascadeControl_CLOSED s
+  NS_KPCascadeControl_STUB s
 
 /-- **Re-export (Phase 12A) PROVED**: Shell energy geometric bound → summable.
     For nonneg `f : ℕ → ℝ` with `f n ≤ C · rⁿ` and `0 ≤ r < 1`, f is summable.

@@ -2,7 +2,7 @@
 ================================================================
 Towers / NS / NSPhase102ZeroInitPointwise  --  Phase 102
 
-PATH A: NS_ZeroInit_Pointwise_PROVED  (0 sorry, 3-step proof)
+PATH A: NS_ZeroInit_Pointwise_STUB  (0 sorry, 3-step proof)
 Author: David Fox  |  Date: July 2, 2026
 Series: Opera Numerorum (internal: Battle Plan v1.6)
 
@@ -94,9 +94,9 @@ theorem NS_IntegralZeroImpliesAEZero
   (MeasureTheory.integral_eq_zero_iff_of_nonneg_ae
     (Filter.eventually_of_forall hnn) hfm).mp hint
 
-/-! ## §I. NS_ZeroInit_Pointwise_PROVED — 0 sorry, 3-step proof -/
+/-! ## §I. NS_ZeroInit_Pointwise_STUB — 0 sorry, 3-step proof -/
 
-/-- **NS_ZeroInit_Pointwise_PROVED** (0 sorry, classical trio).
+/-- **NS_ZeroInit_Pointwise_STUB** (0 sorry, classical trio).
 
     THEOREM:
       If v t : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3) is continuous
@@ -120,9 +120,9 @@ theorem NS_IntegralZeroImpliesAEZero
       the ESS blowup framework, the hypothetical blowup solution is
       classical (C^∞) on (0, T*). Absorbed into NS_ESSRescaleNS_OPEN.
 
-    #print axioms NS_ZeroInit_Pointwise_PROVED
+    #print axioms NS_ZeroInit_Pointwise_STUB
       → {propext, Classical.choice, Quot.sound} -/
-theorem NS_ZeroInit_Pointwise_PROVED
+theorem NS_ZeroInit_Pointwise_STUB
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (t : ℝ) (ht : 0 < t)
     (hcont : Continuous (v t))
@@ -167,21 +167,21 @@ theorem NS_ZeroInit_Pointwise_PROVED
     nlinarith [sq_nonneg ‖v t x‖]
   exact norm_eq_zero.mp hx_norm
 
-/-! ## §II. NS_ZeroInitToZero_PROVED — closes from L2Zero + Pointwise -/
+/-! ## §II. NS_ZeroInitToZero_STUB — closes from L2Zero + Pointwise -/
 
-/-- **NS_ZeroInitToZero_PROVED** (0 sorry, classical trio).
+/-- **NS_ZeroInitToZero_STUB** (0 sorry, classical trio).
 
     THEOREM: If NS_WeakSolution v v₀ and v₀ = 0 a.e. and v t is continuous
     for all t > 0, then v t x = 0 for all x and all t ≥ 0.
 
     PROOF:
       Phase 101: NS_ZeroInit_L2Zero_PROVED gives ∫‖v t‖² = 0 for t ≥ 0.
-      Phase 102: NS_ZeroInit_Pointwise_PROVED gives v t x = 0 for t > 0.
+      Phase 102: NS_ZeroInit_Pointwise_STUB gives v t x = 0 for t > 0.
       t = 0: v 0 = v₀ = 0 a.e. (by .init), using v₀ = 0 a.e.
 
     Note: The continuity hypothesis for t > 0 is absorbed into the
     ESS framework (smooth solutions on (0, T*)). -/
-theorem NS_ZeroInitToZero_PROVED
+theorem NS_ZeroInitToZero_STUB
     (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (hWeak : NS_WeakSolution v v₀)
@@ -209,14 +209,14 @@ theorem NS_ZeroInitToZero_PROVED
     -- v 0 x = v₀ x = 0 a.e.; need pointwise — use L2Zero argument
     -- ∫‖v 0 y‖^2 = 0 was proved above; use pointwise via norm argument
     -- v 0 = v₀, v₀ = 0 a.e. → v 0 x = v₀ x = 0 in L² sense
-    -- For pointwise we need NS_ZeroInit_Pointwise_PROVED with continuity of v 0
+    -- For pointwise we need NS_ZeroInit_Pointwise_STUB with continuity of v 0
     -- At t = 0 we use NS_WeakSolInitCond: v 0 x = v₀ x, and v₀ = 0 a.e.
     -- Formally: this requires continuity of v 0 or a.e. argument
     -- We record as conditional on v 0 continuous (NS_ESSRescale provides this)
     simp [congr_fun hWeak.init x]  -- reduces to v₀ x = 0 (a.e. — needs extra step)
   · -- t > 0: use Pointwise_PROVED
     have ht_pos : 0 < t := lt_of_le_of_ne ht (Ne.symm ht0)
-    exact NS_ZeroInit_Pointwise_PROVED v t ht_pos (hcont t ht_pos) hEt x
+    exact NS_ZeroInit_Pointwise_STUB v t ht_pos (hcont t ht_pos) hEt x
 
 /-! ## §III. NS_M6_CLOSED_v102 — 6 deps -/
 
@@ -267,7 +267,7 @@ Opera Numerorum — David Fox (ORCID: 0009-0008-1290-6105)
 ================================================================
 
 PROVED THIS PHASE (0 sorry, classical trio):
-  NS_ZeroInit_Pointwise_PROVED
+  NS_ZeroInit_Pointwise_STUB
     Hypothesis: Continuous (v t)  [from ESS smooth framework]
     Proof: 3 steps
       1. integral_eq_zero_iff_of_nonneg_ae -> ae zero
@@ -276,7 +276,7 @@ PROVED THIS PHASE (0 sorry, classical trio):
     API: integral_eq_zero_iff_of_nonneg_ae, IsOpenPosMeasure,
          measure_mono_null, ae_iff, norm_eq_zero
 
-  NS_ZeroInitToZero_PROVED
+  NS_ZeroInitToZero_STUB
     Closes: energy + pointwise -> zero solution for all t >= 0
 
 MASTER: NS_M6_CLOSED_v102 — 6 deps (7 -> 6, Pointwise + ZeroInitToZero proved)

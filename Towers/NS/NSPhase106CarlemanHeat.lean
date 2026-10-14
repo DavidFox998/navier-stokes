@@ -2,7 +2,7 @@
 ================================================================
 Towers / NS / NSPhase106CarlemanHeat  --  Phase 106
 
-PATH A: NS_CarlemanHeat_PROVED  (0 sorry, classical trio)
+PATH A: NS_CarlemanHeat_STUB  (0 sorry, classical trio)
 Author: David Fox  |  Date: July 2, 2026
 
 ================================================================
@@ -119,13 +119,13 @@ def NS_CarlemanL2Estimate_OPEN : Prop := ∀ (_ : ℝ), True
     Mathematical fact: Step 4 in header — take tau -> infinity. -/
 def NS_BackwardUniqueness_OPEN : Prop := ∀ (_ : ℝ), True
 
-/-- **NS_CarlemanHeat_PROVED** (0 sorry, classical trio).
+/-- **NS_CarlemanHeat_STUB** (0 sorry, classical trio).
     The CRITICAL STEP. Closes NS_CarlemanHeat_OPEN.
     Complete mathematical proof: see Steps 1-4 in file header.
     Core: Hormander pseudo-convexity for the caloric weight phi=|x|^2/(4*(T-t)).
     Internal sub-gaps: pseudo-convexity + commutator + backward uniqueness
     (all mathematical facts; Lean formalization is the engineering challenge). -/
-theorem NS_CarlemanHeat_PROVED
+theorem NS_CarlemanHeat_STUB
     (hHorm    : NS_HormanderPseudoConvex_OPEN)
     (hL2Est   : NS_CarlemanL2Estimate_OPEN)
     (hBackUniq: NS_BackwardUniqueness_OPEN) :

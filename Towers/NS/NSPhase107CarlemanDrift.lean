@@ -2,7 +2,7 @@
 ================================================================
 Towers / NS / NSPhase107CarlemanDrift  --  Phase 107
 
-PATH A: NS_CarlemanDriftAbsorption_PROVED  (0 sorry, classical trio)
+PATH A: NS_CarlemanDriftAbsorption_STUB  (0 sorry, classical trio)
 Author: David Fox  |  Date: July 2, 2026
 
 ================================================================
@@ -88,13 +88,13 @@ def NS_LorentzHolder_OPEN : Prop := ∀ (_ : ℝ), True
     Mathematical fact: elliptic regularity interpolation. -/
 def NS_RellichInterp_OPEN : Prop := ∀ (_ : ℝ), True
 
-/-- **NS_CarlemanDriftAbsorption_PROVED** (0 sorry, classical trio).
+/-- **NS_CarlemanDriftAbsorption_STUB** (0 sorry, classical trio).
     Closes NS_CarlemanDriftAbsorption_OPEN.
     The L^{3,inf} drift from (u.nabla)u is absorbed into the Carleman
     weight (Phase 106) when tau >= C*M^2 (concentration hypothesis).
     Complete proof in Steps 1-4 of file header.
     Internal: Lorentz-Holder + Rellich interpolation (standard FA). -/
-theorem NS_CarlemanDriftAbsorption_PROVED
+theorem NS_CarlemanDriftAbsorption_STUB
     (hHolder  : NS_LorentzHolder_OPEN)
     (hRellich : NS_RellichInterp_OPEN) :
     ∀ (_ : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)), True := by

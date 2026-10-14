@@ -214,7 +214,7 @@ theorem NS_Carleman_SmoothApprox_PROVED
 
 /-- Legacy smoothness pass-through: this returns the supplied smoothness
 hypothesis. Its statement constructs no time-dependent mollified family. -/
-theorem NS_MollifiedFamily_Smooth_PROVED
+theorem NS_MollifiedFamily_Smooth_PASSTHROUGH
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (ε : ℝ) (hε : 0 < ε)
     (hv : ContDiff ℝ ⊤ (Function.uncurry v))

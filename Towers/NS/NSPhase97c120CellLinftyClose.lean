@@ -67,7 +67,7 @@ theorem avg120_gradient_reduction (u : Field) (hSym : Is120CellSymmetric u) :
 theorem NS_H4_120Cell_linearized
     (u : NS_Solution H4) (hSym : Is120CellSymmetric u) :
     deriv (fun t => ‖u t‖_H4) ≤ C_120 * ‖u t‖_H4 := by
-  have h_energy := NS_H4_EnergyIneq_PROVED u divFree
+  have h_energy := NS_H4_EnergyIneq_STUB u divFree
   have h_embed : ‖∇u‖_L∞ ≤ C_S * ‖u‖_H4 := NS_H4_Sobolev_C2alpha_PROVED
   have h_reduce := avg120_gradient_reduction u hSym
   -- Under symmetry, effective ‖∇u‖_L∞ replaced by ‖∇Avg120 u‖_L∞ ≤ (1/10)‖∇u‖_L∞
@@ -86,7 +86,7 @@ theorem NS_H4_120Cell_linearized
 
 /-! ## §III. Gronwall → L∞ time integral bound -/
 
-theorem NS_H4_120Cell_Linfty_PROVED
+theorem NS_H4_120Cell_Linfty_STUB
     (u₀ : H4_initial) (hSym₀ : Is120CellSymmetric u₀)
     (T : ℝ) (hT : 0 < T) :
     ∃ C₀ ≤ 10, ∫ t in 0..T, ‖∇ (u t)‖_L∞ ≤ C₀ * ‖u₀‖_H4 := by
@@ -121,10 +121,10 @@ theorem NS_H4_120Cell_Linfty_PROVED
             exact icosahedral_iteration_bound T hT
 
 /-- Gap 3 closed: replaces OPEN def -/
-theorem Opera_v3_120Cell_Linfty_CLOSED : Opera_v3_120Cell_Linfty_OPEN := by
-  exact NS_H4_120Cell_Linfty_PROVED
+theorem Opera_v3_120Cell_Linfty_STUB : Opera_v3_120Cell_Linfty_OPEN := by
+  exact NS_H4_120Cell_Linfty_STUB
 
-theorem phase97c_ledger : Opera_v3_120Cell_Linfty_CLOSED := Opera_v3_120Cell_Linfty_CLOSED
+theorem phase97c_ledger : Opera_v3_120Cell_Linfty_STUB := Opera_v3_120Cell_Linfty_STUB
 
 end Phase97c120CellLinftyClose
 end NS

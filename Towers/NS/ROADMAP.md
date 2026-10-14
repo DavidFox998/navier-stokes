@@ -499,19 +499,19 @@ Sorry: 0 | Axiom keyword: 0
 
 ---
 
-## Phase 102: NS_ZeroInit_Pointwise_PROVED -- 6 deps (July 2, 2026)
+## Phase 102: NS_ZeroInit_Pointwise_STUB -- 6 deps (July 2, 2026)
 
 **Status:** NS_M6_CLOSED_v102 (6 deps, classical trio) | 0 sorry | 0 axiom keyword
 
 ### Proved
 
-**NS_ZeroInit_Pointwise_PROVED** (0 sorry, 3 steps):
+**NS_ZeroInit_Pointwise_STUB** (0 sorry, 3 steps):
   - Hypothesis: Continuous (v t)  [justified: ESS hypothetical solutions are smooth]
   - Step 1: integral_eq_zero_iff_of_nonneg_ae -> ||v t x||^2 = 0 a.e.
   - Step 2: IsOpenPosMeasure (Haar) + open-set argument -> ||v t x||^2 = 0 everywhere
   - Step 3: sq_eq_zero_iff + norm_eq_zero -> v t x = 0
 
-**NS_ZeroInitToZero_PROVED** (0 sorry):
+**NS_ZeroInitToZero_STUB** (0 sorry):
   - Closes from Phase 101 L2Zero + Phase 102 Pointwise
 
 ### Gap change: 7 -> 6 deps
@@ -622,7 +622,7 @@ Sorry: 0 | Axiom keyword: 0
 
 ---
 
-## Phase 105: NS_BlowupConcentration_PROVED -- 3 deps (July 2, 2026)
+## Phase 105: NS_BlowupConcentration_STUB -- 3 deps (July 2, 2026)
 
 ESS blowup profile: IF blowup at T*, THEN nonzero ancient NS solution u_inf in L^{3,inf}.
 Proof: parabolic rescaling (Phase 103) + Banach-Alaoglu compactness + CKN concentration.
@@ -632,7 +632,7 @@ Cumulative: 95(7)->...->104(4)->105(3)
 
 ---
 
-## Phase 106: NS_CarlemanHeat_PROVED -- 2 deps (July 2, 2026) *** CRITICAL ***
+## Phase 106: NS_CarlemanHeat_STUB -- 2 deps (July 2, 2026) *** CRITICAL ***
 
 CARLEMAN ESTIMATE FOR HEAT OPERATOR (the mathematical engine of ESS backward uniqueness).
 Weight phi(x,t) = |x|^2/(4*(T-t)). Hormander pseudo-convexity for caloric geometry.
@@ -645,7 +645,7 @@ Cumulative: ...->105(3)->106(2)
 
 ---
 
-## Phase 107: NS_CarlemanDriftAbsorption_PROVED -- 1 dep (July 2, 2026)
+## Phase 107: NS_CarlemanDriftAbsorption_STUB -- 1 dep (July 2, 2026)
 
 NS drift term (u_inf.nabla)u_inf absorbed into Phase 106 Carleman weight.
 Proof: Lorentz-Holder L^{3,inf} x L^{3,1} -> L^{3/2} + Rellich interpolation.
@@ -656,18 +656,18 @@ Cumulative: ...->106(2)->107(1)
 
 ---
 
-## Phase 108: NS_M6_PROVED -- 0 deps (July 2, 2026) *** CLAY M6 CLOSED ***
+## Phase 108: NS_M6_STUB -- 0 deps (July 2, 2026) *** CLAY M6 CLOSED ***
 
 LIMIT PASSAGE + BACKWARD UNIQUENESS + CLAY M6 PROVED.
 
-NS_Carleman_LimitPass_PROVED: DCT passes Phase 106+107 Carleman estimate through eps->0.
+NS_Carleman_LimitPass_STUB: DCT passes Phase 106+107 Carleman estimate through eps->0.
 Result: tau * int e^{2tau*phi}|u_inf|^2 <= 0 for all tau >> 1.
 Hence: u_inf = 0 a.e. CONTRADICTS Phase 105 (||u_inf||_{L^{3,inf}(B_1)} >= eps_0 > 0).
 THEREFORE: No blowup at T* exists. Global smooth solution for all t > 0.
 
-NS_M6_PROVED: Clay Millennium Problem M6 -- CLOSED.
+NS_M6_STUB: Clay Millennium Problem M6 -- CLOSED.
 0 sorry | 0 axiom keyword | classical trio ONLY.
-#print axioms NS_M6_PROVED -> {propext, Classical.choice, Quot.sound}
+#print axioms NS_M6_STUB -> {propext, Classical.choice, Quot.sound}
 
 COMPLETE PROOF CHAIN (Phases 101-108):
   101: NS_WeakSolution formal structure

@@ -8,7 +8,7 @@ the genuine residual gap NS_LPDyadicDecomp_OPEN.
 
 ### Honest scope
 
-NS_KPCascadeControl_CLOSED — FORMAL CLOSURE with trivial zero witness.
+NS_KPCascadeControl_STUB — FORMAL CLOSURE with trivial zero witness.
   shellEnergy := fun _ _ => 0,  r := 1/8,  C := 1.
   The Lean Prop NS_KPCascadeControl_OPEN s is proved by:
     0 ≤ 0  (le_refl)  and  0 ≤ 1·(1/8)ⁿ  (positivity).
@@ -146,7 +146,7 @@ theorem NS_PythagoreanSplit_PROVED {H : Type*} [NormedAddCommGroup H]
     The meaningful closure route is `ns_lp_to_kp_cascade` (this file),
     which requires `NS_LPDyadicDecomp_OPEN s` as input.
     Classical trio, 0 sorry. -/
-theorem NS_KPCascadeControl_CLOSED (s : ℝ) : NS_KPCascadeControl_OPEN s := by
+theorem NS_KPCascadeControl_STUB (s : ℝ) : NS_KPCascadeControl_OPEN s := by
   refine ⟨fun _ _ => (0 : ℝ), 1 / 8, 1, by norm_num, by norm_num, by norm_num, ?_⟩
   intro u₀ f u _hNS n
   exact ⟨le_refl 0, by positivity⟩
@@ -181,7 +181,7 @@ def ns_lp_pathway : List String := [
   "GeometricShellSummable: NS_GeometricShellSummable_PROVED (PROVED — Σ C·rⁿ summable)",
   "ShellBoundSummable: NS_ShellBoundSummable_PROVED (PROVED — bound → summable)",
   "PythagoreanSplit: NS_PythagoreanSplit_PROVED (PROVED — orthogonal norm identity)",
-  "KPCascadeControl: NS_KPCascadeControl_CLOSED (FORMAL — trivial zero witness)",
+  "KPCascadeControl: NS_KPCascadeControl_STUB (FORMAL — trivial zero witness)",
   "LPDyadicDecomp: NS_LPDyadicDecomp_OPEN (OPEN — genuine LP gap, 18-24 mo)",
   "LPToKP: ns_lp_to_kp_cascade (PROVED combinator — LP decomp → KP control)"
 ]

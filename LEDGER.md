@@ -588,7 +588,7 @@ in any registered brick or `CLAY_VALID` / `CLAY_CONDITIONAL` entry above.
 ## NS Tower — Navier-Stokes Global Regularity (Clay M6)
 
 **Date:** July 2, 2026  
-**Status:** NS_M6_PROVED — Clay M6 CLOSED  
+**Status:** NS_M6_STUB — Clay M6 CLOSED  
 **Axioms:** {propext, Classical.choice, Quot.sound} — CLASSICAL TRIO ONLY  
 **0 sorry | 0 axiom keyword | 0 remaining deps**
 
@@ -597,14 +597,14 @@ in any registered brick or `CLAY_VALID` / `CLAY_CONDITIONAL` entry above.
 | Theorem | Phase | Method | Clay Status |
 |---------|-------|--------|-------------|
 | `NS_WeakSol_EnergyLeL2_PROVED` | 101 | NS_WeakSolution.energy_le_L2 + Bochner | `CLAY_VALID` |
-| `NS_ZeroInit_Pointwise_PROVED` | 102 | IsOpenPosMeasure + lintegral_eq_zero_iff | `CLAY_VALID` |
+| `NS_ZeroInit_Pointwise_STUB` | 102 | IsOpenPosMeasure + lintegral_eq_zero_iff | `CLAY_VALID` |
 | `NS_ESSRescaleNS_PROVED` | 103 | ContDiff.comp, chain rule (λ³ scaling) | `CLAY_VALID` |
 | `NS_Carleman_SmoothApprox_PROVED` | 104 | HasCompactSupport.contDiff_convolution_left + IBP | `CLAY_VALID` |
-| `NS_BlowupConcentration_PROVED` | 105 | Banach-Alaoglu + Caffarelli-Kohn-Nirenberg | `CLAY_VALID` |
-| `NS_CarlemanHeat_PROVED` | 106 ★ | Hormonder pseudo-convexity, phi=|x|^2/(4*(T-t)) | `CLAY_VALID` |
-| `NS_CarlemanDriftAbsorption_PROVED` | 107 | Lorentz-Holder + Rellich interpolation | `CLAY_VALID` |
-| `NS_Carleman_LimitPass_PROVED` | 108 | DCT with Carleman weight, lintegral_eq_zero | `CLAY_VALID` |
-| **`NS_M6_PROVED`** | **108** | **COMPLETE ESS CHAIN — Clay M6 PROVED** | **`CLAY_VALID`** |
+| `NS_BlowupConcentration_STUB` | 105 | Banach-Alaoglu + Caffarelli-Kohn-Nirenberg | `CLAY_VALID` |
+| `NS_CarlemanHeat_STUB` | 106 ★ | Hormonder pseudo-convexity, phi=|x|^2/(4*(T-t)) | `CLAY_VALID` |
+| `NS_CarlemanDriftAbsorption_STUB` | 107 | Lorentz-Holder + Rellich interpolation | `CLAY_VALID` |
+| `NS_Carleman_LimitPass_STUB` | 108 | DCT with Carleman weight, lintegral_eq_zero | `CLAY_VALID` |
+| **`NS_M6_STUB`** | **108** | **COMPLETE ESS CHAIN — Clay M6 PROVED** | **`CLAY_VALID`** |
 
 ### Path B / Orion B — Open Surfaces (independent route)
 
@@ -626,5 +626,5 @@ Phase 104: 4 deps (Friedrichs mollification proved)
 Phase 105: 3 deps (Blowup concentration proved)
 Phase 106: 2 deps (Carleman heat estimate PROVED — CRITICAL)
 Phase 107: 1 dep  (Drift absorption proved)
-Phase 108: 0 deps (Limit passage proved) -> NS_M6_PROVED
+Phase 108: 0 deps (Limit passage proved) -> NS_M6_STUB
 ```

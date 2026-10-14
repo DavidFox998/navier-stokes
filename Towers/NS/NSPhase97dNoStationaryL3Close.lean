@@ -53,7 +53,7 @@ theorem NS_L3_annulus_vanishes
     _ ≤ ∫_{|x|≥R} |u|³ := setIntegral_mono h_sub
     _ →0 := this
 
-theorem NS_no_stationary_L3_PROVED
+theorem NS_no_stationary_L3_STUB
     (u : StationaryNS) (hu : u ∈ L3) : u = 0 := by
   have h_press := NS_stationary_pressure_L32 u hu
   have h_energy_R : ∀ R, ∫ φ_R*|∇u|² ≤ C*(‖u‖_{L³(A_R)}³ + ‖p‖_{L32(A_R)}*‖u‖_{L³(A_R)}) := by
@@ -80,10 +80,10 @@ theorem NS_no_stationary_L3_PROVED
     linarith [hu]
   rw [hc, this]; simp
 
-theorem NS_no_stationary_L3_CLOSED : NS_no_stationary_L3_OPEN := by
-  exact NS_no_stationary_L3_PROVED
+theorem NS_no_stationary_L3_CLOSED_STUB : NS_no_stationary_L3_OPEN := by
+  exact NS_no_stationary_L3_STUB
 
-theorem phase97d_ledger : NS_no_stationary_L3_CLOSED := NS_no_stationary_L3_CLOSED
+theorem phase97d_ledger : NS_no_stationary_L3_CLOSED_STUB := NS_no_stationary_L3_CLOSED_STUB
 
 end Phase97dNoStationaryL3Close
 end NS

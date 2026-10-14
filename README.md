@@ -26,13 +26,13 @@ This is a distinct Clay Millennium Problem from RH, BSD, Yang-Mills.
 ## Path A — ESS Backward Uniqueness — July 2026 scaffold (superseded — see STATUS above)
 
 - `NS_WeakSol_EnergyLeL2_PROVED` — `.init + .energy_le_L2`
-- `NS_ZeroInit_Pointwise_PROVED` — `L²=0 → pointwise zero`
+- `NS_ZeroInit_Pointwise_STUB` — `L²=0 → pointwise zero`
 - `NS_ESSRescaleNS_PROVED` — `uλ=λ·u(λx,λ²t)` solves NS
 - `NS_Carleman_SmoothApprox_PROVED` — Friedrichs mollification
-- `NS_BlowupConcentration_PROVED` — blowup → ancient `u_∞` in `L^{3,∞}`
-- `NS_CarlemanHeat_PROVED` — `τ∫e^{2τφ}|f|²≤C∫e^{2τφ}|Pf|²`
-- `NS_CarlemanDriftAbsorption_PROVED` — `L^{3,∞}` drift absorbed `τ≥CM²`
-- `NS_Carleman_LimitPass_PROVED` + `NS_M6_PROVED` — `u_∞=0` ⊥ blowup → **NO BLOWUP**
+- `NS_BlowupConcentration_STUB` — blowup → ancient `u_∞` in `L^{3,∞}`
+- `NS_CarlemanHeat_STUB` — `τ∫e^{2τφ}|f|²≤C∫e^{2τφ}|Pf|²`
+- `NS_CarlemanDriftAbsorption_STUB` — `L^{3,∞}` drift absorbed `τ≥CM²`
+- `NS_Carleman_LimitPass_STUB` + `NS_M6_STUB` — `u_∞=0` ⊥ blowup → **NO BLOWUP**
 
 Dependency chain: `95(7)→98(10)→99(8)→100(8)→101(7)→102(6)→103(5)→104(4)→105(3)→106(2)→107(1)→108(0)`
 

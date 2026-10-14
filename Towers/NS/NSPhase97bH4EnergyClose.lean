@@ -2,7 +2,7 @@
 
 Towers / NS / NSPhase97bH4EnergyClose -- Phase 97b
 
-CLOSE GAP 2: NS_H4_EnergyIneq_OPEN → NS_H4_EnergyIneq_PROVED
+CLOSE GAP 2: NS_H4_EnergyIneq_OPEN → NS_H4_EnergyIneq_STUB
 Author: David Fox | Date: July 3, 2026 | ORCID: 0009-0008-1290-6105
 
 Statement: Kato-Ponce H⁴ energy inequality for NS
@@ -90,7 +90,7 @@ theorem NS_H4_viscous_dissipation
 
 /-! ## §IV. Main Energy Inequality -/
 
-/-- NS_H4_EnergyIneq_PROVED: d/dt ‖u‖²_{Ḣ⁴} ≤ 8‖∇u‖_{L∞}‖u‖²_{Ḣ⁴}
+/-- NS_H4_EnergyIneq_STUB: d/dt ‖u‖²_{Ḣ⁴} ≤ 8‖∇u‖_{L∞}‖u‖²_{Ḣ⁴}
 
     Proof chain:
       (d/dt) ½‖J⁴u‖²_L2 = ⟨J⁴u, J⁴u_t⟩
@@ -101,7 +101,7 @@ theorem NS_H4_viscous_dissipation
       Third 0 pressure cancel
       Fourth ≤0 viscous
       Hence ≤4‖∇u‖_L∞‖u‖²_H4, times 2 for ‖·‖² → 8‖∇u‖_L∞‖u‖² -/
-theorem NS_H4_EnergyIneq_PROVED
+theorem NS_H4_EnergyIneq_STUB
     (u : NS_Solution H4) (hu_div : divergenceFree u) :
     ∃ C ≤ 8, deriv (fun t => ‖u t‖_H4 ^ 2) ≤ C * ‖∇ (u t)‖_L∞ * ‖u t‖_H4 ^ 2 := by
   refine ⟨8, by norm_num,?_⟩
@@ -133,10 +133,10 @@ theorem NS_H4_EnergyIneq_PROVED
     _ = 8 * ‖∇u‖_L∞ * ‖u‖_H4 ^ 2 := by ring
 
 /-- Gap 2 closed: replaces OPEN def -/
-theorem NS_H4_EnergyIneq_CLOSED : NS_H4_EnergyIneq_OPEN := by
-  exact NS_H4_EnergyIneq_PROVED
+theorem NS_H4_EnergyIneq_CLOSED_STUB : NS_H4_EnergyIneq_OPEN := by
+  exact NS_H4_EnergyIneq_STUB
 
-theorem phase97b_ledger : NS_H4_EnergyIneq_PROVED := NS_H4_EnergyIneq_PROVED
+theorem phase97b_ledger : NS_H4_EnergyIneq_STUB := NS_H4_EnergyIneq_STUB
 
 end Phase97bH4EnergyClose
 end NS

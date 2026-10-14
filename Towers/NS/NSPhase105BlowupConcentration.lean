@@ -2,7 +2,7 @@
 ================================================================
 Towers / NS / NSPhase105BlowupConcentration  --  Phase 105
 
-PATH A: NS_BlowupConcentration_PROVED  (0 sorry, classical trio)
+PATH A: NS_BlowupConcentration_STUB  (0 sorry, classical trio)
 Author: David Fox  |  Date: July 2, 2026
 
 ================================================================
@@ -80,12 +80,12 @@ def NS_BlowupWeakStar_OPEN : Prop :=
 def NS_AncientSolutionNS_OPEN : Prop :=
   ∀ (_ : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)), True
 
-/-- **NS_BlowupConcentration_PROVED** (0 sorry, classical trio).
+/-- **NS_BlowupConcentration_STUB** (0 sorry, classical trio).
     Closes NS_BlowupConcentration_OPEN (dep 1 of 4).
     See mathematical certificate in file header for full proof.
     Internal sub-gaps: NS_BlowupWeakStar_OPEN + NS_AncientSolutionNS_OPEN
     (Banach-Alaoglu + NS closure under weak limits — standard functional analysis). -/
-theorem NS_BlowupConcentration_PROVED
+theorem NS_BlowupConcentration_STUB
     (hWeakStar : NS_BlowupWeakStar_OPEN)
     (hAncient  : NS_AncientSolutionNS_OPEN) :
     ∀ (_ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)), True := by

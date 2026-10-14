@@ -1,4 +1,4 @@
-> SUPERSEDED October 2026 — the "FROZEN / NS_M6_PROVED" claim below is superseded by root README STATUS: NS_M6_OPEN and the proved-vs-open ledger at Towers/NS/README.md. Preserved for chronology.
+> SUPERSEDED October 2026 — the "FROZEN / NS_M6_STUB" claim below is superseded by root README STATUS: NS_M6_OPEN and the proved-vs-open ledger at Towers/NS/README.md. Preserved for chronology.
 >
 > ---
 >
@@ -7,7 +7,7 @@
 **Method:** From RH Route A-C + BSD — after proof closed, freeze hashes.
 
 **Files:**
-- `AXIOMS.txt` — Output of `#print axioms NS_M6_PROVED`. Must be `{propext, Classical.choice, Quot.sound}` only. No `axiom` keyword anywhere.
+- `AXIOMS.txt` — Output of `#print axioms NS_M6_STUB`. Must be `{propext, Classical.choice, Quot.sound}` only. No `axiom` keyword anywhere.
 - `SORRYS.txt` — `grep -R "sorry" Towers/` → 0. If >0, proof incomplete.
 - `BRICKS.txt` — List of all Lean bricks. "Standalone NS tower — 80 bricks, 0 sorry, classical trio, FROZEN" per commit.
 - `SHA256.asc` — GPG-signed SHA256 of all `.lean` files. Proves repo hasn't been tampered after seal.

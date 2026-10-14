@@ -50,10 +50,17 @@ namespace StokesAdjoint
 
 variable {s : ℝ}
 
+-- `Hdiv_free s` is `↥(divFreeSubmodule s)`, a submodule of `↥(Lp Val 2 (mu s))`.
+-- Instance search does not unfold that `def`, so the carrier coercion is recorded here.
+noncomputable instance instCoeHdivLp (s : ℝ) :
+    Coe (Hdiv_free s) (↥(Lp Val 2 (mu s))) where
+  coe := Submodule.subtype (divFreeSubmodule s)
+
 /-- The inner product on `Hdiv_free s = ↥(divFreeSubmodule s)` is the
     restriction of the ambient `Lp Val 2 (mu s)` inner product. For any
     submodule `K` of a Hilbert space `H`, the subtype inner product is
     defined as `inner x y := inner (x : H) (y : H)` (definitional). -/
+
 theorem inner_Hdiv_eq (x y : Hdiv_free s) :
     @inner ℂ (Hdiv_free s) _ x y =
     @inner ℂ (Lp Val 2 (mu s)) _ (x : Lp Val 2 (mu s)) (y : Lp Val 2 (mu s)) :=

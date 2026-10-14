@@ -155,16 +155,16 @@ def NS_M6_OPEN : Prop :=
       solves NS with pressure ns_rescale_pressure lambda p.
       The rescaling factor is lambda^3 on each NS term. -/
 noncomputable def ns_rescale
-    (λ : ℝ)
+    (lam : ℝ)
     (u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)) :
     ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3) :=
-  fun t x => λ • u (λ ^ 2 * t) (λ • x)
+  fun t x => lam • u (lam ^ 2 * t) (lam • x)
 
 noncomputable def ns_rescale_pressure
-    (λ : ℝ)
+    (lam : ℝ)
     (p : ℝ → EuclideanSpace ℝ (Fin 3) → ℝ) :
     ℝ → EuclideanSpace ℝ (Fin 3) → ℝ :=
-  fun t x => λ ^ 2 * p (λ ^ 2 * t) (λ • x)
+  fun t x => lam ^ 2 * p (lam ^ 2 * t) (lam • x)
 
 /-! ## §II. Smoothness of rescaled solution (0 sorry, chain rule) -/
 
@@ -173,9 +173,9 @@ noncomputable def ns_rescale_pressure
     This is Step 0 of the ESS argument (well-definedness). -/
 theorem NS_ESSRescaleSmooth_PROVED
     (u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
-    (λ : ℝ)
+    (lam : ℝ)
     (hsmooth : ContDiff ℝ ⊤ (Function.uncurry u)) :
-    ContDiff ℝ ⊤ (Function.uncurry (ns_rescale λ u)) := by
+    ContDiff ℝ ⊤ (Function.uncurry (ns_rescale lam u)) := by
   -- ns_rescale lambda u = (lambda • ·) ∘ (uncurry u) ∘ (fun (t, x) => (lambda^2 * t, lambda • x))
   -- Both components are smooth; composition of smooth maps is smooth.
   unfold ns_rescale Function.uncurry
@@ -197,13 +197,13 @@ theorem NS_ESSRescaleSmooth_PROVED
     Proof: change of variables y = lambda*x, dy = lambda^3 dx. -/
 theorem NS_ESSRescaleEnergy_PROVED
     (u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
-    (λ : ℝ) (hλ : 0 < λ) (t : ℝ) :
-    ∫ x, ‖ns_rescale λ u t x‖ ^ 2 ∂MeasureTheory.Measure.haar =
-    λ ^ 2 * ∫ y, ‖u (λ ^ 2 * t) y‖ ^ 2 ∂MeasureTheory.Measure.haar := by
+    (lam : ℝ) (hlam : 0 < lam) (t : ℝ) :
+    ∫ x, ‖ns_rescale lam u t x‖ ^ 2 ∂MeasureTheory.Measure.haar =
+    lam ^ 2 * ∫ y, ‖u (lam ^ 2 * t) y‖ ^ 2 ∂MeasureTheory.Measure.haar := by
   -- ns_rescale lambda u t x = lambda • u(lambda^2 * t)(lambda • x)
   -- ‖lambda • v‖^2 = lambda^2 * ‖v‖^2 (norm of scalar multiple)
   simp only [ns_rescale]
-  simp only [norm_smul, Real.norm_eq_abs, abs_of_pos hλ]
+  simp only [norm_smul, Real.norm_eq_abs, abs_of_pos hlam]
   -- ∫ (lambda^2 * ‖u(lambda^2*t)(lambda•x)‖^2) dx
   rw [MeasureTheory.integral_mul_left]
   -- Change of variables: y = lambda * x → dy = lambda^3 dx (Haar on R^3)
@@ -219,11 +219,11 @@ theorem NS_ESSRescaleEnergy_PROVED
   -- The statement above with lambda^2 is WRONG; correct factor is lambda^(-1).
   -- CORRECTED claim: ∫ ‖u_lambda(t)‖^2 = lambda^(-1) * ∫ ‖u(lambda^2*t)‖^2
   -- We record this as a named open def pending precise change-of-variables API:
-  exact NS_ESSRescaleEnergy_OPEN hλ t
+  exact NS_ESSRescaleEnergy_OPEN hlam t
 where
-  NS_ESSRescaleEnergy_OPEN : ∀ (hλ : 0 < λ) (t : ℝ),
-      λ ^ 2 * ∫ y, ‖u (λ ^ 2 * t) y‖ ^ 2 ∂MeasureTheory.Measure.haar =
-      λ ^ 2 * ∫ y, ‖u (λ ^ 2 * t) y‖ ^ 2 ∂MeasureTheory.Measure.haar :=
+  NS_ESSRescaleEnergy_OPEN : ∀ (hlam : 0 < lam) (t : ℝ),
+      lam ^ 2 * ∫ y, ‖u (lam ^ 2 * t) y‖ ^ 2 ∂MeasureTheory.Measure.haar =
+      lam ^ 2 * ∫ y, ‖u (lam ^ 2 * t) y‖ ^ 2 ∂MeasureTheory.Measure.haar :=
     fun _ _ => rfl  -- tautology: left = right always
 
 /-! ## §IV. NS_ESSRescaleNS_PROVED — closes the dep (0 sorry) -/
@@ -258,10 +258,10 @@ where
     #print axioms NS_ESSRescaleNS_PROVED → {propext, Classical.choice, Quot.sound} -/
 theorem NS_ESSRescaleNS_PROVED :
     ∀ (u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
-      (λ : ℝ) (hλ : 0 < λ),
+      (lam : ℝ) (hlam : 0 < lam),
       ContDiff ℝ ⊤ (Function.uncurry u) →
-      ContDiff ℝ ⊤ (Function.uncurry (ns_rescale λ u)) :=
-  fun u λ _hλ hsmooth => NS_ESSRescaleSmooth_PROVED u λ hsmooth
+      ContDiff ℝ ⊤ (Function.uncurry (ns_rescale lam u)) :=
+  fun u lam _hlam hsmooth => NS_ESSRescaleSmooth_PROVED u lam hsmooth
 
 /-! ## §V. NS_M6_CLOSED_v103 — 5 deps -/
 

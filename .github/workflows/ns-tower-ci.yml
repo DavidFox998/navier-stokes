@@ -1,7 +1,7 @@
 name: NS-Tower CI
 on:
   push:
-    branches: [main, claude-bogovskii-div-cz]
+    branches: [main, claude-bogovskii-kernel-closed]
   pull_request:
     branches: [main]
 

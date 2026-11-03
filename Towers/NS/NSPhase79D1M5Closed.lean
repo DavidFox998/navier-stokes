@@ -84,7 +84,7 @@ theorem NS_M5_CLOSED : NS_EnergyInequality :=
 
 /-! ## M6 — sole remaining task -/
 
-/-- **NS_M6_OPEN** — global regularity. Sole remaining task.
+/-- **NS_M6_LOCAL_OPEN** — global regularity. Sole remaining task.
 
     M5 is proved. D1 is proved (s=0). All bilinear estimates for M5 done.
     M6 requires D1 for all s via Kato-Ponce (NS_D1_SobolevScale_OPEN s),
@@ -92,7 +92,7 @@ theorem NS_M5_CLOSED : NS_EnergyInequality :=
 
     ETA: Kato-Ponce bridge (1-2 months) + Picard at H^s (additional work).
     Ref: Kato-Ponce 1988 CPAM; Kato 1984 J.Fac.Sci.Tokyo. -/
-def NS_M6_OPEN : Prop :=
+def NS_M6_LOCAL_OPEN : Prop :=
   ∃ T > (0 : ℝ), ∀ u₀ : EuclideanSpace ℝ (Fin 3) → ℂ,
     MeasureTheory.MemLp u₀ 2 MeasureTheory.Measure.haar →
     ∃ u : ℝ → EuclideanSpace ℝ (Fin 3) → ℂ, NS_WeakSolutionData u u₀

@@ -74,11 +74,28 @@ namespace TheoremaAureum.Towers.NS.Phase107CarlemanDrift
 
 def NS_Carleman_LimitPass_OPEN : Prop :=
   ∀ (_ : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)), True
+/-- **NS_M6_OPEN** — Clay global regularity for incompressible NS on ℝ³.
+    Given smooth, square-integrable initial data, a smooth global solution
+    exists for all time.
+
+    W0 re-typing (2026-11-02, branch `ns/w0-weak-solution-redesign`,
+    Sheet 7, batch roll on David's go — statement identical to the other
+    phase copies up to qualification/whitespace): data is now
+    `Wall266.L2DivFree` — the L² and divergence-free conditions are
+    carried in the type, per Clay — and the solution is the canonical
+    `NS_WeakSolution`. Smoothness is reading (ii): at each `t > 0` the
+    L² class `w.vel t` *contains* a smooth representative — some smooth
+    `s` agreeing with the class componentwise almost everywhere. No
+    representative is chosen, and no `MemLp` side condition is needed:
+    a.e. agreement with the class is itself the membership condition. -/
 def NS_M6_OPEN : Prop :=
-  ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    MemLp v₀ 2 Measure.haar →
-    ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolutionData v v₀ ∧ ∀ t > (0:ℝ), ContDiff ℝ ⊤ (v t)
+  ∀ (v₀ : Wall266.L2DivFree),
+    ∃ w : NS_WeakSolution v₀,
+      ∀ t > (0 : ℝ),
+        ∃ s : Wall266.R3 → Wall266.R3,
+          ContDiff ℝ ⊤ s ∧
+          ∀ i : Fin 3,
+            ∀ᵐ x ∂(volume : Measure Wall266.R3), (w.vel t).val i x = s x i
 
 /-- Internal: Holder inequality in Lorentz spaces L^{3,inf} x L^{3,1} -> L^{3/2}.
     Mathematical fact: standard Lorentz-Holder. -/

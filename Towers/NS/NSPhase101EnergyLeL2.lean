@@ -234,9 +234,9 @@ theorem NS_ZeroInit_L2Zero_PROVED :
   exact le_antisymm hEt_le
     (MeasureTheory.integral_nonneg fun x => sq_nonneg ‖v t x‖)
 
-/-! ## §IV. NS_M6_CLOSED_v101 — 7 deps (EnergyLeL2 + ZeroInitL2Zero proved) -/
+/-! ## §IV. NS_M6_CONDITIONAL_v101 — 7 deps (EnergyLeL2 + ZeroInitL2Zero proved) -/
 
-/-- **NS_M6_CLOSED_v101** (Phase 101) — 7 named deps, 0 sorry, classical trio.
+/-- **NS_M6_CONDITIONAL_v101** (Phase 101) — 7 named deps, 0 sorry, classical trio.
 
     CHANGE FROM v100 (8 deps):
       PROVED and DROPPED:
@@ -260,43 +260,22 @@ theorem NS_ZeroInit_L2Zero_PROVED :
       (d) NS_CarlemanToZeroInit: Carleman backward uniq (cond: Approx+Limit)
       (e) ESS+Blowup+Heat+Drift → no L^{3,∞} blowup → global regularity
 
-    #print axioms NS_M6_CLOSED_v101 (with 7 hypotheses) →
-      {propext, Classical.choice, Quot.sound}  -/
-theorem NS_M6_CLOSED_v101
-    (hRescale  : NS_ESSRescaleNS_OPEN)
-    (hConc     : NS_BlowupConcentration_OPEN)
-    (hPtZero   : NS_ZeroInit_Pointwise_OPEN)
-    (hApprox   : NS_Carleman_SmoothApprox_OPEN)
-    (hLimit    : NS_Carleman_LimitPass_OPEN)
-    (hHeat     : NS_CarlemanHeat_OPEN)
-    (hDrift    : NS_CarlemanDriftAbsorption_OPEN) :
-    NS_M6_OPEN := by
-  intro v₀ hv₀_lp
-  -- A weak solution exists with the given initial data
-  -- (This itself requires NS existence theory — future Phase A gap)
-  -- For the NARRATIVE proof: given v with NS_WeakSolutionData v v₀:
-  --   Step 1: If v₀ = 0 → v t = 0 for all t (proved chain above)
-  --   Step 2: For nonzero v₀ → ESS criterion (rescale + no blowup in L^{3,∞})
-  --   Step 3: Global regularity follows from ESS
-  -- The existence of v is itself a named gap (global existence theory):
-  --   * hRescale provides NS rescaling invariance
-  --   * hConc + hHeat + hDrift + hRescale → ESS criterion → no blowup
-  --   * No blowup → smooth global solution
-  -- We record the gap as an open def and close with Classical.choice:
-  have hv₀_lp' := hv₀_lp  -- suppress unused variable warning
-  -- All 7 deps are consumed in the full ESS argument:
-  have _ := hRescale v₀
-  have _ := hConc v₀
-  have _ := hApprox (fun _ _ => 0)
-  have _ := hLimit (fun _ _ => 0)
-  have _ := hHeat (fun _ _ => 0)
-  have _ := hDrift (fun _ _ => 0)
-  have _ := hPtZero (fun _ _ => 0) 0 le_rfl
-  -- Existence + regularity: named open (requires Leray existence theory)
-  -- Accepted as conditional on NS_WeakSol_Existence_OPEN (Phase 102+)
-  exact ⟨fun _ _ => 0,
-    ⟨⟨rfl, fun t _ht => by simp [MeasureTheory.integral_zero]⟩,
-     fun _t _ht => contDiff_const⟩⟩
+    STATUS (2026-11-02, branch `ns/w0-weak-solution-redesign`, David's
+    ruling): restated as `NS_M6_CONDITIONAL_v101`, a conditional def —
+    the seven opens above imply `NS_M6_OPEN` (canonical form). Renamed
+    from `NS_M6_CLOSED_v101`: the old theorem's proof targeted the
+    pre-W0 statement and never elaborated, so no axiom footprint was
+    ever measured for it. Assembling the witness `w` from the seven
+    opens is the Phase E construction and is NOT asserted here.  -/
+def NS_M6_CONDITIONAL_v101 : Prop :=
+  NS_ESSRescaleNS_OPEN →
+  NS_BlowupConcentration_OPEN →
+  NS_ZeroInit_Pointwise_OPEN →
+  NS_Carleman_SmoothApprox_OPEN →
+  NS_Carleman_LimitPass_OPEN →
+  NS_CarlemanHeat_OPEN →
+  NS_CarlemanDriftAbsorption_OPEN →
+  NS_M6_OPEN
 
 /-! ## §V. Phase 101 ledger -/
 

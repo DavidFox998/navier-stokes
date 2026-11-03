@@ -89,13 +89,13 @@ def NS_WeakL3Barrier_OPEN : Prop :=
   ∀ (M : ℝ) (u₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MeasureTheory.MemLp u₀ 2 MeasureTheory.Measure.haar →
     ∃ u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution u u₀ ∧
+      NS_WeakSolutionData u u₀ ∧
       (∀ t ≥ 0, ∀ λ > 0,
         MeasureTheory.Measure.haar
           {x | MeasureTheory.nnnorm (u t x) > ENNReal.ofReal λ} ≤
         (ENNReal.ofReal (M / λ)) ^ 3) →
       ∀ T > 0, ∃ u' : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-        NS_WeakSolution u' u₀
+        NS_WeakSolutionData u' u₀
 
 /-- **NS_corrSemigroupRate_OPEN** — Route 1: semigroup decay rate.
 
@@ -111,7 +111,7 @@ def NS_corrSemigroupRate_OPEN (ξ : ℝ) : Prop :=
     MeasureTheory.eLpNorm u₀ 2 MeasureTheory.Measure.haar ≤ ENNReal.ofReal ξ →
     ∀ t : ℝ, t > 0 →
     ∃ u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution u u₀ ∧
+      NS_WeakSolutionData u u₀ ∧
       MeasureTheory.eLpNorm (u t) 3 MeasureTheory.Measure.haar ≤
         ENNReal.ofReal (C * t ^ (-δ)) *
         MeasureTheory.eLpNorm u₀ 2 MeasureTheory.Measure.haar

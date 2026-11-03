@@ -14,7 +14,7 @@ Phase 99 makes the following progress on Path A:
 
   CLOSED: NS_WeakSolInitCond_PROVED (0 sorry, classical trio)
     ↳ NS_WeakSolInitCond_OPEN closes by ONE LINE: h.init
-      where NS_WeakSolution v v₀ has field init : v 0 = v₀.
+      where NS_WeakSolutionData v v₀ has field init : v 0 = v₀.
     ↳ Makes NS_WeakSol_L2weakstar_OPEN +
               NS_WeakSol_L2trace_OPEN OBSOLETE
       (Phase 98 sub-gaps no longer needed — direct proof wins)
@@ -70,14 +70,14 @@ namespace Phase99InitCondClose
 
 /-- **NS_WeakSolInitCond_PROVED** — Initial condition from the weak solution structure.
 
-    THEOREM (0 sorry, 1 line): NS_WeakSolution v v₀ → v 0 = v₀.
+    THEOREM (0 sorry, 1 line): NS_WeakSolutionData v v₀ → v 0 = v₀.
 
     PROOF:
-    `NS_WeakSolution v v₀` is a structure with field:
+    `NS_WeakSolutionData v v₀` is a structure with field:
       `.init : v 0 = v₀`
     (confirmed Phase 91 L97: "The Lean formulation uses `WeakSolution.init : u 0 = u₀`")
 
-    Therefore: `NS_WeakSolInitCond_OPEN = ∀ v₀ v, NS_WeakSolution v v₀ → v 0 = v₀`
+    Therefore: `NS_WeakSolInitCond_OPEN = ∀ v₀ v, NS_WeakSolutionData v v₀ → v 0 = v₀`
     closes immediately by extracting the `.init` field.
 
     CONSEQUENCE: Phase 98's sub-gaps
@@ -99,20 +99,20 @@ theorem NS_WeakSolInitCond_PROVED : NS_WeakSolInitCond_OPEN :=
     then ‖v(t)‖_{L²} = 0 for all t ≥ 0.
 
     PROOF CHAIN:
-    (i)  NS_WeakSolution v v₀ includes: ∀ t ≥ 0, energy v t ≤ energy v 0
+    (i)  NS_WeakSolutionData v v₀ includes: ∀ t ≥ 0, energy v t ≤ energy v 0
     (ii) energy v 0 = (1/2)‖v(0)‖² = (1/2)‖v₀‖²   (since v 0 = v₀ by .init)
     (iii) ‖v₀‖_{L²} = 0  (since v₀ = 0 a.e. → ∫‖v₀‖² = 0 by ae_zero)
     (iv) Therefore energy v t ≤ 0, and since energy ≥ 0, energy v t = 0.
     (v)  energy v t = 0 ↔ ∫‖v(t,x)‖² dμ = 0 ↔ ‖v(t)‖_{L²} = 0.
 
     LEAN STATUS:
-      Requires: energy inequality from NS_WeakSolution.energy_ineq field.
+      Requires: energy inequality from NS_WeakSolutionData.energy_ineq field.
       Mathlib has: integral_eq_zero_iff_of_nonneg (for a.e. zero → integral zero).
       ETA: 3-5 days (energy field + Mathlib integral lemmas). -/
 def NS_ZeroInit_L2Zero_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     (∀ᵐ x ∂MeasureTheory.Measure.haar, v₀ x = 0) →
     ∀ t ≥ 0,
       ∫ x, ‖v t x‖^2 ∂MeasureTheory.Measure.haar = 0
@@ -131,16 +131,16 @@ def NS_ZeroInit_L2Zero_OPEN : Prop :=
     (iv) For the POINTWISE conclusion (∀ x, v t x = 0):
          This needs either (a) v is continuous (regularity), or
          (b) the Lean model identifies v with its a.e. representative.
-         ETA depends on how NS_WeakSolution represents v.
+         ETA depends on how NS_WeakSolutionData represents v.
 
     LEAN STATUS:
       Step (i)-(iii): provable from Mathlib (MeasureTheory.integral_eq_zero_iff).
-      Step (iv): requires continuity of v from NS_WeakSolution, or model choice.
-      ETA: 1-2 weeks (depends on NS_WeakSolution continuity field). -/
+      Step (iv): requires continuity of v from NS_WeakSolutionData, or model choice.
+      ETA: 1-2 weeks (depends on NS_WeakSolutionData continuity field). -/
 def NS_ZeroInit_Pointwise_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     (∀ t ≥ 0, ∫ x, ‖v t x‖^2 ∂MeasureTheory.Measure.haar = 0) →
     ∀ t ∈ Set.Icc 0 (1 : ℝ), ∀ x, v t x = 0
 
@@ -241,9 +241,9 @@ PATH A PROGRESS (Phase 99):
 
 CLOSED THIS PHASE (0 sorry, 1-line proof):
   NS_WeakSolInitCond_PROVED
-    Statement: ∀ v₀ v, NS_WeakSolution v v₀ → v 0 = v₀
+    Statement: ∀ v₀ v, NS_WeakSolutionData v v₀ → v 0 = v₀
     Proof:     fun _v₀ _v h => h.init
-    API:       NS_WeakSolution.init field (Phase 91 L97)
+    API:       NS_WeakSolutionData.init field (Phase 91 L97)
     #print axioms → {propext, Classical.choice, Quot.sound}
 
 OBSOLETE (Phase 98 sub-gaps no longer needed):

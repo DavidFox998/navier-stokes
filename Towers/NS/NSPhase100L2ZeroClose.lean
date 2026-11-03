@@ -62,10 +62,10 @@ namespace Phase100L2ZeroClose
 /-- **NS_WeakSol_EnergyLeL2_OPEN** (Phase 100 sub-gap, ETA 1-2 days)
 
     MATHEMATICAL CONTENT:
-    The energy inequality from NS_WeakSolution, stated directly in terms
+    The energy inequality from NS_WeakSolutionData, stated directly in terms
     of the L² integral ∫ ‖v t x‖^2 ∂haar.
 
-    RELATIONSHIP TO NS_WeakSolution.energy_le:
+    RELATIONSHIP TO NS_WeakSolutionData.energy_le:
     The WeakNS structure (WeakSolution.lean L130) has:
       energy_le : ∀ t, 0 ≤ t → energy u t ≤ energy u 0
     where energy u t is the kinetic energy functional.
@@ -75,7 +75,7 @@ namespace Phase100L2ZeroClose
     so energy_le immediately gives ∫‖v t‖² ≤ ∫‖v 0‖².
 
     PROOF ROUTE (ETA 1-2 days):
-      Given hWeak : NS_WeakSolution v v₀,
+      Given hWeak : NS_WeakSolutionData v v₀,
       apply hWeak.energy_le t ht to get energy v t ≤ energy v 0,
       then unfold energy to get the integral form.
       Lean: simp [energy] or by definition.
@@ -84,7 +84,7 @@ namespace Phase100L2ZeroClose
 def NS_WeakSol_EnergyLeL2_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     ∀ t : ℝ, 0 ≤ t →
       ∫ x, ‖v t x‖^2 ∂MeasureTheory.Measure.haar ≤
       ∫ x, ‖v 0 x‖^2 ∂MeasureTheory.Measure.haar
@@ -216,8 +216,8 @@ PROVED THIS PHASE (0 sorry):
 
 NEW NAMED OPEN DEF (1 new):
   NS_WeakSol_EnergyLeL2_OPEN
-    Content: NS_WeakSolution.energy_le in L² integral form
-    ETA: 1-2 days (unfold energy def in NS_WeakSolution)
+    Content: NS_WeakSolutionData.energy_le in L² integral form
+    ETA: 1-2 days (unfold energy def in NS_WeakSolutionData)
     Route: hWeak.energy_le t ht → unfold energy → integral form
 
 MASTER: NS_M6_CLOSED_v100 — 8 deps (same count, L2Zero→EnergyLeL2)

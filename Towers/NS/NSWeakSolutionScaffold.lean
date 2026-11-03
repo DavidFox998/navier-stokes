@@ -2,7 +2,7 @@
 ================================================================
 Towers / NS / NSWeakSolutionScaffold — Phase 102 scaffold
 
-HONEST SCAFFOLD for the two missing fields of NS_WeakSolution:
+HONEST SCAFFOLD for the two missing fields of NS_WeakSolutionData:
   1. Weak momentum equation (distributional Navier-Stokes)
   2. Divergence-free constraint (distributional div v = 0)
 
@@ -71,9 +71,9 @@ def NS_WeakMomentum_OPEN
 def NS_DivFree_OPEN
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)) : Prop := True
 
-/-- **NS_WeakSolutionFull**: NS_WeakSolution + the two missing fields.
+/-- **NS_WeakSolutionFull**: NS_WeakSolutionData + the two missing fields.
 
-    HONEST SCAFFOLD. Extends the Clay `NS_WeakSolution` (init + energy)
+    HONEST SCAFFOLD. Extends the Clay `NS_WeakSolutionData` (init + energy)
     with the weak momentum equation and divergence-free constraint as
     open Props. When the human authors the real definitions, replace
     the `_OPEN` Props here with the proved versions. -/
@@ -81,7 +81,7 @@ structure NS_WeakSolutionFull
     (v  : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)) : Prop where
   /-- The base Clay weak solution (init + L² energy). -/
-  base : NS_WeakSolution v v₀
+  base : NS_WeakSolutionData v v₀
   /-- Weak momentum equation (open — needs authoring). -/
   momentum : NS_WeakMomentum_OPEN v v₀
   /-- Divergence-free constraint (open — needs authoring). -/

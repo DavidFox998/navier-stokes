@@ -172,7 +172,7 @@ def NS_BlowupConcentration_OPEN : Prop :=
   ∀ (u₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (T : ℝ), T > 0 →
-    NS_WeakSolution u u₀ →
+    NS_WeakSolutionData u u₀ →
     (∃ M : ℝ, ∀ t ≥ (0 : ℝ), ∀ α > (0 : ℝ),
       MeasureTheory.Measure.haar
         {x | MeasureTheory.nnnorm (u t x) > ENNReal.ofReal α} ≤

@@ -66,7 +66,7 @@ def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MemLp v₀ 2 Measure.haar →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution v v₀ ∧ ∀ t > (0:ℝ), ContDiff ℝ ⊤ (v t)
+      NS_WeakSolutionData v v₀ ∧ ∀ t > (0:ℝ), ContDiff ℝ ⊤ (v t)
 
 /-- Internal sub-gap: Banach-Alaoglu weak-* compactness in L^{3,inf}.
     Mathematical fact: bounded sequences in L^{3,inf}(K) are weak-* precompact.

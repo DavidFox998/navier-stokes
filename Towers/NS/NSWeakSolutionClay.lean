@@ -2,7 +2,7 @@
 ================================================================
 Towers / NS / NSWeakSolutionClay  —  Phase 101 base definition
 
-FORMAL DEFINITION of NS_WeakSolution for EuclideanSpace ℝ (Fin 3).
+FORMAL DEFINITION of NS_WeakSolutionData for EuclideanSpace ℝ (Fin 3).
 
 This file provides the CANONICAL Clay-problem formulation of a
 Navier-Stokes weak solution in the EuclideanSpace ℝ (Fin 3) model.
@@ -14,7 +14,7 @@ KEY DIFFERENCE from WeakNS (WeakSolution.lean):
     where energy u t := ‖u t‖^2  (H^{s+2} SOBOLEV norm squared)
     NOT the L² kinetic energy (1/2)∫|u|².
 
-  NS_WeakSolution.energy_le_L2 : ∫‖v t x‖^2 ∂haar <= ∫‖v 0 x‖^2 ∂haar
+  NS_WeakSolutionData.energy_le_L2 : ∫‖v t x‖^2 ∂haar <= ∫‖v 0 x‖^2 ∂haar
     This IS the L² kinetic energy inequality (the correct Clay bound).
 
 WHY: Energy.lean L74 says "NOT the L² kinetic energy ½∫|u|²;
@@ -30,6 +30,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.MeasureTheory.Integral.Bochner
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Towers.NS.Wall266_TrilinearForm
 
 open MeasureTheory
 
@@ -37,7 +38,7 @@ namespace TheoremaAureum
 namespace Towers
 namespace NS
 
-/-- **NS_WeakSolution** (Clay formulation, EuclideanSpace ℝ (Fin 3)).
+/-- **NS_WeakSolutionData** (Clay formulation, EuclideanSpace ℝ (Fin 3)).
 
     A time-dependent velocity field `v : ℝ → ℝ³ → ℝ³` is a weak
     Navier-Stokes solution with initial data `v₀ : ℝ³ → ℝ³` if it
@@ -58,7 +59,7 @@ namespace NS
     Remaining: H4_controls_trilinear proof.
 
     AXIOM FOOTPRINT: structure keyword uses classical trio only. -/
-structure NS_WeakSolution
+structure NS_WeakSolutionData
     (v  : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)) : Prop where
   /-- Initial condition: `v 0 = v₀` (function equality). -/
@@ -68,14 +69,32 @@ structure NS_WeakSolution
     ∫ x, ‖v t x‖ ^ 2 ∂volume ≤
     ∫ x, ‖v 0 x‖ ^ 2 ∂volume
 
-/-- **NS_WeakSolution.init_apply**: pointwise form of the initial condition.
+/-- **NS_WeakSolutionData.init_apply**: pointwise form of the initial condition.
     `v 0 x = v₀ x` for every `x : EuclideanSpace ℝ (Fin 3)`. -/
-theorem NS_WeakSolution.init_apply
+theorem NS_WeakSolutionData.init_apply
     {v  : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)}
     {v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)}
-    (h : NS_WeakSolution v v₀)
+    (h : NS_WeakSolutionData v v₀)
     (x : EuclideanSpace ℝ (Fin 3)) : v 0 x = v₀ x :=
   congr_fun h.init x
+
+/-- **NS_WeakSolution** — CANONICAL (promoted 2026-11-02, David's Gate 1 pick,
+    Universal Plan W0).
+
+    The canonical weak-solution notion is the Wall266 structure in
+    `Wall266_TrilinearForm.lean` (David's PR #2): velocity and pressure
+    fields over divergence-free L² data, carrying `init_cond`,
+    `energy_le`, `div_free`, and `momentum` fields. This name is an
+    abbrev for that single definition — U1: one name, one definition;
+    no second copy of the structure lives here.
+
+    The previous stand-in (init + energy_le_L2 only) is preserved above
+    as `NS_WeakSolutionData` — U6: a stand-in, kept for migration only;
+    do not use it in new statements.
+
+    Existence is NOT claimed. The weak-momentum field's body is still
+    the `True`-valued shape pending the trilinear form (Phase E). -/
+abbrev NS_WeakSolution (v₀ : Wall266.L2DivFree) := Wall266.NS_WeakSolution v₀
 
 end NS
 end Towers

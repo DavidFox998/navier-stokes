@@ -77,7 +77,7 @@ def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MeasureTheory.MemLp v₀ 2 MeasureTheory.Measure.haar →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
+      NS_WeakSolutionData v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
 
 /-! ## §B. Integral = 0 → a.e. = 0 helper -/
 
@@ -171,7 +171,7 @@ theorem NS_ZeroInit_Pointwise_PROVED
 
 /-- **NS_ZeroInitToZero_PROVED** (0 sorry, classical trio).
 
-    THEOREM: If NS_WeakSolution v v₀ and v₀ = 0 a.e. and v t is continuous
+    THEOREM: If NS_WeakSolutionData v v₀ and v₀ = 0 a.e. and v t is continuous
     for all t > 0, then v t x = 0 for all x and all t ≥ 0.
 
     PROOF:
@@ -184,7 +184,7 @@ theorem NS_ZeroInit_Pointwise_PROVED
 theorem NS_ZeroInitToZero_PROVED
     (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
-    (hWeak : NS_WeakSolution v v₀)
+    (hWeak : NS_WeakSolutionData v v₀)
     (hv₀_zero : ∀ᵐ x ∂MeasureTheory.Measure.haar, v₀ x = 0)
     (hcont : ∀ t : ℝ, 0 < t → Continuous (v t)) :
     ∀ t : ℝ, 0 ≤ t → ∀ x, v t x = 0 := by

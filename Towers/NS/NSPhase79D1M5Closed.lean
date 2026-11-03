@@ -95,7 +95,7 @@ theorem NS_M5_CLOSED : NS_EnergyInequality :=
 def NS_M6_OPEN : Prop :=
   ∃ T > (0 : ℝ), ∀ u₀ : EuclideanSpace ℝ (Fin 3) → ℂ,
     MeasureTheory.MemLp u₀ 2 MeasureTheory.Measure.haar →
-    ∃ u : ℝ → EuclideanSpace ℝ (Fin 3) → ℂ, NS_WeakSolution u u₀
+    ∃ u : ℝ → EuclideanSpace ℝ (Fin 3) → ℂ, NS_WeakSolutionData u u₀
 
 /-! ## Phase 79 ledger -/
 

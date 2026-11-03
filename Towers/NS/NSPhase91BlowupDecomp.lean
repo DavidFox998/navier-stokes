@@ -12,7 +12,7 @@ WHAT THIS PHASE DOES
 
 Phase 90 introduced NS_BlowupRescalingCompactness_OPEN (§II):
   If u ∈ L^{3,∞} is not smooth at T, ∃ rescaled limit v with:
-    (a) NS_WeakSolution v v₀'
+    (a) NS_WeakSolutionData v v₀'
     (b) L^{3,∞} bound on v
     (c) eLpNorm (v T) 2 haar = 0
     (d) v ≢ 0 on [0,T]
@@ -106,8 +106,8 @@ def NS_ESSRescaleNS_OPEN : Prop :=
     (T₀ λ₀ : ℝ)
     (x₀ : EuclideanSpace ℝ (Fin 3)),
     0 < λ₀ →
-    NS_WeakSolution u u₀ →
-    NS_WeakSolution
+    NS_WeakSolutionData u u₀ →
+    NS_WeakSolutionData
       (fun t x => λ₀ • u (T₀ + λ₀ ^ 2 * t) (x₀ + λ₀ • x))
       (fun x => λ₀ • u T₀ (x₀ + λ₀ • x))
 
@@ -162,7 +162,7 @@ def NS_ESSBlowupCenter_OPEN : Prop :=
   ∀ (u₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (T : ℝ), T > 0 →
-    NS_WeakSolution u u₀ →
+    NS_WeakSolutionData u u₀ →
     (∃ M : ℝ, ∀ t ≥ (0 : ℝ), ∀ λ > (0 : ℝ),
       MeasureTheory.Measure.haar
         {x | MeasureTheory.nnnorm (u t x) > ENNReal.ofReal λ} ≤
@@ -196,7 +196,7 @@ def NS_ESSBlowupCenter_OPEN : Prop :=
                     - u_λ₀ ≢ 0 on [0,T] (nontrivial).
 
     Step 2 (hNS):   Wire NS_ESSRescaleNS_OPEN to get
-                    NS_WeakSolution (u_λ₀) (u_λ₀_init).
+                    NS_WeakSolutionData (u_λ₀) (u_λ₀_init).
                     Here u_λ₀(t,x) = λ₀ u(T+λ₀²t)(x₀+λ₀x)
                     and initial data v₀'(x) = λ₀ u(T)(x₀+λ₀x).
                     Applied: hNS u u₀ T λ₀ x₀ hλ hu_weak.

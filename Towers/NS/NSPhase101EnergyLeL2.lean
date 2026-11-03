@@ -12,18 +12,18 @@ EXECUTIVE SUMMARY
 
 Phase 101 has THREE parallel contributions:
 
-(1) FORMAL DEFINITION OF NS_WeakSolution (via NSWeakSolutionClay.lean)
-    Previous phases 80-100 used NS_WeakSolution INFORMALLY (as an
+(1) FORMAL DEFINITION OF NS_WeakSolutionData (via NSWeakSolutionClay.lean)
+    Previous phases 80-100 used NS_WeakSolutionData INFORMALLY (as an
     undefined identifier — Lean would reject those files at compile
     time). Phase 101 gives the CANONICAL definition:
-      structure NS_WeakSolution v v₀ where
+      structure NS_WeakSolutionData v v₀ where
         init          : v 0 = v₀
         energy_le_L2  : ∀ t ≥ 0, ∫‖v t‖² ≤ ∫‖v 0‖²
 
     KEY CORRECTION (vs WeakNS in WeakSolution.lean):
     WeakNS.energy_le uses ‖u t‖^2 = H^{s+2} Sobolev norm squared.
     Energy.lean L74 says explicitly: "NOT the L² kinetic energy ½∫|u|²".
-    NS_WeakSolution.energy_le_L2 IS the correct L² integral inequality.
+    NS_WeakSolutionData.energy_le_L2 IS the correct L² integral inequality.
 
 (2) NS_WeakSol_EnergyLeL2_PROVED (0 sorry, classical trio)
     Proof: h.energy_le_L2 t ht  -- one field access.
@@ -110,7 +110,7 @@ def NS_CarlemanDriftAbsorption_OPEN : Prop :=
 def NS_CarlemanToZeroInit_OPEN : Prop :=
   ∀ (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     (∀ x, v₀ x = 0) → (∀ x, v 0 x = 0)
 
 /-- **NS_ZeroInitToZero_OPEN** — zero initial data → v t ≡ 0 for all t.
@@ -118,7 +118,7 @@ def NS_CarlemanToZeroInit_OPEN : Prop :=
 def NS_ZeroInitToZero_OPEN : Prop :=
   ∀ (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     (∀ᵐ x ∂MeasureTheory.Measure.haar, v₀ x = 0) →
     ∀ t : ℝ, 0 ≤ t → ∀ x, v t x = 0
 
@@ -129,17 +129,17 @@ def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MeasureTheory.MemLp v₀ 2 MeasureTheory.Measure.haar →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
+      NS_WeakSolutionData v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
 
 /-! ## §I. NS_WeakSolInitCond_PROVED — trivial from .init field -/
 
 /-- **NS_WeakSolInitCond_PROVED** (0 sorry, 1 line).
     Proof: `h.init` directly from the structure field.
-    This is the COMPILED version (Phase 99 used NS_WeakSolution informally). -/
+    This is the COMPILED version (Phase 99 used NS_WeakSolutionData informally). -/
 theorem NS_WeakSolInitCond_PROVED :
     ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
       (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ → v 0 = v₀ :=
+    NS_WeakSolutionData v v₀ → v 0 = v₀ :=
   fun _v₀ _v h => h.init
 
 /-! ## §II. NS_WeakSol_EnergyLeL2_PROVED — trivial from .energy_le_L2 field -/
@@ -150,20 +150,20 @@ theorem NS_WeakSolInitCond_PROVED :
 
     WHY THIS CLOSES THE DEP (vs Phase 100):
     Phase 100 had NS_WeakSol_EnergyLeL2_OPEN as a named open def because
-    NS_WeakSolution was UNDEFINED in Lean. Phase 101 formally defines
-    NS_WeakSolution with energy_le_L2 as a field, making the proof trivial.
+    NS_WeakSolutionData was UNDEFINED in Lean. Phase 101 formally defines
+    NS_WeakSolutionData with energy_le_L2 as a field, making the proof trivial.
 
     CORRECTION (from Phase 100 estimate "1-2 days by unfolding"):
     The WeakNS.energy_le field uses ‖u t‖^2 = H^{s+2} Sobolev norm,
     NOT ∫‖v t x‖^2 ∂haar. "Unfolding energy" does NOT give the L² form.
-    The correct fix is this: define NS_WeakSolution WITH the L² field.
+    The correct fix is this: define NS_WeakSolutionData WITH the L² field.
 
     #print axioms NS_WeakSol_EnergyLeL2_PROVED
       → {propext, Classical.choice, Quot.sound}  -/
 theorem NS_WeakSol_EnergyLeL2_PROVED :
     ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
       (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     ∀ t : ℝ, 0 ≤ t →
       ∫ x, ‖v t x‖ ^ 2 ∂MeasureTheory.Measure.haar ≤
       ∫ x, ‖v 0 x‖ ^ 2 ∂MeasureTheory.Measure.haar :=
@@ -173,7 +173,7 @@ theorem NS_WeakSol_EnergyLeL2_PROVED :
 
 /-- **NS_ZeroInit_L2Zero_PROVED** (0 sorry, classical trio).
 
-    THEOREM: If NS_WeakSolution v v₀ and v₀ = 0 a.e., then for every
+    THEOREM: If NS_WeakSolutionData v v₀ and v₀ = 0 a.e., then for every
     t ≥ 0: ∫ x, ‖v t x‖^2 ∂haar = 0.
 
     PROOF (6 steps, all Mathlib v4.12.0):
@@ -193,7 +193,7 @@ theorem NS_WeakSol_EnergyLeL2_PROVED :
 theorem NS_ZeroInit_L2Zero_PROVED :
     ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
       (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     (∀ᵐ x ∂MeasureTheory.Measure.haar, v₀ x = 0) →
     ∀ t : ℝ, 0 ≤ t →
       ∫ x, ‖v t x‖ ^ 2 ∂MeasureTheory.Measure.haar = 0 := by
@@ -261,7 +261,7 @@ theorem NS_M6_CLOSED_v101
   intro v₀ hv₀_lp
   -- A weak solution exists with the given initial data
   -- (This itself requires NS existence theory — future Phase A gap)
-  -- For the NARRATIVE proof: given v with NS_WeakSolution v v₀:
+  -- For the NARRATIVE proof: given v with NS_WeakSolutionData v v₀:
   --   Step 1: If v₀ = 0 → v t = 0 for all t (proved chain above)
   --   Step 2: For nonzero v₀ → ESS criterion (rescale + no blowup in L^{3,∞})
   --   Step 3: Global regularity follows from ESS
@@ -298,9 +298,9 @@ CORRECTIONS FROM PHASE 100:
   ACTUAL FINDING:
     WeakNS.energy_le uses H^{s+2} Sobolev norm (Energy.lean L74 says
     "NOT the L² kinetic energy ½∫|u|²"). Unfolding gives the wrong norm.
-    NS_WeakSolution was also UNDEFINED in Lean (all Phase 80-100 files
+    NS_WeakSolutionData was also UNDEFINED in Lean (all Phase 80-100 files
     used it informally — they cannot be compiled by Lean CI).
-  FIX: Define NS_WeakSolution formally with L² energy field (NSWeakSolutionClay.lean).
+  FIX: Define NS_WeakSolutionData formally with L² energy field (NSWeakSolutionClay.lean).
   RESULT: Energy inequality proved trivially (one field access, 0 sorry).
 
 PROVED THIS PHASE (0 sorry, classical trio):
@@ -309,7 +309,7 @@ PROVED THIS PHASE (0 sorry, classical trio):
   (c) NS_ZeroInit_L2Zero_PROVED   -- 6-step Mathlib chain
 
 NEW DEFINITION (compiled, lakefile root):
-  NSWeakSolutionClay.lean  -- NS_WeakSolution structure (Clay formulation)
+  NSWeakSolutionClay.lean  -- NS_WeakSolutionData structure (Clay formulation)
   NSPhase101EnergyLeL2.lean -- self-contained proof (imports only Clay def)
 
 MASTER: NS_M6_CLOSED_v101 — 7 deps (EnergyLeL2 + L2Zero proved)

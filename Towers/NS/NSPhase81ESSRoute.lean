@@ -97,7 +97,7 @@ def NS_D1_L3_Control_OPEN : Prop :=
   ∀ (u₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MeasureTheory.MemLp u₀ 2 MeasureTheory.Measure.haar →
     ∃ u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution u u₀ ∧
+      NS_WeakSolutionData u u₀ ∧
       ∀ T > (0 : ℝ), ∃ C_T : ℝ, ∀ t ∈ Set.Icc 0 T,
         MeasureTheory.eLpNorm (u t) 3 MeasureTheory.Measure.haar ≤
           ENNReal.ofReal C_T
@@ -116,7 +116,7 @@ def NS_D1_L3_Control_OPEN : Prop :=
 def NS_ESS_Criterion_OPEN : Prop :=
   ∀ (u₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution u u₀ →
+    NS_WeakSolutionData u u₀ →
     (∃ M : ℝ, ∀ t ≥ (0 : ℝ), ∀ λ > (0 : ℝ),
       MeasureTheory.Measure.haar
         {x | MeasureTheory.nnnorm (u t x) > ENNReal.ofReal λ} ≤
@@ -172,7 +172,7 @@ theorem NS_M6_from_D1_via_ESS
   -- Step 1: D1 control → weak-L³ barrier (proved above, 0 sorry)
   have h_weakL3 : NS_WeakL3Barrier_OPEN := NS_WeakL3_from_D1_Control h_ctrl
   -- Step 2: ESS + weak-L³ → global regularity = NS_M6_OPEN
-  -- NS_M6_OPEN asks for: ∃ T>0, ∀ u₀ ∈ L², ∃ u, NS_WeakSolution u u₀
+  -- NS_M6_OPEN asks for: ∃ T>0, ∀ u₀ ∈ L², ∃ u, NS_WeakSolutionData u u₀
   -- ESS gives: IF u exists AND weak-L³ bounded THEN u extends to all T
   intro ⟨T, hT, u₀, hu₀⟩
   obtain ⟨u, hu_weak, h_wL3_bounded⟩ := h_weakL3 0 u₀ hu₀

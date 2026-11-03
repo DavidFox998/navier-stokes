@@ -73,7 +73,7 @@ def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MeasureTheory.Memℒp v₀ 2 (volume : Measure (EuclideanSpace ℝ (Fin 3))) →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
+      NS_WeakSolutionData v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
 
 /-! ## §B. One convolution operator and its analytic obligations -/
 
@@ -232,7 +232,7 @@ theorem NS_M6_CLOSED_v104
     (hHeat     : NS_CarlemanHeat_OPEN)
     (hDrift    : NS_CarlemanDriftAbsorption_OPEN) :
     ∃ v : ℝ → R3 → R3,
-      NS_WeakSolution v (fun _ => 0) ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t) := by
+      NS_WeakSolutionData v (fun _ => 0) ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t) := by
   have _ := hConc (fun _ => 0)
   have _ := hLimit (fun _ _ => 0)
   have _ := hHeat (fun _ _ => 0)
@@ -261,7 +261,7 @@ MASTER: NS_M6_CLOSED_v104 -- historical four-hypothesis wrapper, unverified
 
 HISTORICAL PATH A COUNTS (not verified unconditional closure):
   Phase 95:  7 deps
-  Phase 101: 7 deps  (formal NS_WeakSolution)
+  Phase 101: 7 deps  (formal NS_WeakSolutionData)
   Phase 102: 6 deps  (Pointwise via IsOpenPosMeasure)
   Phase 103: 5 deps  (ESS rescaling proved)
   Phase 104: historical 4-dep ledger; smooth approximation is conditional.

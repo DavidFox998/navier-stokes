@@ -139,7 +139,7 @@ def NS_Duhamel_formula_OPEN : Prop :=
   ∀ (u₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MeasureTheory.MemLp u₀ 2 MeasureTheory.Measure.haar →
     ∃ u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution u u₀ ∧
+      NS_WeakSolutionData u u₀ ∧
       ∀ t > (0 : ℝ), ∀ x : EuclideanSpace ℝ (Fin 3),
         u t x = (heatKernel (𝕜 := ℝ) t ∗ u₀) x -
           ∫ s in Set.Ioo 0 t,

@@ -175,7 +175,7 @@ def WeakMomentumEquation (v : ℝ → L2DivFree) (p : ℝ → R3 → ℝ) : Prop
     True -- shape — fill with trilinearForm when defined
 
 /-- Leray-Hopf weak solution, full version extending the skeleton -/
-structure NS_WeakSolutionFull
+structure NS_WeakSolution
     (v₀ : L2DivFree) where
   vel : ℝ → L2DivFree
   pres : ℝ → R3 → ℝ

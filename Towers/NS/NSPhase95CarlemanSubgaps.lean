@@ -352,7 +352,7 @@ MINIMUM NAMED OPEN DEF FOOTPRINT (Phase 95):
   │     Haar dilation formula (addHaar_smul + translation).   │
   │                                                             │
   │  2. NS_WeakSolInitCond_OPEN      ETA 1 week               │
-  │     Initial condition from NS_WeakSolution structure.      │
+  │     Initial condition from NS_WeakSolutionData structure.      │
   │                                                             │
   │  3. NS_ZeroInitToZero_OPEN       ETA 2-4 weeks            │
   │     Zero initial data → zero solution (energy ineq).      │
@@ -387,7 +387,7 @@ AXIOM KEYWORD COUNT (Phases 93-95): 0
 
 CLOSING PRIORITY:
   Week 1:   NS_HaarPreimage_OPEN     (addHaar_smul API matching)
-  Week 2-4: NS_ESSRescaleNS_OPEN     (NS_WeakSolution chain rule)
+  Week 2-4: NS_ESSRescaleNS_OPEN     (NS_WeakSolutionData chain rule)
   Month 1:  NS_WeakSolInitCond_OPEN + NS_ZeroInitToZero_OPEN
   Month 2-3: NS_BlowupConcentration_OPEN
   Month 3-6: NS_CarlemanHeat_OPEN

@@ -65,7 +65,7 @@ namespace Phase86M6Close
 axiom NS_ESS_Criterion :
     ∀ (u₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
       (u  : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-      NS_WeakSolution u u₀ →
+      NS_WeakSolutionData u u₀ →
       (∃ M : ℝ, ∀ t ≥ (0 : ℝ), ∀ λ > (0 : ℝ),
         MeasureTheory.Measure.haar
           {x | MeasureTheory.nnnorm (u t x) > ENNReal.ofReal λ} ≤

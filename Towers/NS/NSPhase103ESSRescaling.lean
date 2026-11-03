@@ -138,7 +138,7 @@ def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MeasureTheory.MemLp v₀ 2 MeasureTheory.Measure.haar →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
+      NS_WeakSolutionData v v₀ ∧ ∀ t > (0 : ℝ), ContDiff ℝ ⊤ (v t)
 
 /-! ## §I. ESS rescaling map — formal definition -/
 
@@ -340,7 +340,7 @@ CUMULATIVE PATH A HISTORY:
   Phase 98: 10 deps  (+3 Carleman sub-gaps decomposed)
   Phase 99:  8 deps  (InitCond proved)
   Phase 100: 8 deps  (L2Zero conditional)
-  Phase 101: 7 deps  (EnergyLeL2 proved via formal NS_WeakSolution)
+  Phase 101: 7 deps  (EnergyLeL2 proved via formal NS_WeakSolutionData)
   Phase 102: 6 deps  (Pointwise proved via IsOpenPosMeasure)
   Phase 103: 5 deps  (ESS rescaling proved)  <-- HERE
 

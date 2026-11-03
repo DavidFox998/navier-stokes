@@ -104,7 +104,7 @@ def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MemLp v₀ 2 Measure.haar →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution v v₀ ∧ ∀ t > (0:ℝ), ContDiff ℝ ⊤ (v t)
+      NS_WeakSolutionData v v₀ ∧ ∀ t > (0:ℝ), ContDiff ℝ ⊤ (v t)
 
 /-- Internal: Hormander sub-ellipticity condition for phi = |x|^2/(4*(T-t)).
     Mathematical fact: {phi, p} satisfies Hormander's pseudo-convexity criterion.

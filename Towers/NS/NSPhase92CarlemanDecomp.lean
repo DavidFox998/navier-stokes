@@ -141,7 +141,7 @@ def NS_ESSCarlemanBound_OPEN : Prop :=
 
     Given the Carleman estimate (NS_ESSCarlemanBound_OPEN), prove:
     If v ∈ L^∞([0,T]; L^{3,∞}(ℝ³)) is a weak NS solution with
-      (a) NS_WeakSolution v v₀
+      (a) NS_WeakSolutionData v v₀
       (b) ∃ M, ∀ t ≥ 0: ‖v(t)‖_{L^{3,∞}} ≤ M (bounded in L^{3,∞})
       (c) eLpNorm(v(T)) 2 haar = 0  (vanishes at T in L²)
     then v ≡ 0 pointwise on [0,T] × ℝ³.
@@ -174,7 +174,7 @@ def NS_ESSBackwardUniq_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (T : ℝ), T > 0 →
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     (∃ M : ℝ, ∀ t ≥ (0 : ℝ), ∀ λ > (0 : ℝ),
       MeasureTheory.Measure.haar
         {x | MeasureTheory.nnnorm (v t x) > ENNReal.ofReal λ} ≤

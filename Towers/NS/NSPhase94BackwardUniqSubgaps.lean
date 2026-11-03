@@ -12,16 +12,16 @@ WHAT THIS PHASE DOES
 
 NS_ESSBackwardUniq_OPEN (Phase 92) has type:
   NS_ESSCarlemanBound_OPEN →
-  ∀ v₀ v T, T > 0 → NS_WeakSolution v v₀ → L^{3,∞} bound → eLpNorm(v T) 2 = 0 →
+  ∀ v₀ v T, T > 0 → NS_WeakSolutionData v v₀ → L^{3,∞} bound → eLpNorm(v T) 2 = 0 →
   ∀ t ∈ [0,T], ∀ x, v t x = 0
 
 Phase 94 decomposes this into 3 sub-steps with a 0-sorry bridge:
 
   NS_WeakSolInitCond_OPEN (§I):
-    NS_WeakSolution v v₀ → v 0 = v₀.
+    NS_WeakSolutionData v v₀ → v 0 = v₀.
     The initial condition is part of the weak solution definition:
     if v is a Leray-Hopf weak solution with initial data v₀, then v(0) = v₀.
-    Lean ETA: 1 week (requires knowing NS_WeakSolution's Lean structure).
+    Lean ETA: 1 week (requires knowing NS_WeakSolutionData's Lean structure).
 
   NS_CarlemanToZeroInit_OPEN (§II):
     Given Carleman (hCarl) and v(T) = 0 in L², conclude v(0) = 0 a.e.
@@ -31,7 +31,7 @@ Phase 94 decomposes this into 3 sub-steps with a 0-sorry bridge:
     Lean ETA: 2-4 months (needs approximation + Carleman application).
 
   NS_ZeroInitToZero_OPEN (§III):
-    NS_WeakSolution v v₀ ∧ (v₀ = 0 a.e.) → ∀ t ∈ [0,T], ∀ x, v t x = 0.
+    NS_WeakSolutionData v v₀ ∧ (v₀ = 0 a.e.) → ∀ t ∈ [0,T], ∀ x, v t x = 0.
     ESS argument (energy): ‖v(t)‖_{L²}² ≤ ‖v₀‖_{L²}² = 0 → v = 0.
     The energy inequality gives ‖v(t)‖_{L²} = 0 for all t ≥ 0.
     But going from ‖v(t)‖_{L²} = 0 to pointwise zero requires
@@ -48,7 +48,7 @@ BRIDGE NS_ESSBackwardUniq_from_subgaps_v2 (§IV, 0 sorry):
     (A) hInit : v 0 = v₀  (from NS_WeakSolInitCond_OPEN)
     (B) hv0_ae : v 0 = 0 a.e.  (from NS_CarlemanToZeroInit_OPEN with Carleman)
     (C) v₀ = 0 a.e.  (from (A): v₀ = v 0 = 0 a.e.)
-    (D) v ≡ 0  (from NS_ZeroInitToZero_OPEN with NS_WeakSolution + v₀ = 0)
+    (D) v ≡ 0  (from NS_ZeroInitToZero_OPEN with NS_WeakSolutionData + v₀ = 0)
 
 AXIOM FOOTPRINT:
   #print axioms NS_ESSBackwardUniq_from_subgaps_v2
@@ -80,7 +80,7 @@ namespace Phase94BackwardUniqSubgaps
 
 /-! ## §I. NS_WeakSolInitCond_OPEN — initial condition from weak solution -/
 
-/-- **NS_WeakSolInitCond_OPEN** — NS_WeakSolution v v₀ implies v(0) = v₀.
+/-- **NS_WeakSolInitCond_OPEN** — NS_WeakSolutionData v v₀ implies v(0) = v₀.
 
     MATHEMATICAL CONTENT:
 
@@ -88,26 +88,26 @@ namespace Phase94BackwardUniqSubgaps
     by definition of the weak solution, the initial condition holds:
       v(0, x) = v₀(x)  pointwise (or strongly in L²).
 
-    In Lean, this is the INITIAL CONDITION component of NS_WeakSolution.
+    In Lean, this is the INITIAL CONDITION component of NS_WeakSolutionData.
     The Phase-5 WeakSolution.lean file defines WeakNS u u₀ f to include
     `u 0 = u₀` as one of the defining conditions.
 
-    For the ESS-route NS_WeakSolution (Phase 80+), the initial condition
-    should similarly be encoded. Once NS_WeakSolution is formalized with
+    For the ESS-route NS_WeakSolutionData (Phase 80+), the initial condition
+    should similarly be encoded. Once NS_WeakSolutionData is formalized with
     an explicit `v 0 = v₀` component, this theorem follows by extracting
     the component from the conjunction.
 
     LEAN STATUS:
-      Depends on the exact Lean structure of NS_WeakSolution.
-      Once NS_WeakSolution is defined concretely, this is immediate.
-      ETA: 1 week (requires NS_WeakSolution formalization).
+      Depends on the exact Lean structure of NS_WeakSolutionData.
+      Once NS_WeakSolutionData is defined concretely, this is immediate.
+      ETA: 1 week (requires NS_WeakSolutionData formalization).
 
     #print axioms NS_WeakSolInitCond_OPEN
     → (does not appear — named open def, NOT axiom) -/
 def NS_WeakSolInitCond_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     v 0 = v₀
 
 /-! ## §II. NS_CarlemanToZeroInit_OPEN — Carleman implies v(0) = 0 a.e. -/
@@ -171,7 +171,7 @@ def NS_CarlemanToZeroInit_OPEN : Prop :=
 
     PROOF METHOD (energy inequality):
 
-    From NS_WeakSolution v v₀ and v₀ = 0 a.e.:
+    From NS_WeakSolutionData v v₀ and v₀ = 0 a.e.:
 
     Step 1: ‖v₀‖_{L²}² = ∫ |v₀(x)|² dx = 0  (since v₀ = 0 a.e.).
 
@@ -182,7 +182,7 @@ def NS_CarlemanToZeroInit_OPEN : Prop :=
     Step 3: ‖v(t)‖_{L²} = 0 → v(t, x) = 0 for a.e. x (for each t).
 
     Step 4: For pointwise zero (not just a.e.): need regularity of v.
-            Under the L^{3,∞} bound and NS_WeakSolution structure, the solution
+            Under the L^{3,∞} bound and NS_WeakSolutionData structure, the solution
             v is locally Hölder continuous (from the Leray-Schauder theory or
             the Serrin regularity criterion), so a.e. zero → pointwise zero.
 
@@ -192,7 +192,7 @@ def NS_CarlemanToZeroInit_OPEN : Prop :=
           The Phase 92 definition uses the pointwise conclusion; we keep it here.
 
     LEAN STATUS:
-      Steps 1-3: energy inequality argument (ETA 1-2 weeks with NS_WeakSolution).
+      Steps 1-3: energy inequality argument (ETA 1-2 weeks with NS_WeakSolutionData).
       Step 4: Hölder regularity from L^{3,∞} (ETA 2-4 weeks additional work).
 
     #print axioms NS_ZeroInitToZero_OPEN
@@ -201,7 +201,7 @@ def NS_ZeroInitToZero_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (T : ℝ), T > 0 →
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     (∀ᵐ x ∂MeasureTheory.Measure.haar, v₀ x = 0) →
     ∀ t ∈ Set.Icc 0 T, ∀ x, v t x = 0
 
@@ -212,7 +212,7 @@ def NS_ZeroInitToZero_OPEN : Prop :=
     PROOF CHAIN:
 
     Given hCarl : NS_ESSCarlemanBound_OPEN, v₀, v, T, hT,
-          hWeak : NS_WeakSolution v v₀, hWL3 : L^{3,∞} bound, hVzero : eLpNorm(vT) 2 = 0.
+          hWeak : NS_WeakSolutionData v v₀, hWL3 : L^{3,∞} bound, hVzero : eLpNorm(vT) 2 = 0.
 
     Step A: v(0) = v₀
             By NS_WeakSolInitCond_OPEN (hInit).
@@ -263,7 +263,7 @@ Opera Numerorum — David Fox (ORCID: 0009-0008-1290-6105)
 PHASE 94 DECOMPOSES Phase 92's NS_ESSBackwardUniq_OPEN into:
 
   NS_WeakSolInitCond_OPEN       ETA 1 week
-    NS_WeakSolution v v₀ → v 0 = v₀.
+    NS_WeakSolutionData v v₀ → v 0 = v₀.
     Initial condition extraction (structural, near-term).
 
   NS_CarlemanToZeroInit_OPEN    ETA 2-4 months (after Carleman)
@@ -271,14 +271,14 @@ PHASE 94 DECOMPOSES Phase 92's NS_ESSBackwardUniq_OPEN into:
     Uses approximation + Carleman limit argument.
 
   NS_ZeroInitToZero_OPEN        ETA 2-4 weeks
-    NS_WeakSolution + v₀=0 a.e. → v≡0 on [0,T].
+    NS_WeakSolutionData + v₀=0 a.e. → v≡0 on [0,T].
     Energy inequality + regularity argument.
 
 BRIDGE (0 sorry, classical trio):
   NS_ESSBackwardUniq_from_subgaps_v2
     — 3 sub-steps (Init + Carleman + Energy) → NS_ESSBackwardUniq_OPEN
 
-NEAR-TERM CLOSEABLE (after NS_WeakSolution formalization):
+NEAR-TERM CLOSEABLE (after NS_WeakSolutionData formalization):
   NS_WeakSolInitCond_OPEN   (ETA 1 week)
   NS_ZeroInitToZero_OPEN    (ETA 2-4 weeks)
 

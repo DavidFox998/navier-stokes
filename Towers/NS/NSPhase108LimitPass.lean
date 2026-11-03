@@ -67,7 +67,7 @@ MATHEMATICAL STATUS:
 ================================================================
 
   The ESS argument (Escauriaza-Seregin-Sverak 2003) is COMPLETE:
-  - Phases 101-102: NS_WeakSolution formal structure
+  - Phases 101-102: NS_WeakSolutionData formal structure
   - Phase 103:      ESS parabolic rescaling invariance
   - Phase 104:      Friedrichs smooth approximation
   - Phase 105:      Blowup concentration (Aubin-Lions + Alaoglu)
@@ -99,7 +99,7 @@ def NS_M6_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
     MemLp v₀ 2 Measure.haar →
     ∃ v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3),
-      NS_WeakSolution v v₀ ∧ ∀ t > (0:ℝ), ContDiff ℝ ⊤ (v t)
+      NS_WeakSolutionData v v₀ ∧ ∀ t > (0:ℝ), ContDiff ℝ ⊤ (v t)
 
 /-- Internal: dominated convergence with Carleman weight e^{2*tau*phi}.
     Mathematical fact: DCT for L^2-convergent mollification with exp weight. -/
@@ -134,7 +134,7 @@ theorem NS_Carleman_LimitPass_PROVED
 
   PROOF CHAIN (Opera Numerorum, Phases 101-108):
 
-    Phase 101-102: Formal NS_WeakSolution structure
+    Phase 101-102: Formal NS_WeakSolutionData structure
                    (energy + initial condition + Pointwise regularity)
     Phase 103:     NS parabolic scaling u_lambda(x,t)=lambda*u(lambda*x,lambda^2*t)
                    solves NS if u does (chain rule, 0 sorry)
@@ -200,7 +200,7 @@ MASTER THEOREM:
   #print axioms NS_M6_PROVED -> {propext, Classical.choice, Quot.sound}
 
 COMPLETE PROOF CHAIN (8 phases):
-  Phase 101: NS_WeakSolution formal structure
+  Phase 101: NS_WeakSolutionData formal structure
   Phase 102: Pointwise zero: integral=0 + IsOpenPosMeasure -> ae=0
   Phase 103: ESS rescaling u_lambda solves NS (chain rule)
   Phase 104: Friedrichs mollification (smoothness + div-free + L^2 conv)

@@ -125,7 +125,7 @@ def NS_CarlemanBackwardUniqueness_OPEN : Prop :=
   ∀ (v₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (T : ℝ), T > 0 →
-    NS_WeakSolution v v₀ →
+    NS_WeakSolutionData v v₀ →
     (∃ M : ℝ, ∀ t ≥ (0 : ℝ), ∀ λ > (0 : ℝ),
       MeasureTheory.Measure.haar
         {x | MeasureTheory.nnnorm (v t x) > ENNReal.ofReal λ} ≤
@@ -146,7 +146,7 @@ def NS_CarlemanBackwardUniqueness_OPEN : Prop :=
       ¬ ContDiff ℝ ⊤ (fun tx => u tx.1 tx.2)
 
     THEN there exists a rescaled limiting solution v with:
-      (a) NS_WeakSolution v v₀' for some v₀' ∈ L²
+      (a) NS_WeakSolutionData v v₀' for some v₀' ∈ L²
       (b) v satisfies the L^{3,∞} bound (preserved by NS rescaling)
       (c) v vanishes at T in L²:  eLpNorm (v T) 2 haar = 0
       (d) v is not identically zero:  ¬(∀ t ∈ [0,T], ∀ x, v t x = 0)
@@ -175,7 +175,7 @@ def NS_BlowupRescalingCompactness_OPEN : Prop :=
   ∀ (u₀ : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (u : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
     (T : ℝ), T > 0 →
-    NS_WeakSolution u u₀ →
+    NS_WeakSolutionData u u₀ →
     (∃ M : ℝ, ∀ t ≥ (0 : ℝ), ∀ λ > (0 : ℝ),
       MeasureTheory.Measure.haar
         {x | MeasureTheory.nnnorm (u t x) > ENNReal.ofReal λ} ≤
@@ -183,7 +183,7 @@ def NS_BlowupRescalingCompactness_OPEN : Prop :=
     ¬ ContDiff ℝ ⊤ (fun tx : ℝ × EuclideanSpace ℝ (Fin 3) => u tx.1 tx.2) →
     ∃ (v₀' : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3))
       (v : ℝ → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3)),
-      NS_WeakSolution v v₀' ∧
+      NS_WeakSolutionData v v₀' ∧
       (∃ M' : ℝ, ∀ t ≥ (0 : ℝ), ∀ λ > (0 : ℝ),
         MeasureTheory.Measure.haar
           {x | MeasureTheory.nnnorm (v t x) > ENNReal.ofReal λ} ≤
@@ -205,7 +205,7 @@ def NS_BlowupRescalingCompactness_OPEN : Prop :=
       obtain ⟨v₀', v, hv_weak, hv_wL3, hv_zero, hv_nontrivial⟩ :=
         hResc u₀ u T hT hu_weak h_wL3 h_nosmooth
         By blow-up rescaling (§II), get a limit solution v with:
-          • NS_WeakSolution v v₀'          (hv_weak)
+          • NS_WeakSolutionData v v₀'          (hv_weak)
           • v ∈ L^{3,∞} with bound M'      (hv_wL3)
           • eLpNorm (v T) 2 = 0            (hv_zero)
           • v ≢ 0 on [0,T]                 (hv_nontrivial)
